@@ -6,11 +6,12 @@
  * @contact intra: @xifeng
  */
 
-import { differenceInMinutes } from 'date-fns';
+import { differenceInDays, differenceInMinutes } from 'date-fns';
 import * as z from 'zod/v4';
 
+import { TIME_SLOT_INTERVAL } from '@/config';
+
 const MIN_MEETING_MINUTES = 15;
-const TIME_SLOT_INTERVAL = 15; // Must divide evenly into 60 (e.g., 5, 10, 15, 30).
 const MAX_USERNAME_LENGTH = 100;
 
 /**
@@ -27,6 +28,13 @@ const timeAdditionalCheck = (datetime: string): boolean => {
  */
 const meetingLengthCheck = (start: string, end: string): boolean => {
   return differenceInMinutes(new Date(end), new Date(start)) >= MIN_MEETING_MINUTES;
+};
+
+/**
+ * @summary Returns if the meeting is in the same day.
+ */
+const isSameDayCheck = (start: string, end: string): boolean => {
+  return differenceInDays(new Date(end), new Date(start)) == 0;
 };
 
 /**
@@ -52,6 +60,10 @@ const SlotSchema = z
   .refine((data) => meetingLengthCheck(data.start, data.end), {
     message: `End time must be at least ${MIN_MEETING_MINUTES} minutes after start time.`,
     path: ['end'],
+  })
+  .refine((data) => isSameDayCheck(data.start, data.end), {
+    message: 'No inter day booking is allowed',
+    path: ['start', 'end'],
   });
 
 const SlotsSchema = z.array(SlotSchema);
@@ -93,6 +105,10 @@ const UpsertSlotSchema = z
   .refine((data) => meetingLengthCheck(data.start, data.end), {
     message: `End time must be at least ${MIN_MEETING_MINUTES} minutes after start time.`,
     path: ['end'],
+  })
+  .refine((data) => isSameDayCheck(data.start, data.end), {
+    message: 'No inter day booking is allowed',
+    path: ['start', 'end'],
   });
 
 export {

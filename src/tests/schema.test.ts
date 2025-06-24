@@ -130,6 +130,18 @@ describe('SlotSchema', () => {
     const result = SlotSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
+
+  it('should fail for a inter day booking', () => {
+    const case1 = {
+      id: 1,
+      start: '2025-06-24T10:15',
+      end: '2025-06-25T10:45',
+      bookedBy: '   ',
+    };
+
+    const result = SlotSchema.safeParse(case1);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('SlotARoomSchema', () => {
