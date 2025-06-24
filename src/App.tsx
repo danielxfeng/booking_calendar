@@ -6,7 +6,41 @@
  * @contact intra: @xifeng
  */
 
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
+
+import loader from '@/lib/loader';
+import type { Table } from '@/lib/table';
+
+/**
+ * @summary Layout of the application.
+ */
 const App = () => {
+  const [table, setTable] = useState<Table | null>(null);
+
+  // Fetch the params from location
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const start = searchParams.get('start');
+  const end = searchParams.get('end');
+
+  // Reload the data if dates are changed.
+  useEffect(() => {
+    loader(start, end)
+      .then((table) => setTable(table))
+      .catch((err) => {
+        throw err; // throw to error boundary on error.
+      });
+  }, [start, end]);
+
+  // Spinning on loading
+  if (!table)
+    return (
+      <div className='flex h-screen w-screen items-center justify-center'>
+        <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
+      </div>
+    );
+
   return (
     <div className='flex min-h-screen w-screen flex-col'>
       {/* Header */}
