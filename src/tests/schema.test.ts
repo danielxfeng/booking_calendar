@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { GetSlotsSchema, SlotsARoomSchema, SlotSchema, UpsertSlotSchema } from '@/lib/schema';
+import { DateSchema, SlotsARoomSchema, SlotSchema, UpsertSlotSchema } from '@/lib/schema';
 
 describe('SlotSchema', () => {
   it('should pass for a valid slot with user', () => {
@@ -204,38 +204,16 @@ describe('SlotARoomSchema', () => {
   });
 });
 
-describe('GetSlotsSchema', () => {
-  it('should pass for a valid GetSlotsQuery', () => {
-    const case1 = {
-      start: '2020-01-01',
-      end: '2020-01-07',
-    };
-    const result = GetSlotsSchema.safeParse(case1);
+describe('DateSchema', () => {
+  it('should pass for a valid date', () => {
+    const case1 = '2020-01-07';
+    const result = DateSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
   it('should fail for a invalid date', () => {
-    const case1 = {
-      start: '2025-06-24T10:15',
-      end: '2020-01-07',
-    };
-    const result = GetSlotsSchema.safeParse(case1);
-    expect(result.success).toBe(false);
-  });
-
-  it('should fail for a missing start', () => {
-    const case1 = {
-      end: '2020-01-07',
-    };
-    const result = GetSlotsSchema.safeParse(case1);
-    expect(result.success).toBe(false);
-  });
-
-  it('should fail for a missing end', () => {
-    const case1 = {
-      start: '2020-01-07',
-    };
-    const result = GetSlotsSchema.safeParse(case1);
+    const case1 = '2025-06-24T10:15';
+    const result = DateSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 });

@@ -83,14 +83,9 @@ const SlotsARoomSchema = z.object({
 const SlotsRoomsSchema = z.array(SlotsARoomSchema);
 
 /**
- * @summary The query params of getting the slots
+ * @summary The schema to validate a iso date
  */
-const GetSlotsSchema = z
-  .object({
-    start: z.iso.date(),
-    end: z.iso.date(),
-  })
-  .strict();
+const DateSchema = z.iso.date();
 
 /**
  * @summary The form value of upsert a new slot
@@ -112,7 +107,7 @@ const UpsertSlotSchema = z
   });
 
 export {
-  GetSlotsSchema,
+  DateSchema,
   SlotsARoomSchema,
   SlotSchema,
   SlotsRoomsSchema,
@@ -124,7 +119,6 @@ type Slot = z.infer<typeof SlotSchema>;
 type Slots = z.infer<typeof SlotsSchema>;
 type SlotsARoom = z.infer<typeof SlotsARoomSchema>;
 type SlotsRooms = z.infer<typeof SlotsRoomsSchema>;
-type GetSlotsQuery = z.infer<typeof GetSlotsSchema>;
 type UpsertSlot = z.infer<typeof UpsertSlotSchema>;
 
-export type { GetSlotsQuery, Slot, Slots, SlotsARoom, SlotsRooms, UpsertSlot };
+export type { Slot, Slots, SlotsARoom, SlotsRooms, UpsertSlot };
