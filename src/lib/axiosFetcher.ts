@@ -19,7 +19,10 @@ const axiosFetcher = axios.create({
 // Attach the token to requests.
 axiosFetcher.interceptors.request.use((config) => {
   const token = getToken();
-  if (!token) window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
+  if (!token) {
+    window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
+    return Promise.reject(new axios.Cancel('No token, redirecting.'));
+  }
   config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -31,6 +34,7 @@ axiosFetcher.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 498) {
       setToken(null);
       window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
+      return Promise.reject(new axios.Cancel('No token, redirecting.'));
     }
     return Promise.reject(error);
   },
