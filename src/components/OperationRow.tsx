@@ -1,3 +1,10 @@
+/**
+ * @file OperationRow.tsx
+ *
+ * @author Xin (Daniel) Feng
+ * @contact intra: @xifeng
+ */
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { format, formatISO, isMonday, nextMonday, nextSunday, previousMonday } from 'date-fns';
