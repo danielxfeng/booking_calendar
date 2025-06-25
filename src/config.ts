@@ -41,9 +41,18 @@ const FETCHER_TIMEOUT = 30; // 30 seconds
  */
 const CACHE_DURATION = 5; // 5 minutes
 
+/**
+ * The size of a cell of the calendar view.
+ * We use `overflow` to support the responsive design for protecting the user experience.
+ */
+const CELL_WIDTH = 'w-28'; //112px
+const CELL_HEIGHT = 'h-6'; // 24px
+
 export {
   API_URL,
   CACHE_DURATION,
+  CELL_HEIGHT,
+  CELL_WIDTH,
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
