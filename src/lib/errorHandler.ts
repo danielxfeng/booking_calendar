@@ -6,13 +6,13 @@
  * @contact intra: @xifeng
  */
 
-import type { AxiosError } from 'axios';
+import axios from 'axios';
 
 /**
  * @summary An error received from the API.
  * @param message the message to throw
  */
-const ThrowInvalidIncomingDataErr = (message: string) => {
+const ThrowInvalidIncomingDataErr = (message: string): never => {
   throw new Error(`Status: 502. Message: The data from API is illegal: ${message}`);
 };
 
@@ -20,18 +20,22 @@ const ThrowInvalidIncomingDataErr = (message: string) => {
  * @summary An unexpected error.
  * @param message the message to throw
  */
-const ThrowInternalError = (message: string) => {
+const ThrowInternalError = (message: string): never => {
   throw new Error(`Status: 500. Message: An unexpected error: ${message}`);
 };
 
 /**
- * @summary Throws an error from axios.
- * @param error The AxiosError object.
+ * @summary Throws an error from API fetching, can be an axios error, or parsing error.
+ * @param error The Error object.
  */
-const ThrowAxiosError = (error: AxiosError) => {
-  throw new Error(
-    `Status: ${error.response?.status ?? 500}. Message: An error from API: ${JSON.stringify(error.response?.data)}`,
-  );
+const ThrowFetchingError = (error: unknown): never => {
+  if (axios.isAxiosError(error)) {
+    throw new Error(
+      `Status: ${error.response?.status ?? 500}. Message: An error from API: ${JSON.stringify(error.response?.data)}`,
+    );
+  } else {
+    throw error;
+  }
 };
 
-export { ThrowAxiosError, ThrowInternalError, ThrowInvalidIncomingDataErr };
+export { ThrowFetchingError, ThrowInternalError, ThrowInvalidIncomingDataErr };
