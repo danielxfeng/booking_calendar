@@ -62,7 +62,7 @@ const App = () => {
   });
 
   // Spinning on loading
-  if (isLoading || !table)
+  if (isLoading || !table || !start)
     return (
       <div className='flex h-screen w-screen items-center justify-center'>
         <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
@@ -81,7 +81,7 @@ const App = () => {
 
       {/* Main */}
       <main className='flex-1'>
-        <Main table={table} />
+        <Main table={table} start={start} />
       </main>
 
       {/* Footer */}
