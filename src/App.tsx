@@ -19,6 +19,19 @@ import { setToken } from '@/lib/tokenStore';
 
 /**
  * @summary Layout of the application.
+ * @description
+ * Mainly, the application is URL-driven.
+ *  - An `useEffect` watches the changes of the address bar.
+ *    - When the URL changes, validation and data fetching are triggered.
+ *    - A 5-minute cache to prevent visiting backend too frequently.
+ *    - Then the page is re-rendered by the new data.
+ *
+ *  - When users switch the date range,
+ *  application uses `useNavigate` to change the search params to trigger the process above.
+ *
+ *  - Basically the application is state-less, except:
+ *    - Cached slots are kept by react Query.
+ *    - Jotai is used to keep the table (if dirty), so the dirty table can survive among re-renders.
  */
 const App = () => {
   const navigate = useNavigate();
