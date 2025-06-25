@@ -216,6 +216,12 @@ describe('DateSchema', () => {
     const result = DateSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
+
+  it('should fail for a null input', () => {
+    const case1 = '2025-06-24T10:15';
+    const result = DateSchema.safeParse(case1);
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('UpsertSlotSchema', () => {
