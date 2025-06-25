@@ -2,7 +2,7 @@ import { parseISO } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
 import type { SlotsRooms } from '@/lib/schema';
-import { TableGenerator } from '@/lib/table';
+import { tableGenerator } from '@/lib/table';
 
 const startDate = parseISO('2025-06-23');
 
@@ -23,7 +23,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    const table = TableGenerator(slotsRooms, startDate);
+    const table = tableGenerator(slotsRooms, startDate);
 
     expect(table[40][2].slots?.[1]).not.toBe(null);
     expect(table[41][2].slots?.[1]).not.toBe(null);
@@ -69,7 +69,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    const table = TableGenerator(slotsRooms, startDate);
+    const table = tableGenerator(slotsRooms, startDate);
 
     expect(table[40][2].slots?.[1]).not.toBe(null);
     expect(table[41][2].slots?.[1]).not.toBe(null);
@@ -104,7 +104,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => TableGenerator(slotsRooms, startDate)).toThrowError(
+    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
       'The slot is outside the displayed week range.',
     );
   });
@@ -125,7 +125,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => TableGenerator(slotsRooms, startDate)).toThrowError(
+    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
       'The slot is outside the displayed week range.',
     );
   });
@@ -152,7 +152,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => TableGenerator(slotsRooms, startDate)).toThrowError(
+    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
       'The data from API is illegal: The slot id is not unique.',
     );
   });
@@ -179,7 +179,7 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => TableGenerator(slotsRooms, startDate)).toThrowError('Duplicate slot detected.');
+    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError('Duplicate slot detected.');
   });
 
   it('should throw if there are duplicate room IDs', () => {
@@ -196,6 +196,6 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => TableGenerator(slotsRooms, startDate)).toThrowError('Duplicate room detected.');
+    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError('Duplicate room detected.');
   });
 });

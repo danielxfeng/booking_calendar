@@ -53,7 +53,7 @@ const newTable = () => {
  * @param startDate the start date of calendar table.
  * @returns a table view.
  */
-const TableGenerator = (slotsRooms: SlotsRooms, startDate: Date): Table => {
+const tableGenerator = (slotsRooms: SlotsRooms, startDate: Date): Table => {
   const table: Table = newTable();
 
   // The length of the array.
@@ -106,6 +106,6 @@ const TableGenerator = (slotsRooms: SlotsRooms, startDate: Date): Table => {
   return table;
 };
 
-export { TableGenerator };
+export { tableGenerator };
 
 export type { Cell, Table };
