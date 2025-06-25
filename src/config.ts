@@ -35,8 +35,15 @@ const ENDPOINT_SLOTS = '';
  */
 const FETCHER_TIMEOUT = 30; // 30 seconds
 
+/**
+ * The cache duration for calendar.
+ * Since the user may switch the calendar view frequently, we set a cache to optimize the loading speed.
+ */
+const CACHE_DURATION = 5; // 5 minutes
+
 export {
   API_URL,
+  CACHE_DURATION,
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
