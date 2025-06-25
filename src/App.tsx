@@ -7,39 +7,70 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 
-import loader from '@/lib/loader';
-import type { Table } from '@/lib/table';
+import Main from '@/components/Main';
+import { CACHE_DURATION } from '@/config';
+import { getSlots } from '@/lib/apiFetcher';
+import { normalizeStartDate } from '@/lib/normalizeStartDate';
+import { type Table, tableGenerator } from '@/lib/table';
+import { setToken } from '@/lib/tokenStore';
 
 /**
  * @summary Layout of the application.
  */
 const App = () => {
-  const [table, setTable] = useState<Table | null>(null);
+  const navigate = useNavigate();
 
   // Fetch the params from location
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const start = searchParams.get('start');
-  const end = searchParams.get('end');
+  const startFromParams = searchParams.get('start');
+  const token = searchParams.get('token');
+  const [start, setStart] = useState<string | null>(null);
 
-  // Reload the data if dates are changed.
+  // Update the received token, useEffect to avoid multi-set.
   useEffect(() => {
-    loader(start, end)
-      .then((table) => setTable(table))
-      .catch((err) => {
-        throw err; // throw to error boundary on error.
-      });
-  }, [start, end]);
+    if (token) {
+      setToken(token);
+    }
+  }, [token]);
+
+  // Validate the start, may redirect to the normalized date.
+  useEffect(() => {
+    const normalizedStart = normalizeStartDate(startFromParams);
+    if (normalizedStart !== startFromParams) {
+      navigate(`/?start=${normalizedStart}`, { replace: true });
+      return;
+    }
+
+    setStart(normalizedStart);
+  }, [navigate, startFromParams]);
+
+  // useQuery to handle the cache, api fetching.
+  const {
+    data: table,
+    error,
+    isLoading,
+    isError,
+  } = useQuery<Table>({
+    enabled: start !== null,
+    queryKey: ['slots', start],
+    queryFn: async () => tableGenerator(await getSlots(start!), new Date(start!)),
+    staleTime: 1000 * 60 * CACHE_DURATION,
+  });
 
   // Spinning on loading
-  if (!table)
+  if (isLoading || !table)
     return (
       <div className='flex h-screen w-screen items-center justify-center'>
         <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
       </div>
     );
+
+  // to error boundary since it makes no sense when there is no data.
+  if (isError) throw error;
 
   return (
     <div className='flex min-h-screen w-screen flex-col'>
@@ -49,7 +80,9 @@ const App = () => {
       </header>
 
       {/* Main */}
-      <main className='flex-1'></main>
+      <main className='flex-1'>
+        <Main table={table} />
+      </main>
 
       {/* Footer */}
       <footer className='bg-accent flex h-18 items-center justify-center'>
@@ -57,13 +90,19 @@ const App = () => {
           data-role='footer-ads-left'
           className='text-muted-foreground mx-auto text-center text-sm'
         >
-          Frontend: <a href='https://danielslab.dev'>@xifeng</a>
+          Frontend:{' '}
+          <a href='https://danielslab.dev' target='_blank' rel='noreferrer'>
+            @xifeng
+          </a>
         </div>
         <div
           data-role='footer-ads-right'
           className='text-muted-foreground mx-auto text-center text-sm'
         >
-          Backend: <a href='https://danielslab.dev'>@abdul</a>
+          Backend:{' '}
+          <a href='https://github.com/ibnBaqqi' target='_blank' rel='noreferrer'>
+            @sabdulba
+          </a>
         </div>
       </footer>
     </div>
