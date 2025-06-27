@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DateSchema, SlotsAndRoomSchema, SlotSchema, UpsertSlotSchema } from '@/lib/schema';
+import { DateSchema, RoomSchema, SlotFromApiSchema, UpsertSlotSchema } from '@/lib/schema';
 
 describe('SlotSchema', () => {
   it('should pass for a valid slot with user', () => {
@@ -11,7 +11,7 @@ describe('SlotSchema', () => {
       bookedBy: 'Daniel',
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
@@ -23,7 +23,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
@@ -34,7 +34,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -46,7 +46,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -57,7 +57,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -69,7 +69,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -81,7 +81,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -92,7 +92,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -104,7 +104,7 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -115,7 +115,7 @@ describe('SlotSchema', () => {
       end: '2025-06-24T10:15',
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -127,7 +127,7 @@ describe('SlotSchema', () => {
       bookedBy: '   ',
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -139,7 +139,7 @@ describe('SlotSchema', () => {
       bookedBy: '   ',
     };
 
-    const result = SlotSchema.safeParse(case1);
+    const result = SlotFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 });
@@ -152,7 +152,7 @@ describe('SlotAndRoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsAndRoomSchema.safeParse(case1);
+    const result = RoomSchema.safeParse(case1);
 
     expect(result.success).toBe(true);
   });
@@ -163,7 +163,7 @@ describe('SlotAndRoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsAndRoomSchema.safeParse(case1);
+    const result = RoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -175,7 +175,7 @@ describe('SlotAndRoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsAndRoomSchema.safeParse(case1);
+    const result = RoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -186,7 +186,7 @@ describe('SlotAndRoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsAndRoomSchema.safeParse(case1);
+    const result = RoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -198,7 +198,7 @@ describe('SlotAndRoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsAndRoomSchema.safeParse(case1);
+    const result = RoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });

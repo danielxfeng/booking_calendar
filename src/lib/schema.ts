@@ -1,6 +1,6 @@
 /**
- * @file slotSchemas.ts
- * @summary Defines the Zod schemas and Types used for Slot related data structures.
+ * @file schema.ts
+ * @summary Defines the Zod schemas and Types used for API request and response.
  *
  * @author Xin (Daniel) Feng
  * @contact intra: @xifeng
@@ -49,7 +49,7 @@ const dateTimeSchema = z.iso
 /**
  * @summary A slot from API
  */
-const SlotSchema = z
+const SlotFromApiSchema = z
   .object({
     id: z.int().positive(),
     start: dateTimeSchema,
@@ -66,21 +66,21 @@ const SlotSchema = z
     path: ['start', 'end'],
   });
 
-const SlotsSchema = z.array(SlotSchema);
+const SlotsFromApiSchema = z.array(SlotFromApiSchema);
 
 /**
  * @summary The slots for a room.
  */
-const SlotsAndRoomSchema = z.object({
+const RoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
-  slots: SlotsSchema,
+  slots: SlotsFromApiSchema,
 });
 
 /**
  * @summary The array of slots for rooms
  */
-const SlotsAndRoomsSchema = z.array(SlotsAndRoomSchema);
+const RoomsSchema = z.array(RoomSchema);
 
 /**
  * @summary The schema to validate a iso date
@@ -108,17 +108,17 @@ const UpsertSlotSchema = z
 
 export {
   DateSchema,
-  SlotsAndRoomSchema,
-  SlotsAndRoomsSchema,
-  SlotSchema,
-  SlotsSchema,
+  RoomSchema,
+  RoomsSchema,
+  SlotFromApiSchema,
+  SlotsFromApiSchema,
   UpsertSlotSchema,
 };
 
-type Slot = z.infer<typeof SlotSchema>;
-type Slots = z.infer<typeof SlotsSchema>;
-type SlotsAndRoom = z.infer<typeof SlotsAndRoomSchema>;
-type SlotsAndRooms = z.infer<typeof SlotsAndRoomsSchema>;
+type SlotFromApi = z.infer<typeof SlotFromApiSchema>;
+type SlotsFromApi = z.infer<typeof SlotsFromApiSchema>;
+type Room = z.infer<typeof RoomSchema>;
+type Rooms = z.infer<typeof RoomsSchema>;
 type UpsertSlot = z.infer<typeof UpsertSlotSchema>;
 
-export type { Slot, Slots, SlotsAndRoom, SlotsAndRooms, UpsertSlot };
+export type { Room, Rooms, SlotFromApi, SlotsFromApi, UpsertSlot };
