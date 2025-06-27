@@ -13,8 +13,8 @@ import { useQuery } from '@tanstack/react-query';
 import Main from '@/components/Main';
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
+import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';
-import { type Table, tableGenerator } from '@/lib/table';
 import { setToken } from '@/lib/tokenStore';
 
 /**
@@ -63,19 +63,19 @@ const App = () => {
 
   // useQuery to handle the cache, api fetching.
   const {
-    data: table,
+    data: grid,
     error,
     isLoading,
     isError,
-  } = useQuery<Table>({
+  } = useQuery<CalGrid>({
     enabled: start !== null,
     queryKey: ['slots', start],
-    queryFn: async () => tableGenerator(await getSlots(start!), new Date(start!)),
+    queryFn: async () => calGridGenerator(await getSlots(start!), new Date(start!)),
     staleTime: 1000 * 60 * CACHE_DURATION,
   });
 
   // Spinning on loading
-  if (isLoading || !table || !start)
+  if (isLoading || !grid || !start)
     return (
       <div className='flex h-screen w-screen items-center justify-center'>
         <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
@@ -94,7 +94,7 @@ const App = () => {
 
       {/* Main */}
       <main className='flex-1'>
-        <Main table={table} start={start} />
+        <Main table={grid} start={start} />
       </main>
 
       {/* Footer */}
