@@ -1,14 +1,15 @@
 import { parseISO } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import type { SlotsRooms } from '@/lib/schema';
-import { tableGenerator } from '@/lib/table';
+import { TIME_SLOT_INTERVAL } from '@/config';
+import { calGridGenerator } from '@/lib/calGrid';
+import type { Rooms } from '@/lib/schema';
 
 const startDate = parseISO('2025-06-23');
 
-describe('TableGenerator', () => {
+describe('calGridGenerator', () => {
   it('should place one slot into correct cell', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -23,14 +24,14 @@ describe('TableGenerator', () => {
       },
     ];
 
-    const table = tableGenerator(slotsRooms, startDate);
+    const grid = calGridGenerator(slotsRooms, startDate);
 
-    expect(table[40][2].slots?.[1]).not.toBe(null);
-    expect(table[41][2].slots?.[1]).not.toBe(null);
+    expect(grid[40][2]?.[0].roomId).toBe(1);
+    expect(grid[41][2]?.[0].roomId).toBe(1);
   });
 
   it('should place slots into correct cells', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -69,27 +70,49 @@ describe('TableGenerator', () => {
       },
     ];
 
-    const table = tableGenerator(slotsRooms, startDate);
+    const grid = calGridGenerator(slotsRooms, startDate);
 
-    expect(table[40][2].slots?.[1]).not.toBe(null);
-    expect(table[41][2].slots?.[1]).not.toBe(null);
+    const timeIndex = (timeStr: string) => {
+      const date = new Date(timeStr);
+      return Math.floor((date.getHours() * 60 + date.getMinutes()) / TIME_SLOT_INTERVAL);
+    };
 
-    expect(table[42][2].slots?.[2]).not.toBe(null);
+    const dayIndex = (dateStr: string) =>
+      Math.floor((new Date(dateStr).getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
-    expect(table[40][2].slots?.[3]).not.toBe(null);
-
-    for (let i = 48; i <= 56; i++) {
-      expect(table[i][3].slots?.[4]).not.toBe(null);
+    const idx1Start = timeIndex('2025-06-25T10:00');
+    const idx1End = timeIndex('2025-06-25T10:30');
+    for (let i = idx1Start; i < idx1End; i++) {
+      const cell = grid[i][dayIndex('2025-06-25')];
+      expect(cell).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: 1, roomId: 1, roomName: 'a' })]),
+      );
     }
 
-    const cell = table[40][2];
-    const slotIds = Object.values(cell.slots).map((s) => s.id);
-    expect(slotIds).toContain(1);
-    expect(slotIds).toContain(3);
+    const idx3Start = timeIndex('2025-06-25T10:00');
+    const idx3End = timeIndex('2025-06-25T10:15');
+    for (let i = idx3Start; i < idx3End; i++) {
+      const cell = grid[i][dayIndex('2025-06-25')];
+      expect(cell).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: 3, roomId: 2, roomName: 'b' })]),
+      );
+    }
+
+    const idx4Start = timeIndex('2025-06-26T12:00');
+    const idx4End = timeIndex('2025-06-26T14:15');
+    for (let i = idx4Start; i < idx4End; i++) {
+      const cell = grid[i][dayIndex('2025-06-26')];
+      expect(cell).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: 4, bookedBy: null, roomId: 2 })]),
+      );
+    }
+
+    const unexpectedCell = grid[timeIndex('2025-06-24T10:00')]?.[dayIndex('2025-06-24')];
+    expect(unexpectedCell).toBeNull();
   });
 
   it('should throw if slot is before the start date', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -104,34 +127,13 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
-      'The slot is outside the displayed week range.',
-    );
-  });
-
-  it('should throw if slot is after the 7-day range', () => {
-    const slotsRooms: SlotsRooms = [
-      {
-        roomId: 1,
-        roomName: 'a',
-        slots: [
-          {
-            id: 11,
-            start: '2025-06-30T10:00',
-            end: '2025-06-30T10:30',
-            bookedBy: 'Daniel',
-          },
-        ],
-      },
-    ];
-
-    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
+    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError(
       'The slot is outside the displayed week range.',
     );
   });
 
   it('should throw on duplicated slot ID in same cell', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -152,13 +154,13 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError(
+    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError(
       'The data from API is illegal: The slot id is not unique.',
     );
   });
 
   it('should throw on overlapping slots', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -179,11 +181,11 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError('Duplicate slot detected.');
+    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError('Duplicate slot detected.');
   });
 
   it('should throw if there are duplicate room IDs', () => {
-    const slotsRooms: SlotsRooms = [
+    const slotsRooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
@@ -196,6 +198,6 @@ describe('TableGenerator', () => {
       },
     ];
 
-    expect(() => tableGenerator(slotsRooms, startDate)).toThrowError('Duplicate room detected.');
+    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError('Duplicate room detected.');
   });
 });
