@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DateSchema, SlotsARoomSchema, SlotSchema, UpsertSlotSchema } from '@/lib/schema';
+import { DateSchema, SlotsAndRoomSchema, SlotSchema, UpsertSlotSchema } from '@/lib/schema';
 
 describe('SlotSchema', () => {
   it('should pass for a valid slot with user', () => {
@@ -144,7 +144,7 @@ describe('SlotSchema', () => {
   });
 });
 
-describe('SlotARoomSchema', () => {
+describe('SlotAndRoomSchema', () => {
   it('should pass for a valid slot with user', () => {
     const case1 = {
       roomId: 1,
@@ -152,7 +152,7 @@ describe('SlotARoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsARoomSchema.safeParse(case1);
+    const result = SlotsAndRoomSchema.safeParse(case1);
 
     expect(result.success).toBe(true);
   });
@@ -163,7 +163,7 @@ describe('SlotARoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsARoomSchema.safeParse(case1);
+    const result = SlotsAndRoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -175,7 +175,7 @@ describe('SlotARoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsARoomSchema.safeParse(case1);
+    const result = SlotsAndRoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -186,7 +186,7 @@ describe('SlotARoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsARoomSchema.safeParse(case1);
+    const result = SlotsAndRoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });
@@ -198,7 +198,7 @@ describe('SlotARoomSchema', () => {
       slots: [],
     };
 
-    const result = SlotsARoomSchema.safeParse(case1);
+    const result = SlotsAndRoomSchema.safeParse(case1);
 
     expect(result.success).toBe(false);
   });

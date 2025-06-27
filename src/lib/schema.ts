@@ -47,7 +47,7 @@ const dateTimeSchema = z.iso
   });
 
 /**
- * @summary A slot
+ * @summary A slot from API
  */
 const SlotSchema = z
   .object({
@@ -71,7 +71,7 @@ const SlotsSchema = z.array(SlotSchema);
 /**
  * @summary The slots for a room.
  */
-const SlotsARoomSchema = z.object({
+const SlotsAndRoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
   slots: SlotsSchema,
@@ -80,7 +80,7 @@ const SlotsARoomSchema = z.object({
 /**
  * @summary The array of slots for rooms
  */
-const SlotsRoomsSchema = z.array(SlotsARoomSchema);
+const SlotsAndRoomsSchema = z.array(SlotsAndRoomSchema);
 
 /**
  * @summary The schema to validate a iso date
@@ -108,17 +108,17 @@ const UpsertSlotSchema = z
 
 export {
   DateSchema,
-  SlotsARoomSchema,
+  SlotsAndRoomSchema,
+  SlotsAndRoomsSchema,
   SlotSchema,
-  SlotsRoomsSchema,
   SlotsSchema,
   UpsertSlotSchema,
 };
 
 type Slot = z.infer<typeof SlotSchema>;
 type Slots = z.infer<typeof SlotsSchema>;
-type SlotsARoom = z.infer<typeof SlotsARoomSchema>;
-type SlotsRooms = z.infer<typeof SlotsRoomsSchema>;
+type SlotsAndRoom = z.infer<typeof SlotsAndRoomSchema>;
+type SlotsAndRooms = z.infer<typeof SlotsAndRoomsSchema>;
 type UpsertSlot = z.infer<typeof UpsertSlotSchema>;
 
-export type { Slot, Slots, SlotsARoom, SlotsRooms, UpsertSlot };
+export type { Slot, Slots, SlotsAndRoom, SlotsAndRooms, UpsertSlot };
