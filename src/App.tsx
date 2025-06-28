@@ -31,7 +31,6 @@ import { setToken } from '@/lib/tokenStore';
  *
  *  - Basically the application is state-less, except:
  *    - Cached slots are kept by react Query.
- *    - Jotai is used to keep the table (if dirty), so the dirty table can survive among re-renders.
  */
 const App = () => {
   const navigate = useNavigate();
@@ -94,7 +93,7 @@ const App = () => {
 
       {/* Main */}
       <main className='flex-1'>
-        <Main table={grid} start={start} />
+        <Main grid={grid} start={start} />
       </main>
 
       {/* Footer */}
