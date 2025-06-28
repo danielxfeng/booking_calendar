@@ -8,9 +8,8 @@
 import { differenceInCalendarDays, getHours, getMinutes } from 'date-fns';
 
 import { NUMBERS_OF_ROOMS, TIME_SLOT_INTERVAL } from '@/config';
+import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
 import type { BookingFromApi, Rooms } from '@/lib/schema';
-
-import { ThrowInvalidIncomingDataErr } from './errorHandler';
 
 /**
  * @summary A booking in the calendar grid view.
