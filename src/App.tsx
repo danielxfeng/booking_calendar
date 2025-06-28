@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 
 import Main from '@/components/Main';
+import { Toaster } from '@/components/ui/sonner';
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
@@ -117,6 +118,7 @@ const App = () => {
           </a>
         </div>
       </footer>
+      <Toaster />
     </div>
   );
 };
