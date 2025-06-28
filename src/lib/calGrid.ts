@@ -51,8 +51,9 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
   if (rooms.length > NUMBERS_OF_ROOMS)
     ThrowInvalidIncomingDataErr('Too many meeting rooms in API response.');
 
+  // Prevent duplicated/overlapped bookings.
   const roomSet = new Set();
-  const idSet = new Set();
+  const bookingMap = new Map<number, Booking>();
 
   // iterator all bookings
   for (const room of rooms) {
@@ -76,19 +77,18 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
       );
 
       // Prevent duplicated booking id.
-      if (idSet.has(booking.id)) ThrowInvalidIncomingDataErr('The booking id is not unique.');
+      if (bookingMap.has(booking.id)) ThrowInvalidIncomingDataErr('The booking id is not unique.');
 
-      idSet.add(booking.id);
+      const newBooking: Booking = { ...booking, roomId: room.roomId, roomName: room.roomName };
+      bookingMap.set(booking.id, newBooking);
 
       // Assign booking to related cells.
       for (let timeIndex = timeIndexStart; timeIndex < timeIndexEnd; timeIndex++) {
         const cell = grid[timeIndex]?.[dayIndex];
 
-        const newCellSlot = { ...booking, roomId: room.roomId, roomName: room.roomName };
-
         // Insert
         if (!cell) {
-          grid[timeIndex][dayIndex] = [newCellSlot];
+          grid[timeIndex][dayIndex] = [newBooking];
           continue;
         }
 
@@ -101,7 +101,7 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
         )
           ThrowInvalidIncomingDataErr('Duplicate booking detected.');
 
-        grid[timeIndex][dayIndex]!.push(newCellSlot);
+        grid[timeIndex][dayIndex]!.push(newBooking);
       }
     }
   }
