@@ -31,7 +31,13 @@ import { cn } from '@/lib/utils';
  * - null: no form should be shown.
  * - editingId = null: insertion, otherwise: update.
  */
-type FormProp = { editingId: number | null; default: UpsertBooking; startDate: Date } | null;
+type FormProp = {
+  editingId: number | null;
+  default: UpsertBooking;
+  startDate: Date;
+  row: number;
+  col: number;
+} | null;
 
 /**
  * @summary The main component of the application, includes:
@@ -85,7 +91,13 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormProp({ editingId: null, default: { start, end, roomId: availRoom.id }, startDate });
+      setFormProp({
+        editingId: null,
+        default: { start, end, roomId: availRoom.id },
+        startDate,
+        col,
+        row,
+      });
       return;
     }
 
@@ -102,14 +114,14 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      const bookings = cellProp?.filter((kv) => kv.id === bookingId);
+      const booking = cellProp?.find((kv) => kv.id === bookingId);
 
-      if (bookings?.length != 1) {
+      if (!booking) {
         console.error('[onClickHandler]: failed to get a booking id.');
         return;
       }
 
-      setFormProp({ editingId: bookingId, default: bookings[0], startDate });
+      setFormProp({ editingId: bookingId, default: booking, startDate, col, row });
       return;
     }
 
