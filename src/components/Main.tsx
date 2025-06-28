@@ -6,8 +6,8 @@
  * @contact intra: @xifeng
  */
 
-import { useState } from 'react';
 import { add, addDays, format, formatISO, minutesToHours } from 'date-fns';
+import { useAtom } from 'jotai';
 
 import BookingForm from '@/components/BookingForm';
 import CellComp from '@/components/CellComponent';
@@ -20,6 +20,7 @@ import {
   TIME_LABEL_INTERVAL,
   TIME_SLOT_INTERVAL,
 } from '@/config';
+import { formPropAtom } from '@/lib/atoms';
 import type { CalGrid, Cell } from '@/lib/calGrid';
 import type { UpsertBooking } from '@/lib/schema';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,7 @@ import { cn } from '@/lib/utils';
  * - null: no form should be shown.
  * - editingId = null: insertion, otherwise: update.
  */
-type FormProp = { editingId: number | null; default: UpsertBooking } | null;
+type FormProp = { editingId: number | null; default: UpsertBooking; startDate: Date } | null;
 
 /**
  * @summary The main component of the application, includes:
@@ -40,7 +41,7 @@ type FormProp = { editingId: number | null; default: UpsertBooking } | null;
  * - A popover form to handle the upsert and delete.
  */
 const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
-  const [formProp, setFormProp] = useState<FormProp>(null);
+  const [formProp, setFormProp] = useAtom(formPropAtom);
   const startDate = new Date(start);
   const rowsCount = (24 * 60) / TIME_SLOT_INTERVAL;
   const currTime = new Date();
@@ -84,7 +85,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormProp({ editingId: null, default: { start, end, roomId: availRoom.id } });
+      setFormProp({ editingId: null, default: { start, end, roomId: availRoom.id }, startDate });
       return;
     }
 
@@ -108,7 +109,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormProp({ editingId: bookingId, default: bookings[0] });
+      setFormProp({ editingId: bookingId, default: bookings[0], startDate });
       return;
     }
 
@@ -172,7 +173,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
       {/* A popover to toggle the form */}
       <Popover open={!!formProp}>
         <PopoverContent className='w-[300px]'>
-          <BookingForm formProp={formProp} setFormProp={setFormProp} grid={grid} />
+          <BookingForm grid={grid} />
         </PopoverContent>
       </Popover>
     </div>
