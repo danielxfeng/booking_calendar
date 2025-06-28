@@ -8,12 +8,12 @@ import type { Rooms } from '@/lib/schema';
 const startDate = parseISO('2025-06-23');
 
 describe('calGridGenerator', () => {
-  it('should place one slot into correct cell', () => {
-    const slotsRooms: Rooms = [
+  it('should place one booking into correct cell', () => {
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [
+        bookings: [
           {
             id: 1,
             start: '2025-06-25T10:00:00',
@@ -24,18 +24,18 @@ describe('calGridGenerator', () => {
       },
     ];
 
-    const grid = calGridGenerator(slotsRooms, startDate);
+    const grid = calGridGenerator(rooms, startDate);
 
     expect(grid[40][2]?.[0].roomId).toBe(1);
     expect(grid[41][2]?.[0].roomId).toBe(1);
   });
 
-  it('should place slots into correct cells', () => {
-    const slotsRooms: Rooms = [
+  it('should place bookings into correct cells', () => {
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [
+        bookings: [
           {
             id: 1,
             start: '2025-06-25T10:00',
@@ -53,7 +53,7 @@ describe('calGridGenerator', () => {
       {
         roomId: 2,
         roomName: 'b',
-        slots: [
+        bookings: [
           {
             id: 3,
             start: '2025-06-25T10:00',
@@ -70,7 +70,7 @@ describe('calGridGenerator', () => {
       },
     ];
 
-    const grid = calGridGenerator(slotsRooms, startDate);
+    const grid = calGridGenerator(rooms, startDate);
 
     const timeIndex = (timeStr: string) => {
       const date = new Date(timeStr);
@@ -112,11 +112,11 @@ describe('calGridGenerator', () => {
   });
 
   it('should throw if slot is before the start date', () => {
-    const slotsRooms: Rooms = [
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [
+        bookings: [
           {
             id: 10,
             start: '2025-06-22T10:00',
@@ -127,17 +127,17 @@ describe('calGridGenerator', () => {
       },
     ];
 
-    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError(
-      'The slot is outside the displayed week range.',
+    expect(() => calGridGenerator(rooms, startDate)).toThrowError(
+      'The booking is outside the displayed week range.',
     );
   });
 
   it('should throw on duplicated slot ID in same cell', () => {
-    const slotsRooms: Rooms = [
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [
+        bookings: [
           {
             id: 12,
             start: '2025-06-25T10:00',
@@ -154,17 +154,17 @@ describe('calGridGenerator', () => {
       },
     ];
 
-    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError(
-      'The data from API is illegal: The slot id is not unique.',
+    expect(() => calGridGenerator(rooms, startDate)).toThrowError(
+      'The data from API is illegal: The booking id is not unique.',
     );
   });
 
-  it('should throw on overlapping slots', () => {
-    const slotsRooms: Rooms = [
+  it('should throw on overlapping bookings', () => {
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [
+        bookings: [
           {
             id: 13,
             start: '2025-06-25T10:00',
@@ -181,23 +181,23 @@ describe('calGridGenerator', () => {
       },
     ];
 
-    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError('Duplicate slot detected.');
+    expect(() => calGridGenerator(rooms, startDate)).toThrowError('Duplicate booking detected.');
   });
 
   it('should throw if there are duplicate room IDs', () => {
-    const slotsRooms: Rooms = [
+    const rooms: Rooms = [
       {
         roomId: 1,
         roomName: 'a',
-        slots: [],
+        bookings: [],
       },
       {
         roomId: 1,
         roomName: 'a',
-        slots: [],
+        bookings: [],
       },
     ];
 
-    expect(() => calGridGenerator(slotsRooms, startDate)).toThrowError('Duplicate room detected.');
+    expect(() => calGridGenerator(rooms, startDate)).toThrowError('Duplicate room detected.');
   });
 });
