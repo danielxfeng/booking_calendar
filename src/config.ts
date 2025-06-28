@@ -11,9 +11,22 @@
 const NUMBERS_OF_ROOMS: number = 2;
 
 /**
+ * @summary The available rooms. Need to replaced by an API.
+ */
+const ROOM_MAP = [
+  { id: 0, name: 'small' },
+  { id: 1, name: 'big' },
+];
+
+/**
  * The time slot interval
  */
 const TIME_SLOT_INTERVAL = 15; // Must divide evenly into 60 (e.g., 5, 10, 15, 30).
+
+/**
+ * Number of calendar cells per time label and horizontal divider.
+ */
+const TIME_LABEL_INTERVAL = 8; // If TIME_SLOT_INTERVAL = 15, and this is 8 = 2, time is shown every 2 hours.
 
 /**
  * The API Url
@@ -45,7 +58,7 @@ const CACHE_DURATION = 5; // 5 minutes
  * The size of a cell of the calendar view.
  * We use `overflow` to support the responsive design for protecting the user experience.
  */
-const CELL_WIDTH = 'w-28'; //112px
+const CELL_WIDTH = 'w-28'; // 112px
 const CELL_HEIGHT = 'h-6'; // 24px
 
 export {
@@ -57,5 +70,7 @@ export {
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
   NUMBERS_OF_ROOMS,
+  ROOM_MAP,
+  TIME_LABEL_INTERVAL,
   TIME_SLOT_INTERVAL,
 };
