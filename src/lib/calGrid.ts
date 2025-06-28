@@ -82,7 +82,7 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
       const newBooking: Booking = { ...booking, roomId: room.roomId, roomName: room.roomName };
       bookingMap.set(booking.id, newBooking);
 
-      // Assign booking to related cells.
+      // Upsert booking to related cells.
       for (let timeIndex = timeIndexStart; timeIndex < timeIndexEnd; timeIndex++) {
         const cell = grid[timeIndex]?.[dayIndex];
 
@@ -94,11 +94,7 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
 
         // Or Append
         // Check overlapping.
-        if (
-          cell.some((booking) => {
-            return booking.roomId === room.roomId;
-          })
-        )
+        if (cell.some((booking) => booking.roomId === room.roomId))
           ThrowInvalidIncomingDataErr('Duplicate booking detected.');
 
         grid[timeIndex][dayIndex]!.push(newBooking);
