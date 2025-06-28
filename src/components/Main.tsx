@@ -55,12 +55,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
     if (formState) return;
 
     const cell = e.currentTarget as HTMLElement;
-    const cellType = cell.dataset.type;
-
-    if (!cellType) {
-      console.error('[onClickHandler]: failed to get the type of a cell.');
-      return;
-    }
+    const cellType = cell.dataset.bookingId ? 'avail' : 'booking';
 
     const row = parseInt(cell.dataset.dataTableRow ?? '', 10);
     const col = parseInt(cell.dataset.dataTableCol ?? '', 10);

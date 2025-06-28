@@ -13,7 +13,7 @@ const NUMBERS_OF_ROOMS: number = 2;
 /**
  * @summary The available rooms. Need to replaced by an API.
  */
-const ROOM_MAP = [
+const ROOM_MAP: { id: number; name: string }[] = [
   { id: 0, name: 'small' },
   { id: 1, name: 'big' },
 ];
@@ -58,14 +58,20 @@ const CACHE_DURATION = 5; // 5 minutes
  * The size of a cell of the calendar view.
  * We use `overflow` to support the responsive design for protecting the user experience.
  */
-const CELL_WIDTH = 'w-28'; // 112px
-const CELL_HEIGHT = 'h-6'; // 24px
+const CELL_WIDTH_PX = 112; // 112px
+const CELL_HEIGHT_PX = 24; // 24px
+
+// For Tailwind
+const CELL_WIDTH = `w-[${CELL_WIDTH_PX}px]`;
+const CELL_HEIGHT = `h-[${CELL_HEIGHT_PX}px]`;
 
 export {
   API_URL,
   CACHE_DURATION,
   CELL_HEIGHT,
+  CELL_HEIGHT_PX,
   CELL_WIDTH,
+  CELL_WIDTH_PX,
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,

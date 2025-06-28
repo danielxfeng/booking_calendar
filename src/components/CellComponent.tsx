@@ -12,6 +12,8 @@ import { CELL_HEIGHT, CELL_WIDTH, TIME_SLOT_INTERVAL } from '@/config';
 import type { CalGrid, Cell } from '@/lib/calGrid';
 import { cn } from '@/lib/utils';
 
+import BookedCell from './BookedCell';
+
 type CellCompProps = {
   row: number;
   col: number;
@@ -24,20 +26,12 @@ type CellCompProps = {
 
 /**
  * @summary Represents a cell of the calendar view, includes:
- * @detail
+ * @description
  * Main logic:
  * - for all cells:
  *   - if in the past, display a gray bg, onHover: none, onClick: none
  *   - if in the future, display a normal bg, onHover: Hover Card to show the time, onClick: upsert form(insertion only)
- *   - if there are slots, draw a absolute view:
- *     - width is shared, so need to be handled very carefully.
- *     - height can be overflowed by the length of the slot.
- *     - draw border and bg (blue maybe?).
- *     - displays the info, start-end time, and bookedBy if available.
- *     - on hover: hovercard to display the info.
- *     - on click: show the upsert form and the deletion btn.
- *       - for the slots which is in the past, or bookedBy is null: disabled.
- *       - otherwise, show the update view, and the deletion btn.
+ *   - if there are bookings, draw a absolute view.
  */
 const CellComp = ({ row, col, timeLabel, grid, startDate, currTime, onClick }: CellCompProps) => {
   const cell: Cell = grid[row][col];
@@ -52,28 +46,27 @@ const CellComp = ({ row, col, timeLabel, grid, startDate, currTime, onClick }: C
   const bookings = cell?.filter((slot) => compareAsc(new Date(slot.start), cellStartTime) === 0);
 
   return (
-    <>
-      <div
-        data-role='cell'
-        data-type='avail'
-        data-col={col}
-        data-row={row}
-        className={cn(
-          'border-border border-r',
-          CELL_HEIGHT,
-          CELL_WIDTH,
-          isPast ? 'bg-gray-400' : 'bg-gray-200',
-          col === 0 && 'border-l',
-          row === 0 && 'border-t',
-          row != 0 && row % timeLabel === 0 && 'border-b',
-        )}
-        onPointerDown={onClick}
-      />
+    <div
+      data-role='cell'
+      data-type='avail'
+      data-col={col}
+      data-row={row}
+      className={cn(
+        'border-border relative border-r',
+        CELL_HEIGHT,
+        CELL_WIDTH,
+        isPast ? 'bg-gray-400' : 'bg-gray-200',
+        col === 0 && 'border-l',
+        row === 0 && 'border-t',
+        row != 0 && row % timeLabel === 0 && 'border-b',
+      )}
+      onPointerDown={onClick}
+    >
+      {/* To display the possible booked blocks(A covered layer)  */}
       {bookings?.map((booking) => (
-        //<BookingBlock key={booking.id} booking={booking} />
-        <p>{booking.end}</p>
+        <BookedCell key={booking.id} row={row} col={col} booking={booking} onClick={onClick} />
       ))}
-    </>
+    </div>
   );
 };
 
