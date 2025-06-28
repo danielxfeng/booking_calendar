@@ -47,9 +47,9 @@ const dateTimeSchema = z.iso
   });
 
 /**
- * @summary A slot from API
+ * @summary A booking from API
  */
-const SlotFromApiSchema = z
+const BookingFromApiSchema = z
   .object({
     id: z.int().positive(),
     start: dateTimeSchema,
@@ -66,19 +66,19 @@ const SlotFromApiSchema = z
     path: ['start', 'end'],
   });
 
-const SlotsFromApiSchema = z.array(SlotFromApiSchema);
+const BookingsFromApiSchema = z.array(BookingFromApiSchema);
 
 /**
- * @summary The slots for a room.
+ * @summary The bookings for a room.
  */
 const RoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
-  slots: SlotsFromApiSchema,
+  bookings: BookingsFromApiSchema,
 });
 
 /**
- * @summary The array of slots for rooms
+ * @summary The array of bookings for rooms
  */
 const RoomsSchema = z.array(RoomSchema);
 
@@ -88,9 +88,9 @@ const RoomsSchema = z.array(RoomSchema);
 const DateSchema = z.iso.date();
 
 /**
- * @summary The form value of upsert a new slot
+ * @summary The form value of upsert a new booking
  */
-const UpsertSlotSchema = z
+const UpsertBookingSchema = z
   .object({
     roomId: z.int(),
     start: dateTimeSchema,
@@ -107,18 +107,18 @@ const UpsertSlotSchema = z
   });
 
 export {
+  BookingFromApiSchema,
+  BookingsFromApiSchema,
   DateSchema,
   RoomSchema,
   RoomsSchema,
-  SlotFromApiSchema,
-  SlotsFromApiSchema,
-  UpsertSlotSchema,
+  UpsertBookingSchema,
 };
 
-type SlotFromApi = z.infer<typeof SlotFromApiSchema>;
-type SlotsFromApi = z.infer<typeof SlotsFromApiSchema>;
+type BookingFromApi = z.infer<typeof BookingFromApiSchema>;
+type BookingsFromApi = z.infer<typeof BookingsFromApiSchema>;
 type Room = z.infer<typeof RoomSchema>;
 type Rooms = z.infer<typeof RoomsSchema>;
-type UpsertSlot = z.infer<typeof UpsertSlotSchema>;
+type UpsertBooking = z.infer<typeof UpsertBookingSchema>;
 
-export type { Room, Rooms, SlotFromApi, SlotsFromApi, UpsertSlot };
+export type { BookingFromApi, BookingsFromApi, Room, Rooms, UpsertBooking };

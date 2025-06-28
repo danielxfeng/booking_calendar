@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { DateSchema, RoomSchema, SlotFromApiSchema, UpsertSlotSchema } from '@/lib/schema';
+import { BookingFromApiSchema, DateSchema, RoomSchema, UpsertBookingSchema } from '@/lib/schema';
 
-describe('SlotSchema', () => {
-  it('should pass for a valid slot with user', () => {
+describe('BookingSchema', () => {
+  it('should pass for a valid booking with user', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:00',
@@ -11,11 +11,11 @@ describe('SlotSchema', () => {
       bookedBy: 'Daniel',
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
-  it('should pass for a valid slot without a user', () => {
+  it('should pass for a valid booking without a user', () => {
     const case1 = {
       id: 2,
       start: '2025-06-24T10:00',
@@ -23,22 +23,22 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
-  it('should fail for a slot without a id', () => {
+  it('should fail for a booking without a id', () => {
     const case1 = {
       start: '2025-06-24T10:00',
       end: '2025-06-24T10:30',
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a valid id', () => {
+  it('should fail for a booking without a valid id', () => {
     const case1 = {
       id: 'a',
       start: '2025-06-24T10:00',
@@ -46,22 +46,22 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a start', () => {
+  it('should fail for a booking without a start', () => {
     const case1 = {
       id: 1,
       end: '2025-06-24T10:30',
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a valid start(format)', () => {
+  it('should fail for a booking without a valid start(format)', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:00:00',
@@ -69,11 +69,11 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a valid start(invalid minute)', () => {
+  it('should fail for a booking without a valid start(invalid minute)', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:20',
@@ -81,22 +81,22 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a end', () => {
+  it('should fail for a booking without a end', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:15',
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a valid end(same as start)', () => {
+  it('should fail for a booking without a valid end(same as start)', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:15',
@@ -104,22 +104,22 @@ describe('SlotSchema', () => {
       bookedBy: null,
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a user', () => {
+  it('should fail for a booking without a user', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:15',
       end: '2025-06-24T10:15',
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
-  it('should fail for a slot without a valid user(empty)', () => {
+  it('should fail for a booking without a valid user(empty)', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:15',
@@ -127,7 +127,7 @@ describe('SlotSchema', () => {
       bookedBy: '   ',
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
@@ -139,28 +139,29 @@ describe('SlotSchema', () => {
       bookedBy: '   ',
     };
 
-    const result = SlotFromApiSchema.safeParse(case1);
+    const result = BookingFromApiSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 });
 
-describe('SlotAndRoomSchema', () => {
-  it('should pass for a valid slot with user', () => {
+describe('RoomSchema', () => {
+  it('should pass for a valid booking with user', () => {
     const case1 = {
       roomId: 1,
       roomName: 'room',
-      slots: [],
+      bookings: [],
     };
 
     const result = RoomSchema.safeParse(case1);
-
+    if (result.error)
+        console.log(JSON.stringify(result.error));
     expect(result.success).toBe(true);
   });
 
   it('should fail for missing a roomId', () => {
     const case1 = {
       roomName: 'room',
-      slots: [],
+      bookings: [],
     };
 
     const result = RoomSchema.safeParse(case1);
@@ -172,7 +173,7 @@ describe('SlotAndRoomSchema', () => {
     const case1 = {
       roomId: 'a',
       roomName: 'room',
-      slots: [],
+      bookings: [],
     };
 
     const result = RoomSchema.safeParse(case1);
@@ -183,7 +184,7 @@ describe('SlotAndRoomSchema', () => {
   it('should fail for missing a room name', () => {
     const case1 = {
       roomId: 'a',
-      slots: [],
+      bookings: [],
     };
 
     const result = RoomSchema.safeParse(case1);
@@ -195,7 +196,7 @@ describe('SlotAndRoomSchema', () => {
     const case1 = {
       roomId: 'a',
       roomName: '',
-      slots: [],
+      bookings: [],
     };
 
     const result = RoomSchema.safeParse(case1);
@@ -224,13 +225,13 @@ describe('DateSchema', () => {
   });
 });
 
-describe('UpsertSlotSchema', () => {
+describe('UpsertBookingSchema', () => {
   it('should pass a valid upsert query', () => {
     const case1 = { roomId: 1, start: '2025-06-24T10:00', end: '2025-06-24T10:30' };
 
-    const result = UpsertSlotSchema.safeParse(case1);
+    const result = UpsertBookingSchema.safeParse(case1);
     expect(result.success).toBe(true);
   });
 
-  // Does not test a lot since the start/end logic is tested in Slot schema.
+  // Does not test a lot since the start/end logic is tested in booking schema.
 });
