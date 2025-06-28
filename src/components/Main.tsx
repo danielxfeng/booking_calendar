@@ -9,8 +9,10 @@
 import { useState } from 'react';
 import { add, addDays, format, formatISO, minutesToHours } from 'date-fns';
 
+import BookingForm from '@/components/BookingForm';
 import CellComp from '@/components/CellComponent';
 import OperationRow from '@/components/OperationRow';
+import { Popover, PopoverContent } from '@/components/ui/popover';
 import {
   CELL_HEIGHT,
   CELL_WIDTH,
@@ -28,13 +30,14 @@ import { cn } from '@/lib/utils';
  * - null: no form should be shown.
  * - editingId = null: insertion, otherwise: update.
  */
-type FormState = { editingId: number | null; default: UpsertBooking; grid: CalGrid } | null;
+type FormState = { editingId: number | null; default: UpsertBooking } | null;
 
 /**
  * @summary The main component of the application, includes:
  * @description
  * - Operation row: pagination buttons, and a date picker.
  * - The calendar.
+ * - A popover form to handle the upsert and delete.
  */
 const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
   const [formState, setFormState] = useState<FormState>(null);
@@ -81,7 +84,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormState({ editingId: null, default: { start, end, roomId: availRoom.id }, grid });
+      setFormState({ editingId: null, default: { start, end, roomId: availRoom.id } });
       return;
     }
 
@@ -105,7 +108,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormState({ editingId: bookingId, default: bookings[0], grid });
+      setFormState({ editingId: bookingId, default: bookings[0] });
       return;
     }
 
@@ -165,8 +168,17 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
           </div>
         ))}
       </div>
+
+      {/* A popover to toggle the form */}
+      <Popover open={!!formState}>
+        <PopoverContent className='w-[300px]'>
+          <BookingForm formState={formState} setFormState={setFormState} grid={grid} />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
 
 export default Main;
+
+export type { FormState };
