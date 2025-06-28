@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
  * - null: no form should be shown.
  * - editingId = null: insertion, otherwise: update.
  */
-type FormState = { editingId: number | null; default: UpsertBooking } | null;
+type FormProp = { editingId: number | null; default: UpsertBooking } | null;
 
 /**
  * @summary The main component of the application, includes:
@@ -40,7 +40,7 @@ type FormState = { editingId: number | null; default: UpsertBooking } | null;
  * - A popover form to handle the upsert and delete.
  */
 const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
-  const [formState, setFormState] = useState<FormState>(null);
+  const [formProp, setFormProp] = useState<FormProp>(null);
   const startDate = new Date(start);
   const rowsCount = (24 * 60) / TIME_SLOT_INTERVAL;
   const currTime = new Date();
@@ -55,7 +55,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
   // The tradeoff is that I have to parse the dataset.
   const onClickHandler = (e: React.PointerEvent<HTMLElement>) => {
     // Stop event response when form is open.
-    if (formState) return;
+    if (formProp) return;
 
     const cell = e.currentTarget as HTMLElement;
     const cellType = cell.dataset.bookingId ? 'avail' : 'booking';
@@ -84,7 +84,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormState({ editingId: null, default: { start, end, roomId: availRoom.id } });
+      setFormProp({ editingId: null, default: { start, end, roomId: availRoom.id } });
       return;
     }
 
@@ -108,7 +108,7 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
         return;
       }
 
-      setFormState({ editingId: bookingId, default: bookings[0] });
+      setFormProp({ editingId: bookingId, default: bookings[0] });
       return;
     }
 
@@ -170,9 +170,9 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
       </div>
 
       {/* A popover to toggle the form */}
-      <Popover open={!!formState}>
+      <Popover open={!!formProp}>
         <PopoverContent className='w-[300px]'>
-          <BookingForm formState={formState} setFormState={setFormState} grid={grid} />
+          <BookingForm formProp={formProp} setFormProp={setFormProp} grid={grid} />
         </PopoverContent>
       </Popover>
     </div>
@@ -181,4 +181,4 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
 
 export default Main;
 
-export type { FormState };
+export type { FormProp };
