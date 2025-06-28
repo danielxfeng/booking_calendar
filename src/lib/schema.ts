@@ -24,6 +24,13 @@ const timeAdditionalCheck = (datetime: string): boolean => {
 };
 
 /**
+ * @summary Returns if the start time is in future.
+ */
+const laterThanNowCheck = (start: string): boolean => {
+  return differenceInMinutes(new Date(start), new Date()) >= MIN_MEETING_MINUTES;
+};
+
+/**
  * @summary Returns if the meeting match the minimal length.
  */
 const meetingLengthCheck = (start: string, end: string): boolean => {
@@ -93,7 +100,10 @@ const DateSchema = z.iso.date();
 const UpsertBookingSchema = z
   .object({
     roomId: z.int(),
-    start: dateTimeSchema,
+    start: dateTimeSchema.refine((value) => laterThanNowCheck(value), {
+      message: 'Start time must be in future',
+      path: ['start'],
+    }),
     end: dateTimeSchema,
   })
   .strict()

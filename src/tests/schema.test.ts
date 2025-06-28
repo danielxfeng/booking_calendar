@@ -1,5 +1,7 @@
+import { addDays, addMinutes, format, set } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
+import { TIME_SLOT_INTERVAL } from '@/config';
 import { BookingFromApiSchema, DateSchema, RoomSchema, UpsertBookingSchema } from '@/lib/schema';
 
 describe('BookingSchema', () => {
@@ -153,8 +155,6 @@ describe('RoomSchema', () => {
     };
 
     const result = RoomSchema.safeParse(case1);
-    if (result.error)
-        console.log(JSON.stringify(result.error));
     expect(result.success).toBe(true);
   });
 
@@ -226,11 +226,52 @@ describe('DateSchema', () => {
 });
 
 describe('UpsertBookingSchema', () => {
-  it('should pass a valid upsert query', () => {
-    const case1 = { roomId: 1, start: '2025-06-24T10:00', end: '2025-06-24T10:30' };
+  const safeStart = set(addDays(new Date(), 1), {
+    hours: 10,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  });
 
-    const result = UpsertBookingSchema.safeParse(case1);
+  it('passes with valid future booking on same day', () => {
+    const start = safeStart;
+    const end = addMinutes(start, TIME_SLOT_INTERVAL * 2);
+
+    const result = UpsertBookingSchema.safeParse({
+      roomId: 1,
+      start: format(start, "yyyy-MM-dd'T'HH:mm"),
+      end: format(end, "yyyy-MM-dd'T'HH:mm"),
+    });
+
     expect(result.success).toBe(true);
+  });
+
+  it('fails if start is in the past', () => {
+    const start = addDays(safeStart, -2); // past
+    const end = addMinutes(start, 30);
+
+    const result = UpsertBookingSchema.safeParse({
+      roomId: 2,
+      start: format(start, "yyyy-MM-dd'T'HH:mm"),
+      end: format(end, "yyyy-MM-dd'T'HH:mm"),
+      bookedBy: 'bob',
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('fails if start and end are not on the same day', () => {
+    const start = safeStart;
+    const end = addDays(start, 1); // cross day
+
+    const result = UpsertBookingSchema.safeParse({
+      roomId: 4,
+      start: format(start, "yyyy-MM-dd'T'HH:mm"),
+      end: format(end, "yyyy-MM-dd'T'HH:mm"),
+      bookedBy: 'david',
+    });
+
+    expect(result.success).toBe(false);
   });
 
   // Does not test a lot since the start/end logic is tested in booking schema.
