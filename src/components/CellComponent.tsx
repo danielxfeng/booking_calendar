@@ -5,23 +5,21 @@
  * @contact intra: @xifeng
  */
 
-import React from 'react';
-import { add, compareAsc } from 'date-fns';
+import { add, isBefore, isEqual } from 'date-fns';
+import { useAtom, useSetAtom } from 'jotai';
 
+import BookedCell from '@/components/BookedCell';
 import { CELL_HEIGHT, CELL_WIDTH, TIME_SLOT_INTERVAL } from '@/config';
-import type { CalGrid, Cell } from '@/lib/calGrid';
+import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
+import type { Cell } from '@/lib/calGrid';
+import { cellOnClickHandler } from '@/lib/cellOnClickHandler';
+import { newDate } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
-
-import BookedCell from './BookedCell';
 
 type CellCompProps = {
   row: number;
   col: number;
   timeLabel: number;
-  grid: CalGrid;
-  startDate: Date;
-  currTime: Date;
-  onClick: (e: React.PointerEvent<HTMLElement>) => void;
 };
 
 /**
@@ -30,27 +28,30 @@ type CellCompProps = {
  * Main logic:
  * - for all cells:
  *   - if in the past, display a gray bg, onHover: none, onClick: none
- *   - if in the future, display a normal bg, onHover: Hover Card to show the time, onClick: upsert form(insertion only)
+ *   - if in the future, display a normal bg, onClick: upsert form(insertion only)
  *   - if there are bookings, draw a absolute view.
  */
-const CellComp = ({ row, col, timeLabel, grid, startDate, currTime, onClick }: CellCompProps) => {
+const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
+  const [grid] = useAtom(calendarGridAtom);
+  const [start] = useAtom(startAtom);
+  const setFormProp = useSetAtom(formPropAtom);
+
   const cell: Cell = grid[row][col];
 
   // The start time of the cell.
+  const startDate = newDate(start);
+  const currTime = new Date();
   const cellStartTime: Date = add(startDate, { minutes: row * TIME_SLOT_INTERVAL, days: col });
 
   // If the slot is prev than curr.
-  const isPast = compareAsc(cellStartTime, currTime) < 0;
+  const isPast = isBefore(cellStartTime, currTime);
 
   // The booked slots dom is controlled by the cell when is the start time.
-  const bookings = cell?.filter((slot) => compareAsc(new Date(slot.start), cellStartTime) === 0);
+  const bookings = cell?.filter((slot) => isEqual(new Date(slot.start), cellStartTime));
 
   return (
     <div
       data-role='cell'
-      data-type='avail'
-      data-col={col}
-      data-row={row}
       className={cn(
         'border-border relative border-r',
         CELL_HEIGHT,
@@ -60,11 +61,18 @@ const CellComp = ({ row, col, timeLabel, grid, startDate, currTime, onClick }: C
         row === 0 && 'border-t',
         row != 0 && row % timeLabel === 0 && 'border-b',
       )}
-      onPointerDown={onClick}
+      onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp)}
     >
       {/* To display the possible booked blocks(A covered layer)  */}
       {bookings?.map((booking) => (
-        <BookedCell key={booking.id} row={row} col={col} booking={booking} onClick={onClick} />
+        <BookedCell
+          key={booking.id}
+          row={row}
+          col={col}
+          booking={booking}
+          grid={grid}
+          start={start}
+        />
       ))}
     </div>
   );

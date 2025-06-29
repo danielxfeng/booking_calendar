@@ -1,15 +1,22 @@
 import { differenceInMinutes } from 'date-fns';
+import { useSetAtom } from 'jotai';
 
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
-import type { Booking } from '@/lib/calGrid';
+import { formPropAtom } from '@/lib/atoms';
+import type { Booking, CalGrid } from '@/lib/calGrid';
+import { cellOnClickHandler } from '@/lib/cellOnClickHandler';
 import { cn } from '@/lib/utils';
 
 type BookedCellProps = {
   row: number;
   col: number;
+  start: string;
+  grid: CalGrid;
   booking: Booking;
-  onClick: (e: React.PointerEvent<HTMLElement>) => void;
 };
+
+// shares the width based on the numbers of meeting rooms.
+const width = CELL_WIDTH_PX / ROOM_MAP.length;
 
 const getClassName = (value: number, type: 'width' | 'height' | 'left'): string => {
   if (type === 'width') return `w-[${value}px]`;
@@ -27,9 +34,8 @@ const getClassName = (value: number, type: 'width' | 'height' | 'left'): string 
  *     - draw border and bg (blue maybe?).
  *     - displays the info, start-end time, and bookedBy if available.
  */
-const BookedCell = ({ row, col, booking, onClick }: BookedCellProps) => {
-  // shares the width based on the numbers of meeting rooms.
-  const width = CELL_WIDTH_PX / ROOM_MAP.length;
+const BookedCell = ({ row, col, booking, grid, start }: BookedCellProps) => {
+  const setFormProp = useSetAtom(formPropAtom);
 
   // height = numbers of slots, may overflow the original container.
   const height =
@@ -48,17 +54,13 @@ const BookedCell = ({ row, col, booking, onClick }: BookedCellProps) => {
   return (
     <div
       data-role='booked-cell'
-      data-type='booking'
-      data-col={col}
-      data-row={row}
-      data-booking-id={booking.id}
       className={cn(
         'absolute top-0 flex flex-col justify-between border border-blue-600 bg-blue-500 text-sm text-blue-50',
         getClassName(height, 'height'),
         getClassName(width, 'width'),
         getClassName(left, 'left'),
       )}
-      onPointerDown={onClick}
+      onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp, booking)}
     >
       <p>{booking.roomName}</p>
       <p>
