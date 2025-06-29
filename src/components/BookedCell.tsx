@@ -1,3 +1,10 @@
+/**
+ * @file BookedCell.tsx
+ *
+ * @author Xin (Daniel) Feng
+ * @contact intra: @xifeng
+ */
+
 import { differenceInMinutes } from 'date-fns';
 import { useSetAtom } from 'jotai';
 

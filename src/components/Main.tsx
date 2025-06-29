@@ -27,7 +27,6 @@ const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
  * @description
  * - Operation row: pagination buttons, and a date picker.
  * - The calendar.
- * - A popover form to handle the upsert and delete.
  */
 const Main = () => {
   const [start] = useAtom(startAtom);

@@ -1,3 +1,10 @@
+/**
+ * @file BookingForm.tsx
+ *
+ * @author Xin (Daniel) Feng
+ * @contact intra: @xifeng
+ */
+
 import { useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,8 +14,8 @@ import { AxiosError } from 'axios';
 import { add, differenceInMinutes, format, startOfDay } from 'date-fns';
 import { useAtom } from 'jotai';
 
-import type { Slot } from '@/components/ScrollTimePicker';
-import ScrollTimePicker from '@/components/ScrollTimePicker';
+import type { Slot } from '@/components/ScrollSlotPicker';
+import ScrollSlotPicker from '@/components/ScrollSlotPicker';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -266,7 +273,7 @@ const BookingFormBody = () => {
                 <FormItem className='space-y-3'>
                   <FormLabel>Start time:</FormLabel>
                   <FormControl>
-                    <ScrollTimePicker
+                    <ScrollSlotPicker
                       slots={startSlots}
                       selected={field.value}
                       onSelect={(val) => {
@@ -290,7 +297,7 @@ const BookingFormBody = () => {
                 <FormItem className='space-y-3'>
                   <FormLabel>End time:</FormLabel>
                   <FormControl>
-                    <ScrollTimePicker
+                    <ScrollSlotPicker
                       slots={endSlots}
                       selected={field.value}
                       onSelect={(val) => {

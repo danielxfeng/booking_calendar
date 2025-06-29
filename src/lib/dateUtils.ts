@@ -1,3 +1,11 @@
+/**
+ * @file dateUtils.ts
+ * @summary Just tools for date related.
+ *
+ * @author Xin (Daniel) Feng
+ * @contact intra: @xifeng
+ */
+
 import { startOfDay } from 'date-fns';
 
 /**

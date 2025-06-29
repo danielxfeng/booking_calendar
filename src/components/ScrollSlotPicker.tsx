@@ -1,3 +1,10 @@
+/**
+ * @file ScrollSlotPicker.tsx
+ *
+ * @author Xin (Daniel) Feng
+ * @contact intra: @xifeng
+ */
+
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -9,7 +16,10 @@ type ScrollTimePickerProps = {
   onSelect: (val: string) => void;
 };
 
-const ScrollTimePicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) => {
+/**
+ * @summary A slot picker made buy ScrollArea and buttons.
+ */
+const ScrollSlotPicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) => {
   onSelect('a'); // toto
   return (
     <ScrollArea className='h-48 w-40 rounded-md border'>
@@ -26,6 +36,6 @@ const ScrollTimePicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) 
   );
 };
 
-export default ScrollTimePicker;
+export default ScrollSlotPicker;
 
 export type { Slot };
