@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { add, differenceInMinutes, format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 import { useAtom } from 'jotai';
 
 import type { Slot } from '@/components/ScrollSlotPicker';
@@ -31,11 +31,10 @@ import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
-import { API_URL, ENDPOINT_SLOTS, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
+import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import type { CalGrid } from '@/lib/calGrid';
-import { ThrowInternalError } from '@/lib/errorHandler';
+import { getFormType, initSlots, timeSlotChangeHandler } from '@/lib/bookingFormUtils';
 import { type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { cn } from '@/lib/utils';
 
@@ -54,57 +53,6 @@ type FormProp = {
   row: number;
   col: number;
 } | null;
-
-/**
- * @summary Returns an empty Slots
- */
-const initSlots = (start: string | undefined): Slot[] => {
-  if (!start) return []; // to solve the type, should not be here.
-
-  const baseDay = startOfDay(start);
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minuteOptionsCount = 60 / TIME_SLOT_INTERVAL - 1; // -1 = - min_interval
-  const minutesIdx = Array.from({ length: minuteOptionsCount }, (_, i) => i);
-  const slots: Slot[] = [];
-  for (const h of hours) {
-    for (const mi of minutesIdx) {
-      slots.push({
-        slot: add(baseDay, { hours: h, minutes: mi * TIME_SLOT_INTERVAL }),
-        avail: false,
-      });
-    }
-  }
-  return slots;
-};
-
-/**
- * @summary Returns form type
- * @description
- * - if there is no `editingId`, indicates the `insert`
- * - Then there should be an existing booking.
- *   - If the booking is expired, or the bookedBy is null, the type is `view`
- *   - Otherwise, it is `update`
- */
-const getFormType = (formProp: Exclude<FormProp, null>, grid: CalGrid): FormType => {
-  // When there is no `editingId`
-  if (formProp.editingId === null) return 'insert';
-
-  const cell = grid[formProp.row][formProp.col];
-
-  const currBooking = cell?.find((booking) => booking.id === formProp.editingId);
-  if (!currBooking) {
-    ThrowInternalError('cannot find the booking.'); // There should be a booking.
-    return 'view'; // Should not be here.
-  }
-
-  // When the bookedBy is null.
-  if (!currBooking.bookedBy) return 'view';
-
-  // When the booking is expired.
-  if (differenceInMinutes(new Date(currBooking.start), new Date()) <= 0) return 'view';
-
-  return 'update';
-};
 
 /**
  * @summary Handle the error from posting data from API.
@@ -132,16 +80,22 @@ const BookingFormBody = () => {
   // Subscribe the atom to survive the re-render.
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
+  const formType = getFormType(formProp, grid);
+
+  // States for time picker.
+  const [startSlots, setStartSlots] = useState<Slot[]>(
+    initSlots(formProp?.default, grid, 'start', formType),
+  );
+  const [endSlots, setEndSlots] = useState<Slot[]>(
+    initSlots(formProp?.default, grid, 'end', formType),
+  );
+
   // Init a RHF.
   const form = useForm<UpsertBooking>({
     resolver: zodResolver(UpsertBookingSchema),
     defaultValues: formProp?.default,
     mode: 'onChange',
   });
-
-  // States for time picker.
-  const [startSlots, setStartSlots] = useState<Slot[]>(initSlots(formProp?.default.start));
-  const [endSlots, setEndSlots] = useState<Slot[]>(initSlots(formProp?.default.start));
 
   /**
    * @summary Post-process when the post/put/delete is done..
@@ -204,21 +158,7 @@ const BookingFormBody = () => {
     },
   });
 
-  // handle the slot (start/end) changing event.
-  const timeSlotChangeHandler = (type: 'start' | 'end', value: string) => {
-    if (type === 'start') {
-      // todo
-      console.log(value);
-      setStartSlots([]);
-    } else if (type === 'end')
-      setEndSlots([]); // todo
-    // should not be here.
-    else ThrowInternalError('The type of Time Slot Selector should be either start or end.');
-  };
-
   if (!formProp) return null; // Should not be here.
-
-  const formType = getFormType(formProp, grid);
 
   return (
     <div
@@ -278,7 +218,7 @@ const BookingFormBody = () => {
                       selected={field.value}
                       onSelect={(val) => {
                         field.onChange(val);
-                        timeSlotChangeHandler('start', val);
+                        timeSlotChangeHandler('start', val, setStartSlots);
                         // next tick to wait for the prev handler taking effect
                         setTimeout(() => form.trigger('end'), 0);
                       }}
@@ -302,7 +242,7 @@ const BookingFormBody = () => {
                       selected={field.value}
                       onSelect={(val) => {
                         field.onChange(val);
-                        timeSlotChangeHandler('end', val);
+                        timeSlotChangeHandler('end', val, setEndSlots);
                         // next tick to wait for the prev handler taking effect
                         setTimeout(() => form.trigger('start'), 0);
                       }}
@@ -394,4 +334,4 @@ const BookingForm = () => {
 
 export default BookingForm;
 
-export type { FormProp };
+export type { FormProp, FormType };
