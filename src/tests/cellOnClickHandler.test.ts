@@ -1,12 +1,17 @@
+import { addDays, format, previousMonday } from 'date-fns';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Booking, CalGrid } from '@/lib/calGrid';
 import { cellOnClickHandler } from '@/lib/cellOnClickHandler';
 
 describe('cellOnClickHandler', () => {
-  const start = '2025-06-23';
+  const startDate = previousMonday(addDays(new Date(), 7));
+  const start = format(startDate, 'yyyy-MM-dd');
   const row = 4;
   const col = 2;
+  const startTimeDate = format(addDays(startDate, col), 'yyyy-MM-dd');
+  const startTime = `${startTimeDate}T01:00`;
+  const endTime = `${startTimeDate}T01:15`;
 
   it('should set insert form when cell is available and room 0 is free', () => {
     const mockSetFormProp = vi.fn();
@@ -19,8 +24,8 @@ describe('cellOnClickHandler', () => {
 
     expect(arg.editingId).toBe(null);
     expect(arg.default.roomId).toBe(0);
-    expect(arg.default.start).toBe('2025-06-25T01:00');
-    expect(arg.default.end).toBe('2025-06-25T01:15');
+    expect(arg.default.start).toBe(startTime);
+    expect(arg.default.end).toBe(endTime);
     expect(arg.col).toBe(col);
     expect(arg.row).toBe(row);
   });
@@ -38,10 +43,22 @@ describe('cellOnClickHandler', () => {
     const arg = mockSetFormProp.mock.calls[0][0];
     expect(arg.editingId).toBe(null);
     expect(arg.default.roomId).toBe(1);
-    expect(arg.default.start).toBe('2025-06-25T01:00');
-    expect(arg.default.end).toBe('2025-06-25T01:15');
+    expect(arg.default.start).toBe(startTime);
+    expect(arg.default.end).toBe(endTime);
     expect(arg.col).toBe(col);
     expect(arg.row).toBe(row);
+  });
+
+  it('should not allow insert booking into past slot', () => {
+    const mockSetFormProp = vi.fn();
+
+    const now = new Date();
+    const pastStart = format(previousMonday(addDays(now, -7)), 'yyyy-MM-dd');
+    const grid: CalGrid = Array.from({ length: 48 }, () => Array.from({ length: 7 }, () => []));
+
+    cellOnClickHandler(0, 0, grid, pastStart, mockSetFormProp);
+
+    expect(mockSetFormProp).not.toHaveBeenCalled();
   });
 
   it('should not call setFormProp and log error if no rooms available', () => {
@@ -66,8 +83,8 @@ describe('cellOnClickHandler', () => {
     const mockSetFormProp = vi.fn();
     const booking: Booking = {
       id: 1,
-      start: '2025-06-25T01:00',
-      end: '2025-06-25T01:15',
+      start: startTime,
+      end: endTime,
       roomId: 2,
       roomName: 'room2',
       bookedBy: null,

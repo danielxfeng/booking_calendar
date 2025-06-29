@@ -5,7 +5,7 @@
  * @contact intra: @xifeng
  */
 
-import { add, format } from 'date-fns';
+import { add, format, isBefore } from 'date-fns';
 
 import type { FormProp } from '@/components/BookingForm';
 import { ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
@@ -19,6 +19,7 @@ import { newDate } from '@/lib/dateUtils';
  *
  * If `booking` is not provided, it's a common cell('avail'), which means an insertion request.
  *  - the time is computed from the given row/col and start date,
+ *  - prevent inserting into expired time slots
  *  - the first available room will be selected automatically.
  *
  * Otherwise, it's a booked cell('booking'), which means an update request
@@ -42,6 +43,10 @@ const cellOnClickHandler = (
   if (cellType === 'avail') {
     const cellProp: Cell = grid[row][col];
     const startTime = add(startDate, { days: col, minutes: row * TIME_SLOT_INTERVAL });
+
+    // Prevent inserting into expired time slots
+    if (isBefore(startTime, new Date())) return;
+
     const start = format(startTime, "yyyy-MM-dd'T'HH:mm");
     const end = format(add(startTime, { minutes: TIME_SLOT_INTERVAL }), "yyyy-MM-dd'T'HH:mm");
 
