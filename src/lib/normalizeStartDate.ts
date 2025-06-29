@@ -6,7 +6,7 @@
  * @contact intra: @xifeng
  */
 
-import { formatISO, isMonday, previousMonday } from 'date-fns';
+import { format, isMonday, previousMonday } from 'date-fns';
 
 import { DateSchema } from '@/lib/schema';
 
@@ -24,12 +24,11 @@ import { DateSchema } from '@/lib/schema';
  */
 const normalizeStartDate = (start: string | null): string => {
   // If there is not a valid start day
-  if (!DateSchema.safeParse(start).success)
-    return formatISO(previousMonday(new Date()), { representation: 'date' });
+  if (!DateSchema.safeParse(start).success) return format(previousMonday(new Date()), 'yyyy-MM-dd');
 
   // If the start is valid, but not the Monday
   const startDate = new Date(start!);
-  if (!isMonday(startDate)) return formatISO(previousMonday(startDate), { representation: 'date' });
+  if (!isMonday(startDate)) return format(previousMonday(startDate), 'yyyy-MM-dd');
 
   // the start is valid
   return start!;
