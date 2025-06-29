@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { format, formatISO, isMonday, nextMonday, nextSunday, previousMonday } from 'date-fns';
+import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { ChevronDownIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -29,18 +29,18 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   const [open, setOpen] = useState(false);
 
   // helper for pagination.
-  const prevMon = formatISO(previousMonday(startDate), { representation: 'date' });
-  const nextMon = formatISO(nextMonday(startDate), { representation: 'date' });
+  const prevMon = format(previousMonday(startDate), 'yyyy-MM-dd');
+  const nextMon = format(nextMonday(startDate), 'yyyy-MM-dd');
 
   // helper for displaying the date picker.
   const nextSun = nextSunday(startDate);
 
   // navigate to updated start date.
   useEffect(() => {
-    if (open || !date || date === startDate) return;
+    if (open || !date || isSameDay(date, startDate)) return;
     const mon = isMonday(date)
-      ? formatISO(date, { representation: 'date' })
-      : formatISO(nextMonday(date), { representation: 'date' });
+      ? format(date, 'yyyy-MM-dd')
+      : format(nextMonday(date), 'yyyy-MM-dd');
     navigate(`/?start=${mon}`);
   }, [open, date, startDate, navigate]);
 
