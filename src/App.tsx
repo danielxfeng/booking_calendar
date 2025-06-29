@@ -16,6 +16,7 @@ import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
 import { calendarGridAtom, startAtom } from '@/lib/atoms';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
+import { newDate } from '@/lib/dateUtils';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';
 import { setToken } from '@/lib/tokenStore';
 
@@ -74,7 +75,7 @@ const App = () => {
     enabled: start !== null,
     queryKey: ['slots', start],
     queryFn: async () => {
-      const grid = calGridGenerator(await getSlots(start!), new Date(start!));
+      const grid = calGridGenerator(await getSlots(start!), newDate(start!));
       setCalendarGrid(grid);
       return grid;
     },

@@ -13,6 +13,7 @@ import CellComp from '@/components/CellComponent';
 import OperationRow from '@/components/OperationRow';
 import { CELL_HEIGHT, CELL_WIDTH, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
 import { formPropAtom, startAtom } from '@/lib/atoms';
+import { newDate } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
 
 // Help to create doms.
@@ -31,7 +32,7 @@ const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
 const Main = () => {
   const [start] = useAtom(startAtom);
   const [formProp] = useAtom(formPropAtom);
-  const startDate = new Date(start);
+  const startDate = newDate(start);
 
   return (
     <div

@@ -8,6 +8,7 @@
 
 import { format, isMonday, previousMonday } from 'date-fns';
 
+import { newDate } from '@/lib/dateUtils';
 import { DateSchema } from '@/lib/schema';
 
 /**
@@ -27,7 +28,7 @@ const normalizeStartDate = (start: string | null): string => {
   if (!DateSchema.safeParse(start).success) return format(previousMonday(new Date()), 'yyyy-MM-dd');
 
   // If the start is valid, but not the Monday
-  const startDate = new Date(start!);
+  const startDate = newDate(start!);
   if (!isMonday(startDate)) return format(previousMonday(startDate), 'yyyy-MM-dd');
 
   // the start is valid
