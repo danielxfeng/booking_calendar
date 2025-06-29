@@ -6,7 +6,7 @@
  * @contact intra: @xifeng
  */
 
-import { formatISO, nextSunday } from 'date-fns';
+import { format, nextSunday } from 'date-fns';
 
 import { ENDPOINT_SLOTS } from '@/config';
 import { axiosFetcher } from '@/lib/axiosFetcher';
@@ -18,7 +18,7 @@ import type { Rooms } from '@/lib/schema';
  * @returns
  */
 const getSlots = async (start: string): Promise<Rooms> => {
-  const end = formatISO(nextSunday(new Date(start)), { representation: 'date' });
+  const end = format(nextSunday(new Date(start)), 'yyyy-MM-dd');
 
   const params = new URLSearchParams();
   params.set('start', start);
