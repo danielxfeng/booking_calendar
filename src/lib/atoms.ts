@@ -8,8 +8,8 @@
 
 import { atom } from 'jotai';
 
-import type { FormProp } from '@/components/Main';
-import type { UpsertBooking } from '@/lib/schema';
+import type { FormProp } from '@/components/BookingForm';
+import type { CalGrid } from '@/lib/calGrid';
 
 /**
  * @summary Maintains the default value of the upsert form.
@@ -17,8 +17,13 @@ import type { UpsertBooking } from '@/lib/schema';
 const formPropAtom = atom<FormProp>(null);
 
 /**
- * @summary Maintains the current value of the upsert form.
+ * @summary Maintains the current grid of the calendar.
  */
-const currFormAtom = atom<UpsertBooking | null>(null);
+const calendarGridAtom = atom<CalGrid>([]);
 
-export { currFormAtom, formPropAtom };
+/**
+ * @summary Maintains the current start of the application.
+ */
+const startAtom = atom<string>('');
+
+export { calendarGridAtom, formPropAtom, startAtom };

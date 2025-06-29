@@ -6,13 +6,15 @@
  * @contact intra: @xifeng
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { useAtom, useSetAtom } from 'jotai';
 
 import Main from '@/components/Main';
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
+import { calendarGridAtom, startAtom } from '@/lib/atoms';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';
 import { setToken } from '@/lib/tokenStore';
@@ -40,7 +42,9 @@ const App = () => {
   const searchParams = new URLSearchParams(location.search);
   const startFromParams = searchParams.get('start');
   const token = searchParams.get('token');
-  const [start, setStart] = useState<string | null>(null);
+
+  const [start, setStart] = useAtom(startAtom);
+  const setCalendarGrid = useSetAtom(calendarGridAtom);
 
   // Update the received token, useEffect to avoid multi-set.
   useEffect(() => {
@@ -58,7 +62,7 @@ const App = () => {
     }
 
     setStart(normalizedStart);
-  }, [navigate, startFromParams]);
+  }, [navigate, setStart, startFromParams]);
 
   // useQuery to handle the cache, api fetching.
   const {
@@ -69,7 +73,11 @@ const App = () => {
   } = useQuery<CalGrid>({
     enabled: start !== null,
     queryKey: ['slots', start],
-    queryFn: async () => calGridGenerator(await getSlots(start!), new Date(start!)),
+    queryFn: async () => {
+      const grid = calGridGenerator(await getSlots(start!), new Date(start!));
+      setCalendarGrid(grid);
+      return grid;
+    },
     staleTime: 1000 * 60 * CACHE_DURATION,
   });
 
@@ -93,7 +101,7 @@ const App = () => {
 
       {/* Main */}
       <main className='flex-1'>
-        <Main grid={grid} start={start} />
+        <Main />
       </main>
 
       {/* Footer */}

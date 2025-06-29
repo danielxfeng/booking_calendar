@@ -6,38 +6,20 @@
  * @contact intra: @xifeng
  */
 
-import { add, addDays, format, formatISO, minutesToHours } from 'date-fns';
+import { addDays, format, minutesToHours } from 'date-fns';
 import { useAtom } from 'jotai';
 
-import BookingForm from '@/components/BookingForm';
 import CellComp from '@/components/CellComponent';
 import OperationRow from '@/components/OperationRow';
-import { Popover, PopoverContent } from '@/components/ui/popover';
-import {
-  CELL_HEIGHT,
-  CELL_WIDTH,
-  ROOM_MAP,
-  TIME_LABEL_INTERVAL,
-  TIME_SLOT_INTERVAL,
-} from '@/config';
-import { formPropAtom } from '@/lib/atoms';
-import type { CalGrid, Cell } from '@/lib/calGrid';
-import type { UpsertBooking } from '@/lib/schema';
+import { CELL_HEIGHT, CELL_WIDTH, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
+import { formPropAtom, startAtom } from '@/lib/atoms';
 import { cn } from '@/lib/utils';
 
-/**
- * @summary Represents the state of upsert form.
- * @description
- * - null: no form should be shown.
- * - editingId = null: insertion, otherwise: update.
- */
-type FormProp = {
-  editingId: number | null;
-  default: UpsertBooking;
-  startDate: Date;
-  row: number;
-  col: number;
-} | null;
+// Help to create doms.
+const rowsCount = (24 * 60) / TIME_SLOT_INTERVAL;
+const timeLabel = rowsCount / TIME_LABEL_INTERVAL;
+const weekViewCols = Array.from({ length: 7 }, (_, i) => i);
+const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
 
 /**
  * @summary The main component of the application, includes:
@@ -46,90 +28,17 @@ type FormProp = {
  * - The calendar.
  * - A popover form to handle the upsert and delete.
  */
-const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
-  const [formProp, setFormProp] = useAtom(formPropAtom);
+const Main = () => {
+  const [start] = useAtom(startAtom);
+  const [formProp] = useAtom(formPropAtom);
   const startDate = new Date(start);
-  const rowsCount = (24 * 60) / TIME_SLOT_INTERVAL;
-  const currTime = new Date();
-  const timeLabel = rowsCount / TIME_LABEL_INTERVAL;
-
-  // Help to create doms.
-  const weekViewCols = Array.from({ length: 7 }, (_, i) => i);
-  const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
-
-  // The handler of clicking a cell.
-  // It's a lifted func, since I don't want to create almost 700 lambda functions
-  // The tradeoff is that I have to parse the dataset.
-  const onClickHandler = (e: React.PointerEvent<HTMLElement>) => {
-    // Stop event response when form is open.
-    if (formProp) return;
-
-    const cell = e.currentTarget as HTMLElement;
-    const cellType = cell.dataset.bookingId ? 'avail' : 'booking';
-
-    const row = parseInt(cell.dataset.dataTableRow ?? '', 10);
-    const col = parseInt(cell.dataset.dataTableCol ?? '', 10);
-    if (isNaN(row) || isNaN(col) || row < 0 || col < 0 || row >= rowsCount || col >= 7) {
-      console.error('[onClickHandler]: failed to locate a cell.');
-      return;
-    }
-
-    const cellProp: Cell = grid[row][col];
-
-    // Insert a new booking.
-    if (cellType === 'avail') {
-      const startTime = add(startDate, { days: col, minutes: row * TIME_SLOT_INTERVAL });
-      const start = formatISO(startTime);
-      const end = formatISO(add(startTime, { minutes: TIME_SLOT_INTERVAL }));
-
-      const availRoom = ROOM_MAP.find(
-        (kv) => !cellProp?.some((booking) => booking.roomId === kv.id),
-      );
-
-      if (!availRoom) {
-        console.error('[onClickHandler]: no available meeting room.');
-        return;
-      }
-
-      setFormProp({
-        editingId: null,
-        default: { start, end, roomId: availRoom.id },
-        startDate,
-        col,
-        row,
-      });
-      return;
-    }
-
-    // View/update a existing booking.
-    if (cellType === 'booking') {
-      if (!cellProp) {
-        console.error('[onClickHandler]: failed to get a booking id.');
-        return;
-      }
-
-      const bookingId = parseInt(cell.dataset.bookingId ?? '', 10);
-      if (isNaN(bookingId)) {
-        console.error('[onClickHandler]: failed to get a booking id.');
-        return;
-      }
-
-      const booking = cellProp?.find((kv) => kv.id === bookingId);
-
-      if (!booking) {
-        console.error('[onClickHandler]: failed to get a booking id.');
-        return;
-      }
-
-      setFormProp({ editingId: bookingId, default: booking, startDate, col, row });
-      return;
-    }
-
-    console.error('[onClickHandler]: invalid cell type.'); // should not be here.
-  };
 
   return (
-    <div data-role='main' className='mx-auto h-full w-full overflow-scroll'>
+    <div
+      data-role='main'
+      // Stop event response when form is open.
+      className={cn('mx-auto h-full w-full overflow-scroll', formProp && 'pointer-events-none')}
+    >
       {/* Operation row */}
       <OperationRow startDate={startDate} />
 
@@ -166,32 +75,14 @@ const Main = ({ grid, start }: { grid: CalGrid; start: string }) => {
             </div>
 
             {/* Cells */}
-            {Array.from({ length: 8 }, (_, j) => j).map((j) => (
-              <CellComp
-                key={`cell-${i}-${j}`}
-                row={i}
-                col={j}
-                grid={grid}
-                timeLabel={timeLabel}
-                startDate={startDate}
-                currTime={currTime}
-                onClick={onClickHandler}
-              />
+            {weekViewCols.map((j) => (
+              <CellComp key={`cell-${i}-${j}`} row={i} col={j} timeLabel={timeLabel} />
             ))}
           </div>
         ))}
       </div>
-
-      {/* A popover to toggle the form */}
-      <Popover open={!!formProp}>
-        <PopoverContent className='w-[300px]'>
-          <BookingForm grid={grid} />
-        </PopoverContent>
-      </Popover>
     </div>
   );
 };
 
 export default Main;
-
-export type { FormProp };
