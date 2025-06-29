@@ -4,10 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { add, differenceInMinutes, format, formatISO, startOfDay } from 'date-fns';
+import { add, differenceInMinutes, format, startOfDay } from 'date-fns';
 import { useAtom } from 'jotai';
 
-import type { FormProp } from '@/components/Main';
 import type { Slot } from '@/components/ScrollTimePicker';
 import ScrollTimePicker from '@/components/ScrollTimePicker';
 import {
@@ -23,9 +22,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Popover, PopoverContent } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { API_URL, ENDPOINT_SLOTS, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
-import { formPropAtom } from '@/lib/atoms';
+import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
 import type { CalGrid } from '@/lib/calGrid';
 import { ThrowInternalError } from '@/lib/errorHandler';
@@ -33,6 +33,20 @@ import { type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { cn } from '@/lib/utils';
 
 type FormType = 'view' | 'insert' | 'update';
+
+/**
+ * @summary Represents the state of upsert form.
+ * @description
+ * - null: no form should be shown.
+ * - editingId = null: insertion, otherwise: update.
+ */
+type FormProp = {
+  editingId: number | null;
+  default: UpsertBooking;
+  startDate: Date;
+  row: number;
+  col: number;
+} | null;
 
 /**
  * @summary Returns an empty Slots
@@ -105,7 +119,9 @@ const parseErrorMsg = (error: unknown): string => {
  * When `bookedBy` is null, or the start time is in the past, then the booking is view only.
  * Otherwise, the form is an `update/delete` form.
  */
-const BookingForm = ({ grid }: { grid: CalGrid }) => {
+const BookingFormBody = () => {
+  const [grid] = useAtom(calendarGridAtom);
+  const [start] = useAtom(startAtom);
   // Subscribe the atom to survive the re-render.
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
@@ -119,8 +135,6 @@ const BookingForm = ({ grid }: { grid: CalGrid }) => {
   // States for time picker.
   const [startSlots, setStartSlots] = useState<Slot[]>(initSlots(formProp?.default.start));
   const [endSlots, setEndSlots] = useState<Slot[]>(initSlots(formProp?.default.start));
-
-  const start = formatISO(new Date(formProp!.startDate), { representation: 'date' });
 
   /**
    * @summary Post-process when the post/put/delete is done..
@@ -357,4 +371,20 @@ const BookingForm = ({ grid }: { grid: CalGrid }) => {
   );
 };
 
+/**
+ * @summary The wrapper of form, it is rendered when `formProp` is not null.
+ * @see BookingFormBody contains the actual form logic
+ */
+const BookingForm = () => {
+  const [formProp] = useAtom(formPropAtom);
+
+  return (
+    <Popover open={!!formProp}>
+      <PopoverContent className='w-[300px]'>{formProp && <BookingFormBody />}</PopoverContent>
+    </Popover>
+  );
+};
+
 export default BookingForm;
+
+export type { FormProp };
