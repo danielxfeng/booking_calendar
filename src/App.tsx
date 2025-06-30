@@ -12,15 +12,15 @@ import { useQuery } from '@tanstack/react-query';
 import { useAtom, useSetAtom } from 'jotai';
 import lodash from 'lodash';
 
+import Loading from '@/components/Loading';
 import Main from '@/components/Main';
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
 import { calendarGridAtom, startAtom } from '@/lib/atoms';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
 import { newDate } from '@/lib/dateUtils';
+import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
-
-import { useStartController } from './lib/hooks';
 
 /**
  * @summary Layout of the application.
@@ -69,7 +69,6 @@ const App = () => {
   const {
     data: grid,
     error,
-    isLoading,
     isError,
   } = useQuery<CalGrid>({
     enabled: start !== null,
@@ -100,15 +99,7 @@ const App = () => {
       </header>
 
       {/* Main */}
-      <main className='flex-1'>
-        {isLoading || !grid || !start ? (
-          <div className='flex h-screen w-screen items-center justify-center'>
-            <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
-          </div>
-        ) : (
-          <Main />
-        )}
-      </main>
+      <main className='flex-1'>{start ? <Main /> : <Loading />}</main>
 
       {/* Footer */}
       <footer className='bg-accent flex h-18 items-center justify-center'>

@@ -10,9 +10,10 @@ import { addDays, format, minutesToHours } from 'date-fns';
 import { useAtom } from 'jotai';
 
 import CellComp from '@/components/CellComponent';
+import Loading from '@/components/Loading';
 import OperationRow from '@/components/OperationRow';
 import { CELL_HEIGHT, CELL_WIDTH, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
-import { formPropAtom, startAtom } from '@/lib/atoms';
+import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { newDate } from '@/lib/dateUtils';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
  */
 const Main = () => {
   const [start] = useAtom(startAtom);
+  const [grid] = useAtom(calendarGridAtom);
   const [formProp] = useAtom(formPropAtom);
   const startDate = newDate(start);
 
@@ -52,34 +54,38 @@ const Main = () => {
         ))}
       </div>
 
-      {/* Calendar cells */}
-      <div data-role='calendar-data' className='border-border w-full border'>
-        {/* Rows */}
-        {dayRows.map((i) => (
-          <div
-            key={`calendar-data-row-${i}`}
-            className={cn('grid w-full grid-cols-8', CELL_HEIGHT)}
-          >
-            {/* A row */}
+      {grid.length === 0 ? (
+        <Loading />
+      ) : (
+        // Calendar cells
+        <div data-role='calendar-data' className='border-border w-full border'>
+          {/* Rows */}
+          {dayRows.map((i) => (
             <div
-              className={cn(
-                CELL_HEIGHT,
-                CELL_WIDTH,
-                // Draw a bottom line for every 2 hours.
-                i !== 0 && i % timeLabel === 0 && 'border-border border-b',
-              )}
+              key={`calendar-data-row-${i}`}
+              className={cn('grid w-full grid-cols-8', CELL_HEIGHT)}
             >
-              {/* Display the time label */}
-              {i % timeLabel === 0 && `${minutesToHours(i * TIME_SLOT_INTERVAL)}:00`}
-            </div>
+              {/* A row */}
+              <div
+                className={cn(
+                  CELL_HEIGHT,
+                  CELL_WIDTH,
+                  // Draw a bottom line for every 2 hours.
+                  i !== 0 && i % timeLabel === 0 && 'border-border border-b',
+                )}
+              >
+                {/* Display the time label */}
+                {i % timeLabel === 0 && `${minutesToHours(i * TIME_SLOT_INTERVAL)}:00`}
+              </div>
 
-            {/* Cells */}
-            {weekViewCols.map((j) => (
-              <CellComp key={`cell-${i}-${j}`} row={i} col={j} timeLabel={timeLabel} />
-            ))}
-          </div>
-        ))}
-      </div>
+              {/* Cells */}
+              {weekViewCols.map((j) => (
+                <CellComp key={`cell-${i}-${j}`} row={i} col={j} timeLabel={timeLabel} />
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
