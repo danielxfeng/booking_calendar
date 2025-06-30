@@ -16,13 +16,14 @@ type Slot = { slot: Date; avail: boolean };
 type ScrollTimePickerProps = {
   slots: Slot[];
   selected: string;
+  disabled: boolean;
   onSelect: (val: string) => void;
 };
 
 /**
  * @summary A slot picker made buy ScrollArea and buttons.
  */
-const ScrollSlotPicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) => {
+const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePickerProps) => {
   const selectedRef = useRef<HTMLButtonElement | null>(null);
 
   // To scroll the selected item to the center of the dom.
@@ -34,6 +35,8 @@ const ScrollSlotPicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) 
 
   // Keyboard support
   const keyDownHandler = (e: React.KeyboardEvent) => {
+    if (disabled) return;
+
     // we just need up/down
     if (!['ArrowUp', 'ArrowDown'].includes(e.key)) return;
 
@@ -76,7 +79,7 @@ const ScrollSlotPicker = ({ slots, selected, onSelect }: ScrollTimePickerProps) 
               key={value}
               ref={isSelected ? selectedRef : undefined}
               variant={isSelected ? 'default' : slot.avail ? 'outline' : 'ghost'}
-              disabled={!slot.avail}
+              disabled={!slot.avail || disabled}
               onClick={() => onSelect(value)}
               role='option'
               aria-selected={isSelected}
