@@ -39,7 +39,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
     if (open || !date || isSameDay(date, startDate)) return;
     const mon = isMonday(date)
       ? format(date, 'yyyy-MM-dd')
-      : format(nextMonday(date), 'yyyy-MM-dd');
+      : format(previousMonday(date), 'yyyy-MM-dd');
     setNewStart(mon, false);
   }, [date, open, setNewStart, startDate]);
 
