@@ -28,13 +28,18 @@ type Booking = {
 type Cell = Booking[] | null;
 
 /**
- * @summary 2D matrix of bookings for the weekly calendar view.
+ * @summary One day, contains cells.
  */
-type CalGrid = Cell[][];
+type Day = Cell[];
+
+/**
+ * @summary 2D matrix of bookings for the weekly calendar view: grid[day][timeSlot]
+ */
+type CalGrid = Day[];
 
 // Returns a new empty Calendar Grid.
 const newCalGrid = (): CalGrid =>
-  Array.from({ length: (24 * 60) / TIME_SLOT_INTERVAL }, () => Array(7).fill(null));
+  Array.from({ length: 7 }, () => Array((24 * 60) / TIME_SLOT_INTERVAL).fill(null));
 
 /**
  * @summary Generate a calendar grid from given rooms
@@ -67,6 +72,9 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
       if (dayIndex < 0)
         ThrowInvalidIncomingDataErr('The booking is outside the displayed week range.');
 
+      // We don't take the bookings out of this week.
+      if (dayIndex > 6) continue;
+
       // Find all related cells, also we have checked that end > start in schema.
       const timeIndexStart = Math.floor(
         (getHours(booking.start) * 60 + getMinutes(booking.start)) / TIME_SLOT_INTERVAL,
@@ -83,11 +91,11 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
 
       // Upsert booking to related cells.
       for (let timeIndex = timeIndexStart; timeIndex < timeIndexEnd; timeIndex++) {
-        const cell = grid[timeIndex]?.[dayIndex];
+        const cell = grid[dayIndex]?.[timeIndex];
 
         // Insert
         if (!cell) {
-          grid[timeIndex][dayIndex] = [newBooking];
+          grid[dayIndex][timeIndex] = [newBooking];
           continue;
         }
 
@@ -96,7 +104,7 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
         if (cell.some((booking) => booking.roomId === room.roomId))
           ThrowInvalidIncomingDataErr('Duplicate booking detected.');
 
-        grid[timeIndex][dayIndex]!.push(newBooking);
+        grid[dayIndex][timeIndex]!.push(newBooking);
       }
     }
   }
@@ -106,4 +114,4 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
 
 export { calGridGenerator, newCalGrid };
 
-export type { Booking, CalGrid, Cell };
+export type { Booking, CalGrid, Cell, Day };

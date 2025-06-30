@@ -26,8 +26,8 @@ describe('calGridGenerator', () => {
 
     const grid = calGridGenerator(rooms, startDate);
 
-    expect(grid[40][2]?.[0].roomId).toBe(1);
-    expect(grid[41][2]?.[0].roomId).toBe(1);
+    expect(grid[2][40]?.[0].roomId).toBe(1);
+    expect(grid[2][41]?.[0].roomId).toBe(1);
   });
 
   it('should place bookings into correct cells', () => {
@@ -83,7 +83,7 @@ describe('calGridGenerator', () => {
     const idx1Start = timeIndex('2025-06-25T10:00');
     const idx1End = timeIndex('2025-06-25T10:30');
     for (let i = idx1Start; i < idx1End; i++) {
-      const cell = grid[i][dayIndex('2025-06-25')];
+      const cell = grid[dayIndex('2025-06-25')][i];
       expect(cell).toEqual(
         expect.arrayContaining([expect.objectContaining({ id: 1, roomId: 1, roomName: 'a' })]),
       );
@@ -92,7 +92,7 @@ describe('calGridGenerator', () => {
     const idx3Start = timeIndex('2025-06-25T10:00');
     const idx3End = timeIndex('2025-06-25T10:15');
     for (let i = idx3Start; i < idx3End; i++) {
-      const cell = grid[i][dayIndex('2025-06-25')];
+      const cell = grid[dayIndex('2025-06-25')][i];
       expect(cell).toEqual(
         expect.arrayContaining([expect.objectContaining({ id: 3, roomId: 2, roomName: 'b' })]),
       );
@@ -101,13 +101,13 @@ describe('calGridGenerator', () => {
     const idx4Start = timeIndex('2025-06-26T12:00');
     const idx4End = timeIndex('2025-06-26T14:15');
     for (let i = idx4Start; i < idx4End; i++) {
-      const cell = grid[i][dayIndex('2025-06-26')];
+      const cell = grid[dayIndex('2025-06-26')][i];
       expect(cell).toEqual(
         expect.arrayContaining([expect.objectContaining({ id: 4, bookedBy: null, roomId: 2 })]),
       );
     }
 
-    const unexpectedCell = grid[timeIndex('2025-06-24T10:00')]?.[dayIndex('2025-06-24')];
+    const unexpectedCell = grid[dayIndex('2025-06-24')]?.[timeIndex('2025-06-24T10:00')];
     expect(unexpectedCell).toBeNull();
   });
 
