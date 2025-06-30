@@ -7,15 +7,13 @@
  * @contact intra: @xifeng
  */
 
-import { add, isBefore, startOfDay } from 'date-fns';
+import { add, addMinutes, isBefore, isEqual, startOfDay } from 'date-fns';
 
 import type { FormProp, FormType } from '@/components/BookingForm';
 import type { Slot } from '@/components/ScrollSlotPicker';
 import { TIME_SLOT_INTERVAL } from '@/config';
-
-import type { CalGrid } from './calGrid';
-import { ThrowInternalError } from './errorHandler';
-import type { UpsertBooking } from './schema';
+import type { CalGrid, Day } from '@/lib/calGrid';
+import { ThrowInternalError } from '@/lib/errorHandler';
 
 /**
  * @summary Returns an empty Slots
@@ -70,28 +68,53 @@ const getFormType = (formProp: FormProp, grid: CalGrid): FormType => {
   return 'update';
 };
 
-// todo
-const initSlots = (
-  booking: UpsertBooking | undefined,
-  grid: CalGrid,
-  filedType: 'start' | 'end',
+/**
+ * @summary Calculate a slots.
+ * @description
+ * The idea is to iterate the bookings, if there is a existing booking, set the slot to unavailable.
+ * The current booking is an exception.
+ */
+const calculateSlots = (
   formType: FormType,
-): Slot[] => {};
+  day: Day,
+  filedType: 'start' | 'end',
+  roomId: number | undefined,
+  editId?: number | undefined | null,
+  start?: string | undefined,
+): Slot[] => {
+  if (roomId === undefined || start === undefined) return []; // should not be here.
 
-// todo
-const timeSlotChangeHandler = (
-  type: 'start' | 'end',
-  value: string,
-  setSlots: (slots: Slot[]) => void,
-) => {
-  if (type === 'start') {
-    // todo
-    console.log(value);
-    setSlots([]);
-  } else if (type === 'end')
-    setSlots([]); // todo
-  // should not be here.
-  else ThrowInternalError('The type of Time Slot Selector should be either start or end.');
+  // Init an empty slots.
+  const slots = newEmptySlots(start);
+
+  for (let i = 0; i < slots.length; i++) {
+    const bookings = day[i] ?? [];
+    let isTaken: boolean;
+
+    // If there is a `view` form, all slots are disabled, except the current booking.
+    if (formType === 'view') isTaken = bookings.some((b) => b.id !== editId);
+    // Otherwise, all booked slots are disabled, except the current booking.
+    else isTaken = bookings.some((b) => b.roomId === roomId && b.id !== editId);
+    slots[i].avail = !isTaken;
+  }
+
+  // For endSlots, add TIME_SLOT_INTERVAL.
+  if (filedType === 'end')
+    slots.forEach((slot) => (slot.slot = addMinutes(slot.slot, TIME_SLOT_INTERVAL)));
+  return slots;
 };
 
-export { getFormType, initSlots, timeSlotChangeHandler };
+const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean => {
+  let inRange: boolean = false;
+  for (const slot of endSlots) {
+    if (isEqual(new Date(start), slot.slot)) inRange = true;
+    if (inRange) {
+      if (!slot.avail) return false;
+      if (isEqual(new Date(end), slot.slot)) return true;
+    }
+  }
+  ThrowInternalError('[overlappingCheck]: End slot not reached, error slot range.');
+  return false; // should not be here.
+};
+
+export { calculateSlots, getFormType, overlappingCheck };

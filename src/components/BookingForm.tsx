@@ -5,16 +5,14 @@
  * @contact intra: @xifeng
  */
 
-import { useState } from 'react';
-import { Form, useForm } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { Form, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { format } from 'date-fns';
 import { useAtom } from 'jotai';
 
-import type { Slot } from '@/components/ScrollSlotPicker';
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
 import {
   AlertDialog,
@@ -34,12 +32,8 @@ import { RadioGroup } from '@/components/ui/radio-group';
 import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import {
-  getFormType,
-  initSlots,
-  roomIdChangeHandler,
-  timeSlotChangeHandler,
-} from '@/lib/bookingFormUtils';
+import { calculateSlots, getFormType, overlappingCheck } from '@/lib/bookingFormUtils';
+import type { Day } from '@/lib/calGrid';
 import { type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { cn } from '@/lib/utils';
 
@@ -81,20 +75,13 @@ const parseErrorMsg = (error: unknown): string => {
  *
  */
 const BookingFormBody = () => {
+  // Subscribe the atoms to tracking the data changing.
   const [grid] = useAtom(calendarGridAtom);
   const [start] = useAtom(startAtom);
-  // Subscribe the atom to survive the re-render.
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
-  const formType = getFormType(formProp, grid);
-
-  // States for time picker.
-  const [startSlots, setStartSlots] = useState<Slot[]>(
-    initSlots(grid, 'start', formType, formProp?.default),
-  );
-  const [endSlots, setEndSlots] = useState<Slot[]>(
-    initSlots(grid, 'end', formType, formProp?.default),
-  );
+  // We just need one day
+  const day: Day = grid[formProp?.col || 0];
 
   // Init a RHF.
   const form = useForm<UpsertBooking>({
@@ -102,6 +89,46 @@ const BookingFormBody = () => {
     defaultValues: formProp?.default,
     mode: 'onChange',
   });
+
+  // Get the type of form, 'view', 'insert', 'update'.
+  const formType: FormType = getFormType(formProp, grid);
+
+  // Hook to track the value change.
+  const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
+    control: form.control,
+    name: ['roomId', 'start', 'end'],
+  });
+
+  // 2 slots is required, it mainly tracks the changing of roomId.
+  // It reads the bookings from `day`, then set `unavailable` to booked slots.
+  const startSlots = useMemo(() => {
+    return calculateSlots(
+      formType,
+      day,
+      'start',
+      watchedRoomId,
+      undefined,
+      formProp?.default.start,
+    );
+  }, [formType, day, formProp?.default.start, watchedRoomId]);
+  const endSlots = useMemo(() => {
+    return calculateSlots(
+      formType,
+      day,
+      'end',
+      watchedRoomId,
+      formProp?.editingId,
+      formProp?.default.start,
+    );
+  }, [formType, day, formProp?.default.start, formProp?.editingId, watchedRoomId]);
+
+  // To validate the overlapping booking, since the overlapping check is not included in zod.
+  useEffect(() => {
+    const isOverlapping = overlappingCheck(watchedStart, watchedEnd, endSlots);
+    if (isOverlapping)
+      form.setError('end', { type: 'manual', message: 'The booked slots are not available.' });
+    else form.clearErrors('end');
+  }, [watchedStart, watchedEnd, endSlots, form]);
 
   /**
    * @summary Post-process when the post/put/delete is done..
@@ -150,11 +177,7 @@ const BookingFormBody = () => {
   // upsert handler.
   const upsertMutation = useMutation({
     mutationFn: (data: UpsertBooking) => {
-      return formType === 'insert'
-        ? axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, { body: data })
-        : axiosFetcher.put(`${API_URL}/${ENDPOINT_SLOTS}/${formProp?.editingId}`, {
-            body: data,
-          });
+      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, { body: data });
     },
     onSuccess: () => {
       delayRefreshAndQuit(start);
@@ -172,15 +195,13 @@ const BookingFormBody = () => {
       className='flex h-screen w-screen flex-col justify-between lg:h-96 lg:w-96'
     >
       <h1>{formType.charAt(0).toUpperCase() + formType.slice(1)} a booking</h1>
-      <div data-role='booking-date'>
-        <span>Date:</span>
-        <span>{format(new Date(formProp.default.start), 'dd MMM')}</span>
-      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => upsertMutation.mutate(data))}
           className='space-y-8'
         >
+          {/* Date, now changing of booking date is disabled currently. */}
+          <div data-role='booked-date'>{`Booked date: {format(formProp.default.start, 'dd MMM')}`}</div>
           {/* Room id selector */}
           <FormField
             control={form.control}
@@ -190,13 +211,10 @@ const BookingFormBody = () => {
                 <FormLabel>Choose a meeting room: </FormLabel>
                 <FormControl>
                   <RadioGroup
-                    onValueChange={(val) => {
-                      const roomId = Number(val);
-                      field.onChange(roomId);
-                      roomIdChangeHandler(form, roomId, grid, formType, formProp?.default);
-                    }}
+                    onValueChange={(val) => field.onChange(Number(val))}
                     defaultValue={String(field.value)}
                     className='flex flex-col'
+                    disabled={formType === 'view'}
                   >
                     {ROOM_MAP.map(({ id, name }) => (
                       <FormItem key={id} className='flex items-center gap-3'>
@@ -226,12 +244,8 @@ const BookingFormBody = () => {
                     <ScrollSlotPicker
                       slots={startSlots}
                       selected={field.value}
-                      onSelect={(val) => {
-                        field.onChange(val);
-                        timeSlotChangeHandler('start', val, setStartSlots);
-                        // next tick to wait for the prev handler taking effect
-                        setTimeout(() => form.trigger('end'), 0);
-                      }}
+                      disabled={formType === 'view'}
+                      onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -250,12 +264,8 @@ const BookingFormBody = () => {
                     <ScrollSlotPicker
                       slots={endSlots}
                       selected={field.value}
-                      onSelect={(val) => {
-                        field.onChange(val);
-                        timeSlotChangeHandler('end', val, setEndSlots);
-                        // next tick to wait for the prev handler taking effect
-                        setTimeout(() => form.trigger('start'), 0);
-                      }}
+                      disabled={formType === 'view'}
+                      onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -280,14 +290,14 @@ const BookingFormBody = () => {
             className={cn('flex justify-between', formType === 'insert' && 'justify-center')}
           >
             {/* Upsert submit */}
-            <Button
-              type='submit'
-              disabled={
-                formType === 'view' || form.formState.isSubmitting || !form.formState.isValid
-              }
-            >
-              {form.formState.isSubmitting ? 'Loading' : formType === 'update' ? 'Update' : 'Book'}
-            </Button>
+            {formType === 'insert' && (
+              <Button
+                type='submit'
+                disabled={form.formState.isSubmitting || !form.formState.isValid}
+              >
+                {form.formState.isSubmitting ? 'Booking' : 'Book'}
+              </Button>
+            )}
 
             {/* Delete */}
             {formType !== 'insert' && (
