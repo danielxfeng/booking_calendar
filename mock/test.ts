@@ -1,0 +1,62 @@
+import { addMinutes, format, parseISO } from 'date-fns';
+import { MockMethod } from 'vite-plugin-mock';
+
+import type { Rooms } from '../src/lib/schema';
+
+const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm");
+
+const generateMockedDate = (start: string): Rooms => {
+  const base = parseISO(start);
+  return [
+    {
+      roomId: 0,
+      roomName: 'Room A',
+      bookings: [
+        {
+          id: 1,
+          start: formatLocal(addMinutes(base, 60)), // 09:00
+          end: formatLocal(addMinutes(base, 90)), // 09:30
+          bookedBy: 'Alice',
+        },
+        {
+          id: 3,
+          start: formatLocal(addMinutes(base, 180)), // 11:00
+          end: formatLocal(addMinutes(base, 210)), // 11:30
+          bookedBy: 'Bob',
+        },
+      ],
+    },
+    {
+      roomId: 1,
+      roomName: 'Room B',
+      bookings: [
+        {
+          id: 2,
+          start: formatLocal(addMinutes(base, 120)), // 10:00
+          end: formatLocal(addMinutes(base, 150)), // 10:30
+          bookedBy: null,
+        },
+        {
+          id: 4,
+          start: formatLocal(addMinutes(base, 180)), // 11:00
+          end: formatLocal(addMinutes(base, 240)), // 12:00
+          bookedBy: null,
+        },
+      ],
+    },
+  ];
+};
+
+const mocks: MockMethod[] = [
+  {
+    url: '/reservation',
+    method: 'get',
+    timeout: 500,
+    response: ({ query }) => {
+      const { start } = query;
+      return generateMockedDate(start);
+    },
+  },
+];
+
+export default mocks;
