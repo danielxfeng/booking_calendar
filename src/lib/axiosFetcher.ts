@@ -18,9 +18,6 @@ const axiosFetcher = axios.create({
 
 // Attach the token to requests.
 axiosFetcher.interceptors.request.use((config) => {
-  // the auth guard only applies in production mode.
-  if (import.meta.env.MODE !== 'prod') return config;
-
   const token = getToken();
   if (!token) {
     window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
