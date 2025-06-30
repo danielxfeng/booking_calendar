@@ -26,9 +26,7 @@ import { DateSchema } from '@/lib/schema';
 const normalizeStartDate = (start: string | null): string => {
   // If there is not a valid start day
   if (!DateSchema.safeParse(start).success)
-    return isMonday(new Date())
-      ? format(new Date(), 'yyyy-MM-dd')
-      : format(previousMonday(new Date()), 'yyyy-MM-dd');
+    start = format(new Date(), 'yyyy-MM-dd');
 
   // If the start is valid, but not the Monday
   const startDate = newDate(start!);
