@@ -31,7 +31,11 @@ axiosFetcher.interceptors.request.use((config) => {
 axiosFetcher.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 || error.response?.status === 498) {
+    if (
+      error.response?.status === 401 ||
+      error.response?.status === 403 ||
+      error.response?.status === 498
+    ) {
       setToken(null);
       window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
       return Promise.reject(new axios.Cancel('No token, redirecting.'));
