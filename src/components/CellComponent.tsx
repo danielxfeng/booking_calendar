@@ -28,7 +28,7 @@ type CellCompProps = {
  * Main logic:
  * - for all cells:
  *   - if in the past, display a gray bg, onHover: none, onClick: none
- *   - if in the future, display a normal bg, onClick: upsert form(insertion only)
+ *   - if in the future, display a normal bg, onClick: insertion form
  *   - if there are bookings, draw a absolute view.
  */
 const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
@@ -36,7 +36,7 @@ const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
   const [start] = useAtom(startAtom);
   const setFormProp = useSetAtom(formPropAtom);
 
-  const cell: Cell = grid[row][col];
+  const cell: Cell = grid[col][row];
 
   // The start time of the cell.
   const startDate = newDate(start);

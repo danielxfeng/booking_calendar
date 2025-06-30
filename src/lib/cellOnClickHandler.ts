@@ -41,7 +41,7 @@ const cellOnClickHandler = (
 
   // Insert a new booking.
   if (cellType === 'avail') {
-    const cellProp: Cell = grid[row][col];
+    const cellProp: Cell = grid[col][row];
     const startTime = add(startDate, { days: col, minutes: row * TIME_SLOT_INTERVAL });
 
     // Prevent inserting into expired time slots

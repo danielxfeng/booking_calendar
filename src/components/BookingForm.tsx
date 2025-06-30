@@ -34,7 +34,12 @@ import { RadioGroup } from '@/components/ui/radio-group';
 import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import { getFormType, initSlots, timeSlotChangeHandler } from '@/lib/bookingFormUtils';
+import {
+  getFormType,
+  initSlots,
+  roomIdChangeHandler,
+  timeSlotChangeHandler,
+} from '@/lib/bookingFormUtils';
 import { type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { cn } from '@/lib/utils';
 
@@ -68,11 +73,12 @@ const parseErrorMsg = (error: unknown): string => {
 };
 
 /**
- * @summary The View/Upsert/Delete form for a booking
+ * @summary The View/Insert/Delete form for a booking
  * @description
  * When `editId` is null, the form is an `insertion` form.
  * When `bookedBy` is null, or the start time is in the past, then the booking is view only.
- * Otherwise, the form is an `update/delete` form.
+ * Otherwise, there is a 'delete' button.
+ *
  */
 const BookingFormBody = () => {
   const [grid] = useAtom(calendarGridAtom);
@@ -84,10 +90,10 @@ const BookingFormBody = () => {
 
   // States for time picker.
   const [startSlots, setStartSlots] = useState<Slot[]>(
-    initSlots(formProp?.default, grid, 'start', formType),
+    initSlots(grid, 'start', formType, formProp?.default),
   );
   const [endSlots, setEndSlots] = useState<Slot[]>(
-    initSlots(formProp?.default, grid, 'end', formType),
+    initSlots(grid, 'end', formType, formProp?.default),
   );
 
   // Init a RHF.
@@ -184,7 +190,11 @@ const BookingFormBody = () => {
                 <FormLabel>Choose a meeting room: </FormLabel>
                 <FormControl>
                   <RadioGroup
-                    onValueChange={(val) => field.onChange(Number(val))}
+                    onValueChange={(val) => {
+                      const roomId = Number(val);
+                      field.onChange(roomId);
+                      roomIdChangeHandler(form, roomId, grid, formType, formProp?.default);
+                    }}
                     defaultValue={String(field.value)}
                     className='flex flex-col'
                   >

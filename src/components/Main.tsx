@@ -63,7 +63,6 @@ const Main = () => {
             {/* A row */}
             <div
               className={cn(
-                '',
                 CELL_HEIGHT,
                 CELL_WIDTH,
                 // Draw a bottom line for every 2 hours.

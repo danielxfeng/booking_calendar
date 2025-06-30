@@ -54,7 +54,7 @@ describe('cellOnClickHandler', () => {
 
     const now = new Date();
     const pastStart = format(previousMonday(addDays(now, -7)), 'yyyy-MM-dd');
-    const grid: CalGrid = Array.from({ length: 48 }, () => Array.from({ length: 7 }, () => []));
+    const grid: CalGrid = Array.from({ length: 7 }, () => Array.from({ length: 96 }, () => []));
 
     cellOnClickHandler(0, 0, grid, pastStart, mockSetFormProp);
 
@@ -64,8 +64,8 @@ describe('cellOnClickHandler', () => {
   it('should not call setFormProp and log error if no rooms available', () => {
     const mockSetFormProp = vi.fn();
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const grid: CalGrid = Array.from({ length: 96 }, () =>
-      Array.from({ length: 7 }, () => [
+    const grid: CalGrid = Array.from({ length: 7 }, () =>
+      Array.from({ length: 96 }, () => [
         { roomId: 0, id: 0, roomName: 'room', start: '', end: '', bookedBy: null },
         { roomId: 1, id: 1, roomName: 'room1', start: '', end: '', bookedBy: null },
       ]),
@@ -89,7 +89,7 @@ describe('cellOnClickHandler', () => {
       roomName: 'room2',
       bookedBy: null,
     };
-    const grid: CalGrid = Array.from({ length: 48 }, () => Array.from({ length: 7 }, () => []));
+    const grid: CalGrid = Array.from({ length: 7 }, () => Array.from({ length: 96 }, () => []));
 
     cellOnClickHandler(row, col, grid, start, mockSetFormProp, booking);
 
