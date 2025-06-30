@@ -6,7 +6,6 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { ChevronDownIcon } from 'lucide-react';
 
@@ -14,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useStartController } from '@/lib/hooks';
 
 /**
  * @summary An operation row includes:
@@ -22,8 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
  * like: <-   Mon 05 Jun - Sun 12 Jun    ->
  */
 const OperationRow = ({ startDate }: { startDate: Date }) => {
-  const navigate = useNavigate();
-
+  const { setNewStart } = useStartController();
   // helper for date picker.
   const [date, setDate] = useState<Date | undefined>(startDate);
   const [open, setOpen] = useState(false);
@@ -41,8 +40,8 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
     const mon = isMonday(date)
       ? format(date, 'yyyy-MM-dd')
       : format(nextMonday(date), 'yyyy-MM-dd');
-    navigate(`/?start=${mon}`);
-  }, [open, date, startDate, navigate]);
+    setNewStart(mon, false);
+  }, [date, open, setNewStart, startDate]);
 
   return (
     <div
@@ -51,7 +50,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
     >
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>
-        <PaginationPrevious href={`/?start=${prevMon}`} />
+        <PaginationPrevious onClick={() => setNewStart(prevMon, false)} />
       </PaginationItem>
 
       {/* Date picker */}
@@ -84,7 +83,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
 
       {/* Next button */}
       <PaginationItem className='hidden lg:block'>
-        <PaginationNext href={`/?start=${nextMon}`} />
+        <PaginationNext onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
     </div>
   );
