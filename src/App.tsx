@@ -89,14 +89,6 @@ const App = () => {
     });
   }, [grid, setCalendarGrid]);
 
-  // Spinning on loading
-  if (isLoading || !grid || !start)
-    return (
-      <div className='flex h-screen w-screen items-center justify-center'>
-        <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
-      </div>
-    );
-
   // to error boundary since it makes no sense when there is no data.
   if (isError) throw error;
 
@@ -109,7 +101,13 @@ const App = () => {
 
       {/* Main */}
       <main className='flex-1'>
-        <Main />
+        {isLoading || !grid || !start ? (
+          <div className='flex h-screen w-screen items-center justify-center'>
+            <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
+          </div>
+        ) : (
+          <Main />
+        )}
       </main>
 
       {/* Footer */}
