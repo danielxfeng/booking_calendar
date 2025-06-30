@@ -36,22 +36,22 @@ const TIME_LABEL_INTERVAL: number = 8; // If TIME_SLOT_INTERVAL = 15, and this i
 /**
  * The API Url
  */
-const API_URL: string = '';
+const API_URL: string = import.meta.env.VITE_API_URL || '';
 
 /**
  * The API endpoint for Login
  */
-const ENDPOINT_AUTH: string = '';
+const ENDPOINT_AUTH: string = 'oauth/login';
 
 /**
  * The API endpoint for getting slots
  */
-const ENDPOINT_SLOTS: string = '';
+const ENDPOINT_SLOTS: string = 'reservation';
 
 /**
  * The timeout for API fetching
  */
-const FETCHER_TIMEOUT: number = 30; // 30 seconds
+const FETCHER_TIMEOUT: number = 3000; // 30 seconds
 
 /**
  * The cache duration for calendar.
