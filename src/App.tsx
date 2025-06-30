@@ -41,23 +41,26 @@ import { setToken } from '@/lib/tokenStore';
  *  - When the Upsert form submits, the related cache is invalidated.
  */
 const App = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   // The custom hook to manage the start and the search params.
   const { setNewStart } = useStartController();
 
   // Fetch the params from location
   const startFromParams = searchParams.get('start');
-  const token = searchParams.get('token');
 
   const [start] = useAtom(startAtom);
   const setCalendarGrid = useSetAtom(calendarGridAtom);
 
   // Update the received token, useEffect to avoid multi-set.
   useEffect(() => {
+    const token = searchParams.get('token');
     if (token) {
       setToken(token);
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('token');
+      setSearchParams(nextParams);
     }
-  }, [token]);
+  }, [searchParams, setSearchParams]);
 
   // Update the start based on the search params.
   useEffect(() => {
