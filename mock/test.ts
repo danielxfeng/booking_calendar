@@ -14,14 +14,14 @@ const generateMockedDate = (start: string): Rooms => {
       bookings: [
         {
           id: 1,
-          start: formatLocal(addMinutes(base, 60)), // 09:00
-          end: formatLocal(addMinutes(base, 90)), // 09:30
+          start: formatLocal(addMinutes(base, 60)), // 1:00
+          end: formatLocal(addMinutes(base, 90)), // 1:30
           bookedBy: 'Alice',
         },
         {
           id: 3,
-          start: formatLocal(addMinutes(base, 180)), // 11:00
-          end: formatLocal(addMinutes(base, 210)), // 11:30
+          start: formatLocal(addMinutes(base, 180)), // 3:00
+          end: formatLocal(addMinutes(base, 210)), // 3:30
           bookedBy: 'Bob',
         },
       ],
@@ -32,14 +32,14 @@ const generateMockedDate = (start: string): Rooms => {
       bookings: [
         {
           id: 2,
-          start: formatLocal(addMinutes(base, 120)), // 10:00
-          end: formatLocal(addMinutes(base, 150)), // 10:30
+          start: formatLocal(addMinutes(base, 120)), // 2:00
+          end: formatLocal(addMinutes(base, 150)), // 2:30
           bookedBy: null,
         },
         {
           id: 4,
-          start: formatLocal(addMinutes(base, 180)), // 11:00
-          end: formatLocal(addMinutes(base, 240)), // 12:00
+          start: formatLocal(addMinutes(base, 180)), // 3:00
+          end: formatLocal(addMinutes(base, 240)), // 4:00
           bookedBy: null,
         },
       ],
