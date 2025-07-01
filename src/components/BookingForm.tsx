@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Popover, PopoverContent } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
 import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
@@ -74,7 +73,7 @@ const parseErrorMsg = (error: unknown): string => {
  * Otherwise, there is a 'delete' button.
  *
  */
-const BookingFormBody = () => {
+const BookingForm = () => {
   // Subscribe the atoms to tracking the data changing.
   const [grid] = useAtom(calendarGridAtom);
   const [start] = useAtom(startAtom);
@@ -335,20 +334,6 @@ const BookingFormBody = () => {
         </form>
       </Form>
     </div>
-  );
-};
-
-/**
- * @summary The wrapper of form, it is rendered when `formProp` is not null.
- * @see BookingFormBody contains the actual form logic
- */
-const BookingForm = () => {
-  const [formProp] = useAtom(formPropAtom);
-
-  return (
-    <Popover open={!!formProp}>
-      <PopoverContent className='w-[300px]'>{formProp && <BookingFormBody />}</PopoverContent>
-    </Popover>
   );
 };
 

@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { describe, expect, it } from 'vitest';
 
-import { newDate } from '@/lib/dateUtils';
+import { newDate } from '@/lib/tools';
 
 describe('newDate', () => {
   it('returns a Date object', () => {

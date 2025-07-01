@@ -5,22 +5,23 @@
  * @contact intra: @xifeng
  */
 
-import { memo } from 'react';
+import { type CSSProperties, memo } from 'react';
 import { add, isBefore, isEqual } from 'date-fns';
 import { useAtom, useSetAtom } from 'jotai';
 
 import BookedCell from '@/components/BookedCell';
-import { CELL_HEIGHT, CELL_WIDTH, TIME_SLOT_INTERVAL } from '@/config';
+import { TIME_SLOT_INTERVAL } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import type { Cell } from '@/lib/calGrid';
 import { cellOnClickHandler } from '@/lib/cellOnClickHandler';
-import { newDate } from '@/lib/dateUtils';
+import { newDate } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 type CellCompProps = {
   row: number;
   col: number;
   timeLabel: number;
+  style: CSSProperties | undefined;
 };
 
 /**
@@ -32,7 +33,7 @@ type CellCompProps = {
  *   - if in the future, display a normal bg, onClick: insertion form
  *   - if there are bookings, draw a absolute view.
  */
-const CellComp = memo(({ row, col, timeLabel }: CellCompProps) => {
+const CellComp = memo(({ row, col, timeLabel, style }: CellCompProps) => {
   const [grid] = useAtom(calendarGridAtom);
   const [start] = useAtom(startAtom);
   const setFormProp = useSetAtom(formPropAtom);
@@ -54,14 +55,13 @@ const CellComp = memo(({ row, col, timeLabel }: CellCompProps) => {
     <div
       data-role='cell'
       className={cn(
-        'border-border relative border-r',
-        CELL_HEIGHT,
-        CELL_WIDTH,
+        'border-border relative z-0 overflow-visible border-r',
         isPast ? 'bg-gray-100' : 'bg-gray-50',
         col === 0 && 'border-l',
         row === 0 && 'border-t',
         row % timeLabel === 3 && 'border-b',
       )}
+      style={style}
       onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp)}
     >
       {/* To display the possible booked blocks(A covered layer)  */}

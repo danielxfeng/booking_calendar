@@ -12,9 +12,9 @@ import { useAtom } from 'jotai';
 import CellComp from '@/components/CellComponent';
 import Loading from '@/components/Loading';
 import OperationRow from '@/components/OperationRow';
-import { CELL_HEIGHT, CELL_WIDTH, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
-import { newDate } from '@/lib/dateUtils';
+import { newDate, styleGenerator } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 // Help to create doms.
@@ -35,20 +35,35 @@ const Main = () => {
   const [formProp] = useAtom(formPropAtom);
   const startDate = newDate(start);
 
+  const styleHeight = styleGenerator(undefined, CELL_HEIGHT_PX);
+  const styleFull = styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX);
+  const styleWidth = styleGenerator(CELL_WIDTH_PX);
+
   return (
     <div
       data-role='main'
       // Stop event response when form is open.
-      className={cn('mx-auto h-full w-full overflow-scroll', formProp && 'pointer-events-none')}
+      className={cn(
+        'mx-auto my-12 h-fit w-fit overflow-x-scroll',
+        formProp && 'pointer-events-none',
+      )}
     >
       {/* Operation row */}
       <OperationRow startDate={startDate} />
 
       {/* Calendar header */}
-      <div data-role='calendar-head' className='sticky top-0 grid h-12 w-full grid-cols-8'>
-        <div key='calendar-head-side' className={cn('border-border h-12 border', CELL_WIDTH)}></div>
+      <div data-role='calendar-head' className='sticky top-0 grid h-12 grid-cols-8'>
+        <div
+          key='calendar-head-side'
+          className={cn('border-border h-12 border')}
+          style={styleWidth}
+        ></div>
         {weekViewCols.map((i) => (
-          <div key={`calendar-head-${i}`} className={cn('border-border h-12 border', CELL_WIDTH)}>
+          <div
+            key={`calendar-head-${i}`}
+            className={cn('border-border h-12 border')}
+            style={styleWidth}
+          >
             {format(addDays(startDate, i), 'eee  dd MMM')}
           </div>
         ))}
@@ -58,21 +73,21 @@ const Main = () => {
         <Loading />
       ) : (
         // Calendar cells
-        <div data-role='calendar-data' className='border-border w-full border'>
+        <div data-role='calendar-data' className='border-border border'>
           {/* Rows */}
           {dayRows.map((i) => (
             <div
               key={`calendar-data-row-${i}`}
-              className={cn('grid w-full grid-cols-8', CELL_HEIGHT)}
+              className={cn('grid grid-cols-8')}
+              style={styleHeight}
             >
               {/* A row */}
               <div
                 className={cn(
-                  CELL_HEIGHT,
-                  CELL_WIDTH,
                   i % timeLabel !== 0 && 'invisible',
                   i % timeLabel === 0 && 'border-t text-center',
                 )}
+                style={styleFull}
               >
                 {/* Display the time label */}
                 {`${minutesToHours(i * TIME_SLOT_INTERVAL)}:${String((i % (60 / TIME_SLOT_INTERVAL)) * TIME_SLOT_INTERVAL).padStart(2, '0')}`}
@@ -80,7 +95,13 @@ const Main = () => {
 
               {/* Cells */}
               {weekViewCols.map((j) => (
-                <CellComp key={`cell-${i}-${j}`} row={i} col={j} timeLabel={timeLabel} />
+                <CellComp
+                  key={`cell-${i}-${j}`}
+                  row={i}
+                  col={j}
+                  timeLabel={timeLabel}
+                  style={styleFull}
+                />
               ))}
             </div>
           ))}

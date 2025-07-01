@@ -47,7 +47,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   return (
     <div
       data-role='operation-panel'
-      className='flex h-12 w-full items-center justify-center gap-10'
+      className='flex h-12 items-center justify-center gap-10'
     >
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>

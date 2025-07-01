@@ -12,6 +12,7 @@ import { CELL_HEIGHT_PX, CELL_WIDTH_PX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/c
 import { formPropAtom } from '@/lib/atoms';
 import type { Booking, CalGrid } from '@/lib/calGrid';
 import { cellOnClickHandler } from '@/lib/cellOnClickHandler';
+import { styleGenerator } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 type BookedCellProps = {
@@ -23,14 +24,7 @@ type BookedCellProps = {
 };
 
 // shares the width based on the numbers of meeting rooms.
-const width = CELL_WIDTH_PX / ROOM_MAP.length;
-
-const getClassName = (value: number, type: 'width' | 'height' | 'left'): string => {
-  if (type === 'width') return `w-[${value}px]`;
-  if (type === 'height') return `h-[${value}px]`;
-  if (type === 'left') return `left-[${value}px]`;
-  throw '[getClassName]: invalid type'; // should not be here
-};
+const width = Math.floor(CELL_WIDTH_PX / ROOM_MAP.length);
 
 /**
  * @summary A booked cell covers the original calendar cell, to display a existing booking.
@@ -53,6 +47,8 @@ const BookedCell = ({ row, col, booking, grid, start }: BookedCellProps) => {
   // left, offset is the index of meeting rooms.
   const left = ROOM_MAP.findIndex((room) => room.id === booking.roomId) * CELL_WIDTH_PX;
 
+  const style = styleGenerator(width, height, left);
+
   if (left < 0) {
     console.error('[BookedCell]: invalid roomId', booking.roomId);
     return null;
@@ -62,11 +58,9 @@ const BookedCell = ({ row, col, booking, grid, start }: BookedCellProps) => {
     <div
       data-role='booked-cell'
       className={cn(
-        'absolute top-0 flex flex-col justify-between border border-blue-600 bg-blue-500 text-sm text-blue-50',
-        getClassName(height, 'height'),
-        getClassName(width, 'width'),
-        getClassName(left, 'left'),
+        'absolute top-0 z-10 flex flex-col justify-between border border-blue-600 bg-blue-500 text-sm text-blue-50',
       )}
+      style={style}
       onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp, booking)}
     >
       <p>{booking.roomName}</p>
