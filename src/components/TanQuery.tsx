@@ -13,10 +13,9 @@ import isEqual from 'lodash/isEqual';
 
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
-import { calendarGridAtom, startAtom } from '@/lib/atoms';
-import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
+import { bookingsAtom, startAtom } from '@/lib/atoms';
 import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
-import { newDate } from '@/lib/tools';
+import { type WeekBookings, weekBookingsGenerator } from '@/lib/weekBookings';
 
 /**
  * @summary TanQuery, not an UI component.
@@ -27,23 +26,23 @@ import { newDate } from '@/lib/tools';
 const TanQuery = memo(() => {
   // Subscribe the start.
   const start = useAtomValue(startAtom);
-  const setCalendarGrid = useSetAtom(calendarGridAtom);
+  const setBookingsAtom = useSetAtom(bookingsAtom);
 
-  const { data: grid, isError } = useQuery<CalGrid>({
+  const { data: bookings, isError } = useQuery<WeekBookings>({
     enabled: start !== null,
     queryKey: ['slots', start],
     queryFn: async () => {
-      const grid = calGridGenerator(await getSlots(start!), newDate(start!));
-      return grid;
+      const bookings = weekBookingsGenerator(await getSlots(start!), start!);
+      return bookings;
     },
     staleTime: 1000 * 60 * CACHE_DURATION,
   });
 
   // Update the atom, deep comparison first.
   useEffect(() => {
-    if (!grid) return;
-    setCalendarGrid((prev) => (isEqual(prev, grid) ? prev : grid));
-  }, [grid, setCalendarGrid]);
+    if (!bookings) return;
+    setBookingsAtom((prev) => (isEqual(prev, bookings) ? prev : bookings));
+  }, [bookings, setBookingsAtom]);
 
   // Redirect to error boundary.
   useEffect(() => {

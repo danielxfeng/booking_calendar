@@ -44,7 +44,7 @@ const FormWrapper = () => {
  * - TanQuery is a headless component, helps to fetching the data from API (with a cache),
  * then updates the `gridAtom` after deep comparison.
  *
- * - `gridAtom` is the main data structure of the application, and is subscribed by
+ * - `bookingsAtom` is the main data structure of the application, and is subscribed by
  * `BookingLayer`, `CalHeads`, and the Upsert form...
  */
 const App = () => {

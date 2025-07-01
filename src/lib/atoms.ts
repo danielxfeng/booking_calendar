@@ -9,7 +9,7 @@
 import { atom } from 'jotai';
 
 import type { FormProp } from '@/components/BookingForm';
-import type { CalGrid } from '@/lib/calGrid';
+import type { WeekBookings } from '@/lib/weekBookings';
 
 /**
  * @summary Maintains the default value of the upsert form.
@@ -17,13 +17,13 @@ import type { CalGrid } from '@/lib/calGrid';
 const formPropAtom = atom<FormProp>(null);
 
 /**
- * @summary Maintains the current grid of the calendar.
+ * @summary Maintains the current bookings for a week.
  */
-const calendarGridAtom = atom<CalGrid>([]);
+const bookingsAtom = atom<WeekBookings>([]);
 
 /**
  * @summary Maintains the current start of the application.
  */
 const startAtom = atom<string>('');
 
-export { calendarGridAtom, formPropAtom, startAtom };
+export { bookingsAtom, formPropAtom, startAtom };
