@@ -40,14 +40,11 @@ const Main = () => {
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
 
   return (
-    <div className='w-full overflow-x-scroll flex justify-center items-center'>
+    <div data-role='main-wrapper' className='flex w-full items-center justify-center overflow-x-scroll'>
       <div
         data-role='main'
         // Stop event response when form is open.
-        className={cn(
-          'mx-auto my-12 h-fit w-fit',
-          formProp && 'pointer-events-none',
-        )}
+        className={cn('mx-auto my-12 h-fit w-fit', formProp && 'pointer-events-none')}
       >
         {/* Operation row */}
         <OperationRow startDate={startDate} />
