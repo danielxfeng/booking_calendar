@@ -18,6 +18,8 @@ const axiosFetcher = axios.create({
 
 // Attach the token to requests.
 axiosFetcher.interceptors.request.use((config) => {
+  if (import.meta.env.VITE_IS_AUTH === 'false') return config;
+
   const token = getToken();
   if (!token) {
     window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
