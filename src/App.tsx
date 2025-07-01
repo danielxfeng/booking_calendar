@@ -16,11 +16,26 @@ import Loading from '@/components/Loading';
 import Main from '@/components/Main';
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
-import { calendarGridAtom, startAtom } from '@/lib/atoms';
+import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
 import { newDate } from '@/lib/dateUtils';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
+
+import BookingForm from './components/BookingForm';
+import { Popover, PopoverContent } from './components/ui/popover';
+
+/**
+ * A popover wrapper of the upsert form.
+ */
+const FormWrapper = () => {
+  const formProp = useAtom(formPropAtom);
+  return (
+    <Popover open={!!formProp}>
+      <PopoverContent className='w-[300px]'>{formProp && <BookingForm />}</PopoverContent>
+    </Popover>
+  );
+};
 
 /**
  * @summary Layout of the application.
@@ -65,7 +80,7 @@ const App = () => {
   // Update the start based on the search params.
   useEffect(() => {
     setNewStart(startFromParams, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useQuery to handle the cache, api fetching
@@ -126,6 +141,7 @@ const App = () => {
           </a>
         </div>
       </footer>
+      <FormWrapper />
     </div>
   );
 };
