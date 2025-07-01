@@ -18,9 +18,9 @@ import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
 import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
-import { newDate } from '@/lib/dateUtils';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
+import { newDate } from '@/lib/tools';
 
 import BookingForm from './components/BookingForm';
 import { Popover, PopoverContent } from './components/ui/popover';

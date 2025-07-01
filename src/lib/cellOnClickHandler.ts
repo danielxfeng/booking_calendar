@@ -10,7 +10,7 @@ import { add, format, isBefore } from 'date-fns';
 import type { FormProp } from '@/components/BookingForm';
 import { ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import type { Booking, CalGrid, Cell } from '@/lib/calGrid';
-import { newDate } from '@/lib/dateUtils';
+import { newDate } from '@/lib/tools';
 
 /**
  * @summary The onClick handler for both common cell and booked cell.

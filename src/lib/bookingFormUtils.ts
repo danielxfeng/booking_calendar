@@ -113,8 +113,7 @@ const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean
       if (isEqual(new Date(end), slot.slot)) return true;
     }
   }
-  ThrowInternalError('[overlappingCheck]: End slot not reached, error slot range.');
-  return false; // should not be here.
+  return true; // should not be here.
 };
 
 export { calculateSlots, getFormType, overlappingCheck };

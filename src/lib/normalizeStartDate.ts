@@ -8,8 +8,8 @@
 
 import { format, isMonday, previousMonday } from 'date-fns';
 
-import { newDate } from '@/lib/dateUtils';
 import { DateSchema } from '@/lib/schema';
+import { newDate } from '@/lib/tools';
 
 /**
  * @summary Validates and normalizes the `start` date from query parameters.
@@ -25,8 +25,7 @@ import { DateSchema } from '@/lib/schema';
  */
 const normalizeStartDate = (start: string | null): string => {
   // If there is not a valid start day
-  if (!DateSchema.safeParse(start).success)
-    start = format(new Date(), 'yyyy-MM-dd');
+  if (!DateSchema.safeParse(start).success) start = format(new Date(), 'yyyy-MM-dd');
 
   // If the start is valid, but not the Monday
   const startDate = newDate(start!);
