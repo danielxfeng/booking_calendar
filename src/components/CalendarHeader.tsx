@@ -29,13 +29,17 @@ const CalendarHeader = () => {
   return (
     <div data-role='calendar-head' className='grid h-12' style={gridStyleGenerator(CELL_WIDTH_PX)}>
       {/* Side header */}
-      <div key='calendar-head-side' className='border-border h-12 border' style={styleWidth}></div>
+      <div
+        key='calendar-head-side'
+        className='border-border box-border h-12 border'
+        style={styleWidth}
+      ></div>
 
       {/* Week day headers */}
       {weekArr.map((v) => (
         <div
           key={`calendar-head-${v}`}
-          className={cn('border-border flex h-12 items-center justify-center border font-semibold')}
+          className={cn('box-border flex h-12 items-center justify-center border font-semibold')}
           style={styleWidth}
         >
           {v}
