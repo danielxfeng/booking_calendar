@@ -13,11 +13,11 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [
+        slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00:00',
-            end: '2025-06-25T10:30:00',
+            start: '2025-06-25T10:00',
+            end: '2025-06-25T10:30',
             bookedBy: 'Daniel',
           },
         ],
@@ -35,17 +35,17 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [
+        slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T10:00:00',
+            end: '2025-06-25T10:30:00',
             bookedBy: 'Daniel',
           },
           {
             id: 2,
-            start: '2025-06-25T10:30',
-            end: '2025-06-25T10:45',
+            start: '2025-06-25T10:30:00',
+            end: '2025-06-25T10:45:00',
             bookedBy: 'Daniel',
           },
         ],
@@ -53,17 +53,17 @@ describe('calGridGenerator', () => {
       {
         roomId: 2,
         roomName: 'b',
-        bookings: [
+        slots: [
           {
             id: 3,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:15',
+            start: '2025-06-25T10:00:00',
+            end: '2025-06-25T10:15:00',
             bookedBy: 'Daniel',
           },
           {
             id: 4,
-            start: '2025-06-26T12:00',
-            end: '2025-06-26T14:15',
+            start: '2025-06-26T12:00:00',
+            end: '2025-06-26T14:15:00',
             bookedBy: null,
           },
         ],
@@ -80,8 +80,8 @@ describe('calGridGenerator', () => {
     const dayIndex = (dateStr: string) =>
       Math.floor((new Date(dateStr).getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
-    const idx1Start = timeIndex('2025-06-25T10:00');
-    const idx1End = timeIndex('2025-06-25T10:30');
+    const idx1Start = timeIndex('2025-06-25T10:00:00');
+    const idx1End = timeIndex('2025-06-25T10:30:00');
     for (let i = idx1Start; i < idx1End; i++) {
       const cell = grid[dayIndex('2025-06-25')][i];
       expect(cell).toEqual(
@@ -89,8 +89,8 @@ describe('calGridGenerator', () => {
       );
     }
 
-    const idx3Start = timeIndex('2025-06-25T10:00');
-    const idx3End = timeIndex('2025-06-25T10:15');
+    const idx3Start = timeIndex('2025-06-25T10:00:00');
+    const idx3End = timeIndex('2025-06-25T10:15:00');
     for (let i = idx3Start; i < idx3End; i++) {
       const cell = grid[dayIndex('2025-06-25')][i];
       expect(cell).toEqual(
@@ -98,8 +98,8 @@ describe('calGridGenerator', () => {
       );
     }
 
-    const idx4Start = timeIndex('2025-06-26T12:00');
-    const idx4End = timeIndex('2025-06-26T14:15');
+    const idx4Start = timeIndex('2025-06-26T12:00:00');
+    const idx4End = timeIndex('2025-06-26T14:15:00');
     for (let i = idx4Start; i < idx4End; i++) {
       const cell = grid[dayIndex('2025-06-26')][i];
       expect(cell).toEqual(
@@ -107,7 +107,7 @@ describe('calGridGenerator', () => {
       );
     }
 
-    const unexpectedCell = grid[dayIndex('2025-06-24')]?.[timeIndex('2025-06-24T10:00')];
+    const unexpectedCell = grid[dayIndex('2025-06-24')]?.[timeIndex('2025-06-24T10:00:00')];
     expect(unexpectedCell).toBeNull();
   });
 
@@ -116,11 +116,11 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [
+        slots: [
           {
             id: 10,
-            start: '2025-06-22T10:00',
-            end: '2025-06-22T10:30',
+            start: '2025-06-22T10:00:00',
+            end: '2025-06-22T10:30:00',
             bookedBy: 'Daniel',
           },
         ],
@@ -137,17 +137,17 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [
+        slots: [
           {
             id: 12,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T10:00:00',
+            end: '2025-06-25T10:30:00',
             bookedBy: 'Daniel',
           },
           {
             id: 12,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T10:00:00',
+            end: '2025-06-25T10:30:00',
             bookedBy: 'Daniel',
           },
         ],
@@ -164,17 +164,17 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [
+        slots: [
           {
             id: 13,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T10:00:00',
+            end: '2025-06-25T10:30:00',
             bookedBy: 'Daniel',
           },
           {
             id: 14,
-            start: '2025-06-25T10:15',
-            end: '2025-06-25T10:45',
+            start: '2025-06-25T10:15:00',
+            end: '2025-06-25T10:45:00',
             bookedBy: 'Daniel',
           },
         ],
@@ -189,12 +189,12 @@ describe('calGridGenerator', () => {
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [],
+        slots: [],
       },
       {
         roomId: 1,
         roomName: 'a',
-        bookings: [],
+        slots: [],
       },
     ];
 

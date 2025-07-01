@@ -9,7 +9,7 @@ import { differenceInCalendarDays, getHours, getMinutes } from 'date-fns';
 
 import { NUMBERS_OF_ROOMS, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
-import type { BookingFromApi, Rooms } from '@/lib/schema';
+import { type BookingFromApi, type Rooms, RoomsSchema } from '@/lib/schema';
 
 /**
  * @summary A booking in the calendar grid view.
@@ -49,6 +49,10 @@ const newCalGrid = (): CalGrid =>
  * @returns a table view.
  */
 const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
+
+  const validatedRooms = RoomsSchema.safeParse(rooms);
+  if (!validatedRooms.success) ThrowInvalidIncomingDataErr(JSON.stringify(validatedRooms.error));
+
   const grid: CalGrid = newCalGrid();
 
   // The length of the array.
@@ -65,7 +69,7 @@ const calGridGenerator = (rooms: Rooms, startDate: Date): CalGrid => {
     if (roomSet.has(room.roomId)) ThrowInvalidIncomingDataErr('Duplicate room detected.');
     roomSet.add(room.roomId);
 
-    for (const booking of room.bookings) {
+    for (const booking of room.slots) {
       const dayIndex = differenceInCalendarDays(booking.start, startDate);
 
       // Validate the date

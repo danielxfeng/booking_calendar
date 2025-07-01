@@ -10,8 +10,8 @@ describe('cellOnClickHandler', () => {
   const row = 4;
   const col = 2;
   const startTimeDate = format(addDays(startDate, col), 'yyyy-MM-dd');
-  const startTime = `${startTimeDate}T01:00`;
-  const endTime = `${startTimeDate}T01:15`;
+  const startTime = `${startTimeDate}T01:00:00`;
+  const endTime = `${startTimeDate}T01:15:00`;
 
   it('should set insert form when cell is available and room 0 is free', () => {
     const mockSetFormProp = vi.fn();
@@ -23,7 +23,7 @@ describe('cellOnClickHandler', () => {
     const arg = mockSetFormProp.mock.calls[0][0];
 
     expect(arg.editingId).toBe(null);
-    expect(arg.default.roomId).toBe(0);
+    expect(arg.default.roomId).toBe(1);
     expect(arg.default.start).toBe(startTime);
     expect(arg.default.end).toBe(endTime);
     expect(arg.col).toBe(col);
@@ -34,7 +34,7 @@ describe('cellOnClickHandler', () => {
     const mockSetFormProp = vi.fn();
     const grid: CalGrid = Array.from({ length: 96 }, () =>
       Array.from({ length: 7 }, () => [
-        { roomId: 0, id: 0, roomName: 'room', start: '', end: '', bookedBy: null },
+        { roomId: 1, id: 0, roomName: 'room', start: '', end: '', bookedBy: null },
       ]),
     );
 
@@ -42,7 +42,7 @@ describe('cellOnClickHandler', () => {
 
     const arg = mockSetFormProp.mock.calls[0][0];
     expect(arg.editingId).toBe(null);
-    expect(arg.default.roomId).toBe(1);
+    expect(arg.default.roomId).toBe(2);
     expect(arg.default.start).toBe(startTime);
     expect(arg.default.end).toBe(endTime);
     expect(arg.col).toBe(col);
@@ -66,8 +66,8 @@ describe('cellOnClickHandler', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const grid: CalGrid = Array.from({ length: 7 }, () =>
       Array.from({ length: 96 }, () => [
-        { roomId: 0, id: 0, roomName: 'room', start: '', end: '', bookedBy: null },
-        { roomId: 1, id: 1, roomName: 'room1', start: '', end: '', bookedBy: null },
+        { roomId: 1, id: 0, roomName: 'room', start: '', end: '', bookedBy: null },
+        { roomId: 2, id: 1, roomName: 'room1', start: '', end: '', bookedBy: null },
       ]),
     );
 
@@ -85,7 +85,7 @@ describe('cellOnClickHandler', () => {
       id: 1,
       start: startTime,
       end: endTime,
-      roomId: 2,
+      roomId: 3,
       roomName: 'room2',
       bookedBy: null,
     };

@@ -47,11 +47,9 @@ const isSameDayCheck = (start: string, end: string): boolean => {
 /**
  * @summary A enhanced datetime.
  */
-const dateTimeSchema = z.iso
-  .datetime({ local: true, precision: -1 })
-  .refine((val) => timeAdditionalCheck(val), {
-    message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots.`,
-  });
+const dateTimeSchema = z.iso.datetime({ local: true }).refine((val) => timeAdditionalCheck(val), {
+  message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots.`,
+});
 
 /**
  * @summary A booking from API
@@ -81,7 +79,7 @@ const BookingsFromApiSchema = z.array(BookingFromApiSchema);
 const RoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
-  bookings: BookingsFromApiSchema,
+  slots: BookingsFromApiSchema,
 });
 
 /**

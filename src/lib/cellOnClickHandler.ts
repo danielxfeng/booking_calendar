@@ -47,8 +47,8 @@ const cellOnClickHandler = (
     // Prevent inserting into expired time slots
     if (isBefore(startTime, new Date())) return;
 
-    const start = format(startTime, "yyyy-MM-dd'T'HH:mm");
-    const end = format(add(startTime, { minutes: TIME_SLOT_INTERVAL }), "yyyy-MM-dd'T'HH:mm");
+    const start = format(startTime, "yyyy-MM-dd'T'HH:mm:ss");
+    const end = format(add(startTime, { minutes: TIME_SLOT_INTERVAL }), "yyyy-MM-dd'T'HH:mm:ss");
 
     const availRoom = ROOM_MAP.find((kv) => !cellProp?.some((booking) => booking.roomId === kv.id));
 

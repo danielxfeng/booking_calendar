@@ -42,7 +42,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
 
     e.preventDefault();
     let selectedIdx = slots.findIndex(
-      (slot) => format(slot.slot, "yyyy-MM-dd'T'HH:mm") === selected,
+      (slot) => format(slot.slot, "yyyy-MM-dd'T'HH:mm:ss") === selected,
     );
 
     if (selectedIdx === -1) return; // should not be here.
@@ -55,7 +55,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
 
       // Select the available value.
       if (slots[selectedIdx].avail) {
-        onSelect(format(slots[selectedIdx].slot, "yyyy-MM-dd'T'HH:mm"));
+        onSelect(format(slots[selectedIdx].slot, "yyyy-MM-dd'T'HH:mm:ss"));
         break;
       }
     }
@@ -71,7 +71,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
         aria-activedescendant={selected}
       >
         {slots.map((slot: Slot) => {
-          const value = format(slot.slot, "yyyy-MM-dd'T'HH:mm");
+          const value = format(slot.slot, "yyyy-MM-dd'T'HH:mm:ss");
           const label = format(slot.slot, 'HH:mm');
           const isSelected = value === selected;
           return (

@@ -3,15 +3,15 @@ import { MockMethod } from 'vite-plugin-mock';
 
 import type { Rooms } from '../src/lib/schema';
 
-const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm");
+const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm:ss");
 
 const generateMockedDate = (start: string): Rooms => {
   const base = parseISO(start);
   return [
     {
-      roomId: 0,
+      roomId: 1,
       roomName: 'Room A',
-      bookings: [
+      slots: [
         {
           id: 1,
           start: formatLocal(addMinutes(base, 60)), // 1:00
@@ -33,9 +33,9 @@ const generateMockedDate = (start: string): Rooms => {
       ],
     },
     {
-      roomId: 1,
+      roomId: 2,
       roomName: 'Room B',
-      bookings: [
+      slots: [
         {
           id: 2,
           start: formatLocal(addMinutes(base, 120)), // 2:00

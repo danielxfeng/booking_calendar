@@ -16,8 +16,8 @@ const NUMBERS_OF_ROOMS: number = 2;
  * @summary The available rooms. Need to replaced by an API.
  */
 const ROOM_MAP: { id: number; name: string }[] = [
-  { id: 0, name: 'small' },
-  { id: 1, name: 'big' },
+  { id: 1, name: 'small' },
+  { id: 2, name: 'big' },
 ];
 
 /**
@@ -31,7 +31,7 @@ if (60 % TIME_SLOT_INTERVAL !== 0)
 /**
  * Number of calendar cells per time label and horizontal divider.
  */
-const TIME_LABEL_INTERVAL: number = 8; // If TIME_SLOT_INTERVAL = 15, and this is 8 = 2, time is shown every 2 hours.
+const TIME_LABEL_INTERVAL: number = 24; // If TIME_SLOT_INTERVAL = 15, and this is 8 = 2, time is shown every 2 hours.
 
 /**
  * The API Url
@@ -64,18 +64,12 @@ const CACHE_DURATION: number = 5; // 5 minutes
  * We use `overflow` to support the responsive design for protecting the user experience.
  */
 const CELL_WIDTH_PX: number = 112; // 112px
-const CELL_HEIGHT_PX: number = 24; // 24px
-
-// For Tailwind
-const CELL_WIDTH: string = `w-[${CELL_WIDTH_PX}px]`;
-const CELL_HEIGHT: string = `h-[${CELL_HEIGHT_PX}px]`;
+const CELL_HEIGHT_PX: number = 12; // 24px
 
 export {
   API_URL,
   CACHE_DURATION,
-  CELL_HEIGHT,
   CELL_HEIGHT_PX,
-  CELL_WIDTH,
   CELL_WIDTH_PX,
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
