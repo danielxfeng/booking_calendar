@@ -6,7 +6,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { format, startOfDay } from 'date-fns';
+import { add, format, isBefore, startOfDay } from 'date-fns';
 
 /**
  * @summary Returns a local time format of date
@@ -77,7 +77,7 @@ const gridStyleGenerator = (sizeW: number, sizeH?: number): CSSProperties => {
     gridTemplateColumns: `repeat(8, ${sizeW}px)`,
   };
 
-  return { ...basic, ...styleGenerator(sizeW, sizeH) };
+  return { ...basic, ...styleGenerator(sizeW * 8, sizeH) };
 };
 
 /**
@@ -89,4 +89,23 @@ const formatToDate = (date: Date) => {
   return format(date, 'yyyy-MM-dd');
 };
 
-export { formatToDate, gridStyleGenerator, newDate, styleGenerator };
+/**
+ * @summary Returns the Date object by given gird cell
+ * @param colIdx the column idx
+ * @param rowIdx the row idx
+ * @param baseTime the start of today
+ */
+const timeFromCellIdx = (colIdx: number, rowIdx: number, baseTime: Date): Date => {
+  return add(baseTime, { days: colIdx, hours: rowIdx });
+};
+
+/**
+ * @summary Determines whether a specific time is in the past.
+ * @param paramTime the time to compare
+ * @param curr now
+ */
+const isPast = (paramTime: Date, curr: Date): boolean => {
+  return isBefore(paramTime, curr);
+};
+
+export { formatToDate, gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx };

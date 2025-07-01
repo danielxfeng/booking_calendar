@@ -37,7 +37,7 @@ const Main = () => (
 
         {/* Calendar data */}
         <div
-          data-role='calendar-base'
+          data-role='calendar-data-container'
           className='relative'
           style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * 24)}
         >
