@@ -38,13 +38,21 @@ const Main = () => {
   const styleHeight = styleGenerator(undefined, CELL_HEIGHT_PX);
   const styleFull = styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX);
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
+  const styleContainer = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(8, ${CELL_WIDTH_PX}px)`,
+    ...styleHeight,
+  };
 
   return (
-    <div data-role='main-wrapper' className='flex w-full items-center justify-center overflow-x-scroll'>
+    <div
+      data-role='main-wrapper'
+      className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
+    >
       <div
         data-role='main'
         // Stop event response when form is open.
-        className={cn('mx-auto my-12 h-fit w-fit', formProp && 'pointer-events-none')}
+        className={cn('mx-4 my-12 h-fit w-fit', formProp && 'pointer-events-none')}
       >
         {/* Operation row */}
         <OperationRow startDate={startDate} />
@@ -59,9 +67,7 @@ const Main = () => {
           {weekViewCols.map((i) => (
             <div
               key={`calendar-head-${i}`}
-              className={cn(
-                'border-border flex h-12 items-center justify-center border font-semibold',
-              )}
+              className={cn('border-border h-12 border font-semibold')}
               style={styleWidth}
             >
               {format(addDays(startDate, i), 'eee  dd MMM')}
@@ -78,8 +84,8 @@ const Main = () => {
             {dayRows.map((i) => (
               <div
                 key={`calendar-data-row-${i}`}
-                className={cn('grid grid-cols-8')}
-                style={styleHeight}
+                className={cn('overflow-visible')}
+                style={styleContainer}
               >
                 {/* A row */}
                 <div

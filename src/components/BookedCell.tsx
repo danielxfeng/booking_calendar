@@ -58,16 +58,12 @@ const BookedCell = ({ row, col, booking, grid, start }: BookedCellProps) => {
     <div
       data-role='booked-cell'
       className={cn(
-        'absolute top-0 z-10 flex flex-col justify-between border border-blue-600 bg-blue-500 text-sm text-blue-50',
+        'absolute top-0 z-10 flex flex-col justify-between border border-blue-600 bg-blue-500/80 text-center text-xs text-blue-50',
       )}
       style={style}
       onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp, booking)}
     >
       <p>{booking.roomName}</p>
-      <p>
-        {booking.start} - {booking.end}
-      </p>
-      {booking.bookedBy && <p>{booking.bookedBy}</p>}
     </div>
   );
 };

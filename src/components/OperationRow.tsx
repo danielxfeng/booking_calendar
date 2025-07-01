@@ -45,7 +45,10 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   };
 
   return (
-    <div data-role='operation-panel' className='mb-8 flex h-12 items-center justify-center gap-10'>
+    <div
+      data-role='operation-panel'
+      className='mb-8 flex h-12 items-center justify-start gap-10 lg:justify-center'
+    >
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>
         <PaginationPrevious onClick={() => setNewStart(prevMon, false)} />

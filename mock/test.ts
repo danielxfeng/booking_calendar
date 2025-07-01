@@ -27,7 +27,7 @@ const generateMockedDate = (start: string): Rooms => {
         {
           id: 5,
           start: formatLocal(addDays(addMinutes(base, 180), 2)), // next day 3:00
-          end: formatLocal(addDays(addMinutes(base, 210), 2)), // 3:30
+          end: formatLocal(addDays(addMinutes(base, 300), 2)), // 4:30
           bookedBy: 'null',
         },
       ],
