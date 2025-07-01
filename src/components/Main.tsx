@@ -67,7 +67,7 @@ const Main = () => {
           {weekViewCols.map((i) => (
             <div
               key={`calendar-head-${i}`}
-              className={cn('border-border h-12 border font-semibold text-center')}
+              className={cn('border-border h-12 border font-semibold flex justify-center items-center')}
               style={styleWidth}
             >
               {format(addDays(startDate, i), 'eee  dd MMM')}
