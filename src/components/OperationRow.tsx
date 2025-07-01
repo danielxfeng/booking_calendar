@@ -5,7 +5,7 @@
  * @contact intra: @xifeng
  */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { ChevronDownIcon } from 'lucide-react';
 
@@ -24,7 +24,6 @@ import { useStartController } from '@/lib/hooks';
 const OperationRow = ({ startDate }: { startDate: Date }) => {
   const { setNewStart } = useStartController();
   // helper for date picker.
-  const [date, setDate] = useState<Date | undefined>(startDate);
   const [open, setOpen] = useState(false);
 
   // helper for pagination.
@@ -34,14 +33,16 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   // helper for displaying the date picker.
   const nextSun = nextSunday(startDate);
 
-  // navigate to updated start date.
-  useEffect(() => {
-    if (open || !date || isSameDay(date, startDate)) return;
+  // // navigate to updated start date.
+  const dateSelectHandler = (date: Date | undefined) => {
+    if (!date) return;
+    if (isSameDay(date, startDate)) return;
     const mon = isMonday(date)
       ? format(date, 'yyyy-MM-dd')
       : format(previousMonday(date), 'yyyy-MM-dd');
     setNewStart(mon, false);
-  }, [date, open, setNewStart, startDate]);
+    setOpen(false);
+  };
 
   return (
     <div
@@ -70,12 +71,9 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
           <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
             <Calendar
               mode='single'
-              selected={date}
+              selected={startDate}
               captionLayout='dropdown'
-              onSelect={(date) => {
-                setDate(date);
-                setOpen(false);
-              }}
+              onSelect={(date) => dateSelectHandler(date)}
             />
           </PopoverContent>
         </Popover>
