@@ -52,7 +52,7 @@ const Main = () => {
       <OperationRow startDate={startDate} />
 
       {/* Calendar header */}
-      <div data-role='calendar-head' className='sticky top-0 grid h-12 grid-cols-8'>
+      <div data-role='calendar-head' className='grid h-12 grid-cols-8'>
         <div
           key='calendar-head-side'
           className={cn('border-border h-12 border')}
@@ -61,7 +61,9 @@ const Main = () => {
         {weekViewCols.map((i) => (
           <div
             key={`calendar-head-${i}`}
-            className={cn('border-border h-12 border')}
+            className={cn(
+              'border-border flex h-12 items-center justify-center border font-semibold',
+            )}
             style={styleWidth}
           >
             {format(addDays(startDate, i), 'eee  dd MMM')}

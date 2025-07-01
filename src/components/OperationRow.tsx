@@ -45,10 +45,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   };
 
   return (
-    <div
-      data-role='operation-panel'
-      className='flex h-12 items-center justify-center gap-10'
-    >
+    <div data-role='operation-panel' className='mb-8 flex h-12 items-center justify-center gap-10'>
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>
         <PaginationPrevious onClick={() => setNewStart(prevMon, false)} />
@@ -61,7 +58,7 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
             <Button
               variant='outline'
               id='date'
-              className='w-48 justify-between font-normal'
+              className='w-56 justify-between font-normal'
               aria-label='Choose start date'
             >
               {`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}
