@@ -70,12 +70,12 @@ const Main = () => {
                 className={cn(
                   CELL_HEIGHT,
                   CELL_WIDTH,
-                  // Draw a bottom line for every 2 hours.
-                  i !== 0 && i % timeLabel === 0 && 'border-border border-b',
+                  i % timeLabel !== 0 && 'invisible',
+                  i % timeLabel === 0 && 'border-t text-center',
                 )}
               >
                 {/* Display the time label */}
-                {i % timeLabel === 0 && `${minutesToHours(i * TIME_SLOT_INTERVAL)}:00`}
+                {`${minutesToHours(i * TIME_SLOT_INTERVAL)}:${String((i % (60 / TIME_SLOT_INTERVAL)) * TIME_SLOT_INTERVAL).padStart(2, '0')}`}
               </div>
 
               {/* Cells */}
