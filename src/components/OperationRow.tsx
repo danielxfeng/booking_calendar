@@ -7,28 +7,35 @@
 
 import { useState } from 'react';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
+import { useAtomValue } from 'jotai';
 import { ChevronDownIcon } from 'lucide-react';
 
+import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
+import { formatToDate, newDate } from '@/lib/tools';
 
 /**
  * @summary An operation row includes:
  * @description
- * NavLeft, DatePicker, NavRight. The pagination buttons only display on desktop view.
- * like: <-   Mon 05 Jun - Sun 12 Jun    ->
+ * NavLeft, DatePicker, Today, NavRight. The pagination buttons only display on desktop view.
+ * like: <-, Mon 05 Jun - Sun 12 Jun, Today,  ->
+ * - Subscribe the `startAtom`
  */
-const OperationRow = ({ startDate }: { startDate: Date }) => {
+const OperationRow = () => {
   const { setNewStart } = useStartController();
+  const start = useAtomValue(startAtom);
+  const startDate = newDate(start);
   // helper for date picker.
   const [open, setOpen] = useState(false);
 
   // helper for pagination.
-  const prevMon = format(previousMonday(startDate), 'yyyy-MM-dd');
-  const nextMon = format(nextMonday(startDate), 'yyyy-MM-dd');
+  const prevMon = formatToDate(previousMonday(startDate));
+  const nextMon = formatToDate(nextMonday(startDate));
 
   // helper for displaying the date picker.
   const nextSun = nextSunday(startDate);
@@ -37,12 +44,13 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
   const dateSelectHandler = (date: Date | undefined) => {
     if (!date) return;
     if (isSameDay(date, startDate)) return;
-    const mon = isMonday(date)
-      ? format(date, 'yyyy-MM-dd')
-      : format(previousMonday(date), 'yyyy-MM-dd');
+    const mon = isMonday(date) ? formatToDate(date) : formatToDate(previousMonday(date));
     setNewStart(mon, false);
     setOpen(false);
   };
+
+  // To prevent there is not a start.
+  if (!start) return <Loading />;
 
   return (
     <div
@@ -78,6 +86,15 @@ const OperationRow = ({ startDate }: { startDate: Date }) => {
           </PopoverContent>
         </Popover>
       </div>
+
+      {/* Today */}
+      <Button
+        onClick={() => {
+          dateSelectHandler(new Date());
+        }}
+      >
+        Today
+      </Button>
 
       {/* Next button */}
       <PaginationItem className='hidden lg:block'>
