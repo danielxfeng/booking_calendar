@@ -65,7 +65,8 @@ const App = () => {
   // Update the start based on the search params.
   useEffect(() => {
     setNewStart(startFromParams, true);
-  }, [setNewStart, startFromParams]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // useQuery to handle the cache, api fetching
   // And it subscribes the start.
