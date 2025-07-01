@@ -1,4 +1,4 @@
-import { addMinutes, format, parseISO } from 'date-fns';
+import { addDays, addMinutes, format, parseISO } from 'date-fns';
 import { MockMethod } from 'vite-plugin-mock';
 
 import type { Rooms } from '../src/lib/schema';
@@ -23,6 +23,12 @@ const generateMockedDate = (start: string): Rooms => {
           start: formatLocal(addMinutes(base, 180)), // 3:00
           end: formatLocal(addMinutes(base, 210)), // 3:30
           bookedBy: 'Bob',
+        },
+        {
+          id: 5,
+          start: formatLocal(addDays(addMinutes(base, 180), 2)), // next day 3:00
+          end: formatLocal(addMinutes(base, 210)), // 3:30
+          bookedBy: 'null',
         },
       ],
     },
