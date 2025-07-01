@@ -5,6 +5,7 @@
  * @contact intra: @xifeng
  */
 
+import { memo } from 'react';
 import { add, isBefore, isEqual } from 'date-fns';
 import { useAtom, useSetAtom } from 'jotai';
 
@@ -31,7 +32,7 @@ type CellCompProps = {
  *   - if in the future, display a normal bg, onClick: insertion form
  *   - if there are bookings, draw a absolute view.
  */
-const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
+const CellComp = memo(({ row, col, timeLabel }: CellCompProps) => {
   const [grid] = useAtom(calendarGridAtom);
   const [start] = useAtom(startAtom);
   const setFormProp = useSetAtom(formPropAtom);
@@ -56,10 +57,10 @@ const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
         'border-border relative border-r',
         CELL_HEIGHT,
         CELL_WIDTH,
-        isPast ? 'bg-gray-400' : 'bg-gray-200',
+        isPast ? 'bg-gray-100' : 'bg-gray-50',
         col === 0 && 'border-l',
         row === 0 && 'border-t',
-        row != 0 && row % timeLabel === 0 && 'border-b',
+        row % timeLabel === 3 && 'border-b',
       )}
       onPointerDown={() => cellOnClickHandler(row, col, grid, start, setFormProp)}
     >
@@ -76,6 +77,6 @@ const CellComp = ({ row, col, timeLabel }: CellCompProps) => {
       ))}
     </div>
   );
-};
+});
 
 export default CellComp;
