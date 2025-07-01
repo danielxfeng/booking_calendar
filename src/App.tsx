@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
 
-import Main from '@/components/Mainv1';
+import Main from '@/components/Main';
 import { formPropAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
