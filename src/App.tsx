@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtom } from 'jotai';
 
-import Main from '@/components/Main';
+import Main from '@/components/Mainv1';
 import { formPropAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
@@ -45,7 +45,7 @@ const FormWrapper = () => {
  * then updates the `gridAtom` after deep comparison.
  *
  * - `gridAtom` is the main data structure of the application, and is subscribed by
- * `Reservations`, `CalHeads`, and the Upsert form...
+ * `BookingLayer`, `CalHeads`, and the Upsert form...
  */
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -80,7 +80,7 @@ const App = () => {
       </header>
 
       {/* Main */}
-      <main className='flex w-full flex-1 flex-col items-start p-4 lg:items-center'>
+      <main className='flex-1'>
         <Main />
       </main>
 

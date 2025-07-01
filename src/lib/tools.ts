@@ -6,7 +6,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { startOfDay } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 
 /**
  * @summary Returns a local time format of date
@@ -67,4 +67,26 @@ const styleGenerator = (
   return { ...w, ...h, ...l, ...t };
 };
 
-export { newDate, styleGenerator };
+/**
+ * @summary generate style for grid
+ * @param sizeW width
+ * @returns the style
+ */
+const gridStyleGenerator = (sizeW: number, sizeH?: number): CSSProperties => {
+  const basic = {
+    gridTemplateColumns: `repeat(8, ${sizeW}px)`,
+  };
+
+  return { ...basic, ...styleGenerator(sizeW, sizeH) };
+};
+
+/**
+ * @summary to format a Date object to '2020-12-30'
+ * @param date the Date object
+ * @returns like '2020-12-30'
+ */
+const formatToDate = (date: Date) => {
+  return format(date, 'yyyy-MM-dd');
+};
+
+export { formatToDate, gridStyleGenerator, newDate, styleGenerator };
