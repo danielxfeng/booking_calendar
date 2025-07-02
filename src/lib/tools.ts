@@ -6,7 +6,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { add, format, isBefore, startOfDay } from 'date-fns';
+import { addHours, format, isBefore, startOfDay } from 'date-fns';
 
 /**
  * @summary Returns a local time format of date
@@ -100,12 +100,11 @@ const formatToDateTime = (date: Date) => {
 
 /**
  * @summary Returns the Date object by given gird cell
- * @param colIdx the column idx
  * @param rowIdx the row idx
- * @param baseTime the start of today
+ * @param cellBaseTime the start of today
  */
-const timeFromCellIdx = (colIdx: number, rowIdx: number, baseTime: Date): Date => {
-  return add(baseTime, { days: colIdx, hours: rowIdx });
+const timeFromCellIdx = (rowIdx: number, cellBaseTime: Date): Date => {
+  return addHours(cellBaseTime, rowIdx);
 };
 
 /**
