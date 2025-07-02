@@ -6,12 +6,12 @@
  */
 
 import { memo } from 'react';
-import { startOfDay } from 'date-fns';
-import { useSetAtom } from 'jotai';
+import { addDays } from 'date-fns';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
-import { formPropAtom } from '@/lib/atoms';
-import { gridStyleGenerator, isPast, styleGenerator, timeFromCellIdx } from '@/lib/tools';
+import { formPropAtom, startAtom } from '@/lib/atoms';
+import { gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 const rowsArr = Array.from({ length: 24 }, (_, i) => i);
@@ -24,28 +24,38 @@ type BasicCellProps = {
   curr: Date;
 };
 
+/**
+ * @summary A basic grid
+ * @description
+ * TODO: now `isPast` just checks the start time, so the available booking time starts from `next hour`
+ * And when onClick, the `past` may be stale, it can also be optimized.
+ */
 const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const setFormProp = useSetAtom(formPropAtom);
-  const cellTime = timeFromCellIdx(col, row, baseTime);
+  const cellBaseTime = addDays(baseTime, col);
+  const cellTime = timeFromCellIdx(col, row, cellBaseTime);
+  const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn(
-        'border-border box-border border',
-        isPast(cellTime, curr) ? 'bg-gray-200' : 'bg-gray-50',
-      )}
+      className={cn('border-border box-border border', past ? 'bg-gray-200' : 'bg-gray-50')}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-      onClick={() => setFormProp({ startTime: cellTime })}
+      onClick={() => {
+        if (past) return;
+        setFormProp({ startTime: cellTime });
+      }}
     ></div>
   );
 };
 
 /**
  * @summary A full static layer contains 8 (7 + time indicator) * 24 grids
+ * @describe
+ * - Subscribe the `startAtom`
  */
 const BasicGrids = memo(() => {
   const curr = new Date();
-  const baseTime = startOfDay(curr); // start of today
-  const setFormProp = useSetAtom(formPropAtom);
+  const start = useAtomValue(startAtom);
+  const baseTime = newDate(start);
 
   return (
     <div data-role='calendar-basic-grids' className='h-full w-full'>
