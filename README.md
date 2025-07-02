@@ -1,54 +1,72 @@
-# React + TypeScript + Vite
+# Book Me - an event calendar (frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a meeting room reservation system built by me and [Abdul](https://github.com/IbnBaqqi), for **Hive Helsinki**.
+Abdul initialized the idea and developed an excellent backend using **Spring Boot**, while I focused on building the **frontend**.
 
-Currently, two official plugins are available:
+- **Live Preview:** [booking-calendar-chi.vercel.app](https://booking-calendar-chi.vercel.app)  
+- **GitHub Repo:** [github.com/danielxfeng/booking_calendar](https://github.com/danielxfeng/booking_calendar)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+git clone https://github.com/danielxfeng/booking_calendar.git
+cd booking_calendar
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Features
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- View weekly room bookings in a scrollable calendar view
+- Add a new booking with room and time selection
+- Delete an existing booking
+- **Role-based access control** (ABAC):
+  - **Staff** can delete **any** booking
+  - **Students** can only delete **their own** bookings
+- Built-in conflict prevention for overlapping bookings
+- Mobile responsiveness achieved via **horizontal scrolling** — better suited than drag-and-drop for small screens
+- Lightweight, **unstyled** prototype focused on functionality
+
+---
+
+## Tech Highlights
+
+- **Three-layer stacked layout**:
+  - Base grid (time x room)
+  - Booking overlay layer
+  - Floating sheet layer for booking form
+- **URL and state sync**: two-way binding between calendar state and address bar
+- **TanStack Query** for auto-fetching and intelligent caching
+- **Jotai** for clean and minimalistic state management
+- **Custom ScrollSlotPicker**: handcrafted time-slot picker component
+- **Zod** schema validation integrated with React Hook Form
+- **Vitest** for unit tests
+
+---
+
+## Known Issues & Future Improvements
+
+- UI is unstyled (basic prototype only)
+- No logout button
+- The "auto-find empty slot" algorithm can be optimized
+- Cannot edit existing bookings
+- Booking form does not allow changing the selected date
+- Does not support inter-day bookings (Do we need that?)
+- Use different background colors for different meeting rooms
+- Display more booking info depending on block size
+- Add a fixed table header for better scroll alignment
+- Add more tests (unit, integration, E2E)
+
+---
+
+## License
+
+MIT
+
+## ScreenShot
+
+![Booking Calendar Screenshot](./public/screenshot.png)
