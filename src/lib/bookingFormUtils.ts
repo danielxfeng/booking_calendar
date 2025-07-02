@@ -38,6 +38,9 @@ const initForm = (
 
     // Find an available room
     let roomId = ROOM_MAP.find((room) => {
+      // The room is available if there is no slots
+      if (!existingBookings[room.id]) return room.id;
+
       return existingBookings[room.id].slots.some((slot) => {
         const start = new Date(slot.start);
         const end = new Date(slot.end);
@@ -102,19 +105,23 @@ const calculateSlots = (
   }
 
   // Disable slots in existing Bookings
-  existingBookings[roomId].slots.forEach((slot) => {
-    // We skip ourself.
-    if (slot.id === bookingId) return;
+  if (existingBookings[roomId]) {
+    existingBookings[roomId].slots.forEach((slot) => {
+      // We skip ourself.
+      if (slot.id === bookingId) return;
 
-    const bookingStart = new Date(slot.start);
-    const bookingEnd = new Date(slot.end);
+      const bookingStart = new Date(slot.start);
+      const bookingEnd = new Date(slot.end);
 
-    const startIndex = Math.floor(differenceInMinutes(bookingStart, baseTime) / TIME_SLOT_INTERVAL);
-    const endIndex = Math.ceil(differenceInMinutes(bookingEnd, baseTime) / TIME_SLOT_INTERVAL);
+      const startIndex = Math.floor(
+        differenceInMinutes(bookingStart, baseTime) / TIME_SLOT_INTERVAL,
+      );
+      const endIndex = Math.ceil(differenceInMinutes(bookingEnd, baseTime) / TIME_SLOT_INTERVAL);
 
-    // Change all slots between the startIndex and endIndex to unavailable.
-    for (let i = startIndex; i < endIndex; i++) slots[i].avail = false;
-  });
+      // Change all slots between the startIndex and endIndex to unavailable.
+      for (let i = startIndex; i < endIndex; i++) slots[i].avail = false;
+    });
+  }
 
   // For endSlots, add TIME_SLOT_INTERVAL.
   if (filedType === 'end')
