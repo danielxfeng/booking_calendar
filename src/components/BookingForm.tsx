@@ -50,6 +50,7 @@ import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUti
 import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -236,47 +237,49 @@ const BookingForm = () => {
             {prop.booking?.bookedBy && (
               <div data-role='booked-by'>{`Booked By: ${prop.booking?.bookedBy}`}</div>
             )}
+
+            {/* Optional RoomId */}
+            {formType !== 'insert' && (
+              <div data-role='booked-room-name'>{`Room: ${ROOM_MAP.find((room) => room.id === prop.roomId)?.name}`}</div>
+            )}
           </div>
 
-          <hr />
+          {formType === 'insert' && <hr />}
 
           {/* Room id selector */}
-          <FormField
-            control={form.control}
-            name='roomId'
-            render={({ field }) => (
-              <FormItem className='space-y-3'>
-                <FormLabel>Choose a meeting room:</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={(val) => {
-                      if (Number(val) !== field.value) {
-                        field.onChange(Number(val));
-                      }
-                    }}
-                    defaultValue={String(field.value)}
-                    className='flex'
-                    disabled={formType === 'view' || form.formState.isSubmitting}
-                  >
-                    {ROOM_MAP.map(({ id, name }) => (
-                      <div key={id} className='flex items-center gap-3'>
-                        <RadioGroupItem value={String(id)} />
-                        <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
-                          {name}
-                        </FormLabel>
-                      </div>
-                    ))}
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+          {formType === 'insert' && (
+            <FormField
+              control={form.control}
+              name='roomId'
+              render={({ field }) => (
+                <FormItem className='space-y-3'>
+                  <FormLabel>Choose a meeting room:</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={(val) => field.onChange(Number(val))}
+                      value={String(field.value)}
+                      className='flex'
+                      disabled={formType !== 'insert' || form.formState.isSubmitting}
+                    >
+                      {ROOM_MAP.map(({ id, name }) => (
+                        <div key={id} className='flex items-center gap-3'>
+                          <RadioGroupItem value={String(id)} />
+                          <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
+                            {name}
+                          </FormLabel>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <hr />
 
           {/* Slot selector */}
-          <p className='mb-2 pb-0'>Select slots:</p>
+          <p className='mb-2 pb-0'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
           <div className='flex justify-between gap-3 p-4'>
             {/* Start time selector */}
             <FormField
@@ -289,7 +292,7 @@ const BookingForm = () => {
                     <ScrollSlotPicker
                       slots={startSlots}
                       selected={field.value}
-                      disabled={formType === 'view' || form.formState.isSubmitting}
+                      disabled={formType !== 'insert' || form.formState.isSubmitting}
                       onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
@@ -309,7 +312,7 @@ const BookingForm = () => {
                     <ScrollSlotPicker
                       slots={endSlots}
                       selected={field.value}
-                      disabled={formType === 'view' || form.formState.isSubmitting}
+                      disabled={formType !== 'insert' || form.formState.isSubmitting}
                       onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
@@ -343,14 +346,14 @@ const BookingForm = () => {
             )}
 
             {/* Delete */}
-            {formType !== 'insert' && (
+            {formType === 'update' && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   {/* The deletion btn */}
                   <Button
                     variant='outline'
                     type='button'
-                    disabled={formType === 'view' || deleteMutation.isPending}
+                    disabled={deleteMutation.isPending || formProp?.booking?.bookedBy === null}
                     aria-label='Delete booking'
                   >
                     {deleteMutation.isPending ? 'Deleting' : 'Delete'}

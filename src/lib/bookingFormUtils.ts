@@ -37,19 +37,21 @@ const initForm = (
     const formType = 'insert';
 
     // Find an available room
-    let roomId = ROOM_MAP.find((room) => {
-      // The room is available if there is no slots
-      if (!existingBookings[room.id]) return room.id;
+    const endTime = addMinutes(formProp.startTime, TIME_SLOT_INTERVAL);
 
-      return existingBookings[room.id].slots.some((slot) => {
+    let roomId = ROOM_MAP.find((room) => {
+      const bookings = existingBookings[room.id]?.slots ?? [];
+
+      return bookings.every((slot) => {
         const start = new Date(slot.start);
         const end = new Date(slot.end);
+
+        // no overlapping
         return (
-          // Bc we have sorted the slots,
-          // so if the current slot is after the startTime, then the room is available.
-          isAfter(start, formProp.startTime) ||
-          // Is not between
-          (!isBefore(formProp.startTime, start) && !isAfter(formProp.startTime, end))
+          isBefore(end, formProp.startTime) || // booked.end <  Start
+          isEqual(end, formProp.startTime) || // booked.end === currStart
+          isAfter(start, endTime) || // booked.start > endTime
+          isEqual(start, endTime) // booked.start === endTime
         );
       });
     })?.id;
@@ -76,7 +78,8 @@ const initForm = (
       return ThrowInternalError('The update form requires an existing booking and a roomId');
 
     // Update is only allowed for a booking in future.
-    const formType = isAfter(formProp.startTime, new Date()) ? 'update' : 'view';
+    const formType =
+      currBooking.bookedBy !== null && isAfter(formProp.startTime, new Date()) ? 'update' : 'view';
     return [formType, { start: currBooking.start, end: currBooking.end, roomId: currRoomId }];
   }
 };
