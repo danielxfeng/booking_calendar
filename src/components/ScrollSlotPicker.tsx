@@ -95,7 +95,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
                 key={value}
                 type='button'
                 ref={isSelected ? selectedRef : undefined}
-                variant={slot.avail ? 'secondary' : 'default'}
+                variant={slot.avail ? 'secondary' : 'outline'}
                 className={isSelected ? '!bg-primary text-background' : undefined}
                 onClick={() => onSelect(value)}
                 role='option'
