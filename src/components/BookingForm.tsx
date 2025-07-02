@@ -65,6 +65,8 @@ type FormProp = {
   roomId?: number;
 } | null;
 
+const overlappingErrorMessage = 'The booked slots are not available.';
+
 /**
  * @summary Handle the error from posting data from API.
  */
@@ -142,10 +144,10 @@ const BookingForm = () => {
   useEffect(() => {
     const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
 
-    const hasError = !!form.formState.errors.end;
-    if (!validSlots && !hasError)
-      form.setError('end', { type: 'manual', message: 'The booked slots are not available.' });
-    else if (validSlots && hasError) form.clearErrors('end');
+    const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
+    if (!validSlots && currentErrorMessage !== overlappingErrorMessage)
+      form.setError('end', { type: 'manual', message: overlappingErrorMessage });
+    else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
   /**
