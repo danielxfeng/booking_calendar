@@ -118,4 +118,4 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
 
 export { weekBookingsGenerator };
 
-export type { Day, WeekBookings };
+export type { Day, DayBookings, WeekBookings };
