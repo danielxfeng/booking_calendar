@@ -123,10 +123,10 @@ const BookingForm = () => {
   });
 
   // Hook to track the value change.
-  const [watchedRoomId, watchedStart, watchedEnd] = [1, new Date(), new Date()]; /*useWatch({
+  const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
     control: form.control,
     name: ['roomId', 'start', 'end'],
-  });*/
+  });
 
   // 2 slots is required, it mainly tracks the changing of roomId.
   // It reads the bookings from `day`, then set `unavailable` to booked slots.
@@ -147,6 +147,8 @@ const BookingForm = () => {
     else form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
   */
+
+  console.log('roomId value from RHF:', form.getValues('roomId'));
 
   /**
    * @summary Post-process when the post/put/delete is done..
@@ -247,35 +249,38 @@ const BookingForm = () => {
           {formType === 'insert' && <hr />}
 
           {/* Room id selector */}
-          {formType === 'insert' && (
-            <FormField
-              control={form.control}
-              name='roomId'
-              render={({ field }) => (
-                <FormItem className='space-y-3'>
-                  <FormLabel>Choose a meeting room:</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      value={String(field.value)}
-                      className='flex'
-                      disabled={formType !== 'insert' || form.formState.isSubmitting}
-                    >
-                      {ROOM_MAP.map(({ id, name }) => (
-                        <div key={id} className='flex items-center gap-3'>
-                          <RadioGroupItem value={String(id)} />
-                          <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
-                            {name}
-                          </FormLabel>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+          <FormField
+            control={form.control}
+            name='roomId'
+            render={({ field }) => (
+              <FormItem className='space-y-3'>
+                <FormLabel>
+                  {formType === 'insert' ? 'Choose a meeting room:' : 'The booked meeting room:'}
+                </FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={(val) => field.onChange(Number(val))}
+                    value={String(field.value)}
+                    className='flex'
+                    disabled={formType !== 'insert' || form.formState.isSubmitting}
+                  >
+                    {ROOM_MAP.map(({ id, name }) => (
+                      <div key={id} className='flex items-center gap-3'>
+                        <RadioGroupItem
+                          value={String(id)}
+                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary data-[state=checked]:ring-2'
+                        />
+                        <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
+                          {name}
+                        </FormLabel>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <hr />
 
           {/* Slot selector */}
@@ -371,6 +376,7 @@ const BookingForm = () => {
                     <AlertDialogAction
                       onClick={() => deleteMutation.mutate()}
                       disabled={deleteMutation.isPending}
+                      className='text-destructive'
                     >
                       {deleteMutation.isPending ? 'Deleting...' : 'Continue'}
                     </AlertDialogAction>
