@@ -6,13 +6,16 @@
  */
 
 import type { CSSProperties } from 'react';
+import { useIsFetching } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, ROOM_MAP } from '@/config';
-import { bookingsAtom, formPropAtom } from '@/lib/atoms';
+import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import type { WeekBookings } from '@/lib/weekBookings';
+
+import Loading from './Loading';
 
 /**
  * @summary A helper function to get the position of a booking block
@@ -66,7 +69,7 @@ const BookedBlock = ({
       title={`${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
-      onClick={() => setFormProp({ bookingId: slot.id })}
+      onClick={() => setFormProp({ bookingId: slot.id, startTime: new Date(slot.start) })}
     >
       {slot.id}
     </div>
@@ -77,16 +80,28 @@ const BookedBlock = ({
  * @summary the covered layer of booked slots
  */
 const BookingsLayer = () => {
+  const start = useAtomValue(startAtom);
   const bookings: WeekBookings = useAtomValue(bookingsAtom);
+  const isPending =
+    useIsFetching({
+      queryKey: ['slots', start],
+      predicate: (query) => query.state.status === 'pending',
+    }) > 0;
 
   return (
     <div className='absolute z-10 h-full w-full'>
-      {bookings.map((day, col) =>
-        Object.values(day).map((room) =>
-          room.slots.map((slot) => (
-            <BookedBlock key={slot.id} roomId={room.roomId} col={col} slot={slot} />
-          )),
-        ),
+      {isPending ? (
+        <Loading />
+      ) : (
+        <>
+          {bookings.map((day, col) =>
+            Object.values(day).map((room) =>
+              room.slots.map((slot) => (
+                <BookedBlock key={slot.id} roomId={room.roomId} col={col} slot={slot} />
+              )),
+            ),
+          )}
+        </>
       )}
     </div>
   );
