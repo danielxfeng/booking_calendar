@@ -29,7 +29,10 @@ const getPosition = (col: number, start: string, end: string, roomId: number): C
   const endTime = new Date(end);
 
   const startMin = startTime.getHours() * 60 + startTime.getMinutes();
-  const endMin = endTime.getHours() * 60 + endTime.getMinutes();
+  const endMin_ = endTime.getHours() * 60 + endTime.getMinutes();
+
+  // If endTime is "00:00", it is "24:00"
+  const endMin = endMin_ === 0 ? 24 * 60 : endMin_;
 
   const top = (startMin / (24 * 60)) * totalHeight;
   const height = ((endMin - startMin) / (24 * 60)) * totalHeight;
