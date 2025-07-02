@@ -50,7 +50,6 @@ import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUti
 import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
-import { cn } from '@/lib/utils';
 import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -139,14 +138,15 @@ const BookingForm = () => {
   }, [existingBookings, watchedRoomId, prop.booking?.id, baseTime]);
 
   // To validate the overlapping booking, since the overlapping check is not included in zod.
-  /** 
+
   useEffect(() => {
-    const isOverlapping = overlappingCheck(watchedStart, watchedEnd, endSlots);
-    if (isOverlapping)
+    const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
+
+    const hasError = !!form.formState.errors.end;
+    if (!validSlots && !hasError)
       form.setError('end', { type: 'manual', message: 'The booked slots are not available.' });
-    else form.clearErrors('end');
+    else if (validSlots && hasError) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
-  */
 
   console.log('roomId value from RHF:', form.getValues('roomId'));
 
