@@ -59,8 +59,10 @@ const App = () => {
   return (
     <div className='flex min-h-screen w-screen flex-col'>
       {/* Header */}
-      <header className='bg-accent flex h-18 items-center justify-center'>
-        <h1 className='!text-lg font-bold'>Booking Me</h1>
+
+      <header className='text-background relative flex h-12 items-center justify-center'>
+        <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
+        <h1 className='relative z-10 !text-2xl font-bold'>Booking Me</h1>
       </header>
 
       {/* Main */}

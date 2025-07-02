@@ -37,7 +37,7 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn('border-border box-border border', past ? 'bg-gray-200' : 'bg-gray-50')}
+      className={cn('border-border box-border border', past ? 'bg-gray-200/80' : 'bg-gray-50')}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
       onClick={() => {
         if (past) return;
@@ -69,7 +69,7 @@ const BasicGrids = memo(() => {
           {/* Label */}
           <div
             key={`cal-side-row-${row}`}
-            className='border-border box-border flex items-center justify-center border text-xs'
+            className='border-border box-border flex items-center justify-center border text-sm font-semibold'
             style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
           >
             {`${row.toString().padStart(2, '0')}:00`}

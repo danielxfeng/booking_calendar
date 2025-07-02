@@ -29,9 +29,14 @@ import { formatToDate, newDate } from '@/lib/tools';
 const OperationRow = () => {
   const { setNewStart } = useStartController();
   const start = useAtomValue(startAtom);
-  const startDate = newDate(start);
+
   // helper for date picker.
   const [open, setOpen] = useState(false);
+
+  // To prevent there is not a start.
+  if (!start) return <Loading />;
+
+  const startDate = newDate(start);
 
   // helper for pagination.
   const prevMon = formatToDate(previousMonday(startDate));
@@ -49,9 +54,6 @@ const OperationRow = () => {
     setOpen(false);
   };
 
-  // To prevent there is not a start.
-  if (!start) return <Loading />;
-
   return (
     <div
       data-role='operation-panel'
@@ -59,7 +61,10 @@ const OperationRow = () => {
     >
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>
-        <PaginationPrevious onClick={() => setNewStart(prevMon, false)} />
+        <PaginationPrevious
+          className='!text-primary/80'
+          onClick={() => setNewStart(prevMon, false)}
+        />
       </PaginationItem>
 
       {/* Date picker */}
@@ -69,7 +74,7 @@ const OperationRow = () => {
             <Button
               variant='outline'
               id='date'
-              className='w-56 justify-between font-normal'
+              className='w-60 justify-between text-sm font-normal'
               aria-label='Choose start date'
             >
               {`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}
@@ -89,6 +94,8 @@ const OperationRow = () => {
 
       {/* Today */}
       <Button
+        variant='outline'
+        className='text-sm'
         onClick={() => {
           dateSelectHandler(new Date());
         }}
@@ -98,7 +105,7 @@ const OperationRow = () => {
 
       {/* Next button */}
       <PaginationItem className='hidden lg:block'>
-        <PaginationNext onClick={() => setNewStart(nextMon, false)} />
+        <PaginationNext className='!text-primary/80' onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
     </div>
   );

@@ -10,12 +10,11 @@ import { useIsFetching } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
+import Loading from '@/components/Loading';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, ROOM_MAP } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import type { WeekBookings } from '@/lib/weekBookings';
-
-import Loading from './Loading';
 
 /**
  * @summary A helper function to get the position of a booking block
@@ -62,16 +61,19 @@ const BookedBlock = ({
   slot: BookingFromApi;
 }) => {
   const setFormProp = useSetAtom(formPropAtom);
+  const roomName = ROOM_MAP.find((r) => r.id === roomId)?.name;
   return (
     <div
-      className='absolute rounded-sm border border-blue-500 bg-blue-500/60'
+      className='absolute flex items-start justify-center rounded-sm border-2 border-blue-500 bg-blue-800/20'
       style={getPosition(col, slot.start, slot.end, roomId)}
-      title={`${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
+      title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
-      onClick={() => setFormProp({ bookingId: slot.id, startTime: new Date(slot.start) })}
+      onClick={() =>
+        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) })
+      }
     >
-      {slot.id}
+      {roomName}
     </div>
   );
 };
