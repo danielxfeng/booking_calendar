@@ -7,65 +7,75 @@
  * @contact intra: @xifeng
  */
 
-import { add, addMinutes, isBefore, isEqual, startOfDay } from 'date-fns';
+import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual, isSameDay } from 'date-fns';
 
 import type { FormProp, FormType } from '@/components/BookingForm';
 import type { Slot } from '@/components/ScrollSlotPicker';
-import { TIME_SLOT_INTERVAL } from '@/config';
-import type { CalGrid, Day } from '@/lib/calGrid';
+import { ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
+import type { DayBookings } from '@/lib/weekBookings';
+
+import type { BookingFromApi, UpsertBooking } from './schema';
+import { formatToDateTime } from './tools';
 
 /**
- * @summary Returns an empty Slots
- */
-const newEmptySlots = (start: string | undefined): Slot[] => {
-  if (!start) return []; // to solve the type, should not be here.
-
-  const baseDay = startOfDay(start);
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minuteOptionsCount = 60 / TIME_SLOT_INTERVAL - 1; // -1 = - min_interval
-  const minutesIdx = Array.from({ length: minuteOptionsCount }, (_, i) => i);
-  const slots: Slot[] = [];
-  for (const h of hours) {
-    for (const mi of minutesIdx) {
-      slots.push({
-        slot: add(baseDay, { hours: h, minutes: mi * TIME_SLOT_INTERVAL }),
-        avail: false,
-      });
-    }
-  }
-  return slots;
-};
-
-/**
- * @summary Returns form type
+ * @summary Returns form formType, and the default values
  * @description
- * - if there is no `editingId`, indicates the `insert`
+ * - if there is no `currBooking`, it's an `insertion` form.
  * - Then there should be an existing booking.
  *   - If the booking is expired, or the bookedBy is null, the type is `view`
  *   - Otherwise, it is `update`
  */
-const getFormType = (formProp: FormProp, grid: CalGrid): FormType => {
-  if (!formProp) return 'view'; // should not be here.
-
-  // When there is no `editingId`
-  if (formProp.editingId === null) return 'insert';
-
-  const cell = grid[formProp.row][formProp.col];
-
-  const currBooking = cell?.find((booking) => booking.id === formProp.editingId);
+const initForm = (
+  formProp: Exclude<FormProp, null>,
+  existingBookings: DayBookings,
+  currBooking?: BookingFromApi,
+  currRoomId?: number,
+): [FormType, UpsertBooking] => {
   if (!currBooking) {
-    ThrowInternalError('cannot find the booking.'); // There should be a booking.
-    return 'view'; // Should not be here.
+    // `insert`
+    const formType = 'insert';
+
+    // Find an available room
+    let roomId = ROOM_MAP.find((room) => {
+      return existingBookings[room.id].slots.some((slot) => {
+        const start = new Date(slot.start);
+        const end = new Date(slot.end);
+        return (
+          // Bc we have sorted the slots,
+          // so if the current slot is after the startTime, then the room is available.
+          isAfter(start, formProp.startTime) ||
+          // Is not between
+          (!isBefore(formProp.startTime, start) && !isAfter(formProp.startTime, end))
+        );
+      });
+    })?.id;
+
+    // fallbacks to any room, then user/zod handles it in UI. But should not be here.
+    if (!roomId) {
+      console.error('[initForm]: failed to find an available room.');
+      roomId = ROOM_MAP[0].id;
+    }
+
+    return [
+      formType,
+      {
+        roomId,
+        start: formatToDateTime(formProp.startTime),
+        end: formatToDateTime(addMinutes(formProp.startTime, TIME_SLOT_INTERVAL)),
+      },
+    ];
+  } else {
+    // 'update' or 'view'
+
+    // should not be here.
+    if (!currBooking || !currRoomId)
+      return ThrowInternalError('The update form requires an existing booking and a roomId');
+
+    // Update is only allowed for a booking in future.
+    const formType = isAfter(formProp.startTime, new Date()) ? 'update' : 'view';
+    return [formType, { start: currBooking.start, end: currBooking.end, roomId: currRoomId }];
   }
-
-  // When the bookedBy is null.
-  if (!currBooking.bookedBy) return 'view';
-
-  // When the booking is expired.
-  if (isBefore(new Date(currBooking.start), new Date())) return 'view';
-
-  return 'update';
 };
 
 /**
@@ -75,28 +85,36 @@ const getFormType = (formProp: FormProp, grid: CalGrid): FormType => {
  * The current booking is an exception.
  */
 const calculateSlots = (
-  formType: FormType,
-  day: Day,
+  existingBookings: DayBookings,
   filedType: 'start' | 'end',
   roomId: number | undefined,
-  editId?: number | undefined | null,
-  start?: string | undefined,
+  baseTime: Date,
+  bookingId?: number | undefined | null,
 ): Slot[] => {
-  if (roomId === undefined || start === undefined) return []; // should not be here.
+  if (roomId === undefined) return []; // should not be here.
 
   // Init an empty slots.
-  const slots = newEmptySlots(start);
-
-  for (let i = 0; i < slots.length; i++) {
-    const bookings = day[i] ?? [];
-    let isTaken: boolean;
-
-    // If there is a `view` form, all slots are disabled, except the current booking.
-    if (formType === 'view') isTaken = bookings.some((b) => b.id !== editId);
-    // Otherwise, all booked slots are disabled, except the current booking.
-    else isTaken = bookings.some((b) => b.roomId === roomId && b.id !== editId);
-    slots[i].avail = !isTaken;
+  const slots: Slot[] = [];
+  let curr = baseTime;
+  while (isSameDay(baseTime, curr)) {
+    slots.push({ slot: curr, avail: true });
+    curr = addMinutes(curr, TIME_SLOT_INTERVAL);
   }
+
+  // Disable slots in existing Bookings
+  existingBookings[roomId].slots.forEach((slot) => {
+    // We skip ourself.
+    if (slot.id === bookingId) return;
+
+    const bookingStart = new Date(slot.start);
+    const bookingEnd = new Date(slot.end);
+
+    const startIndex = Math.floor(differenceInMinutes(bookingStart, baseTime) / TIME_SLOT_INTERVAL);
+    const endIndex = Math.ceil(differenceInMinutes(bookingEnd, baseTime) / TIME_SLOT_INTERVAL);
+
+    // Change all slots between the startIndex and endIndex to unavailable.
+    for (let i = startIndex; i < endIndex; i++) slots[i].avail = false;
+  });
 
   // For endSlots, add TIME_SLOT_INTERVAL.
   if (filedType === 'end')
@@ -116,4 +134,4 @@ const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean
   return true; // should not be here.
 };
 
-export { calculateSlots, getFormType, overlappingCheck };
+export { calculateSlots, initForm, overlappingCheck };
