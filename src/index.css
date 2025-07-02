@@ -50,6 +50,10 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
+html {
+  color-scheme: light;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   font-optical-sizing: auto;
