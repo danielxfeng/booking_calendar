@@ -84,7 +84,7 @@ const BookingForm = () => {
   const startDate = newDate(start);
 
   // We just need one day: baseTime
-  const dayShift = differenceInCalendarDays(startDate, prop.startTime);
+  const dayShift = differenceInCalendarDays(prop.startTime, startDate);
   if (dayShift < 0 || dayShift > 6)
     // should not be here.
     throw ThrowInternalError('[BookingForm]: the required date is out of range.');
