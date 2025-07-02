@@ -62,7 +62,7 @@ const App = () => {
 
       <header className='text-background relative flex h-12 items-center justify-center'>
         <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
-        <h1 className='relative z-10 !text-2xl font-bold'>Booking Me</h1>
+        <h1 className='relative z-10 !text-2xl font-bold'>Book Me</h1>
       </header>
 
       {/* Main */}
