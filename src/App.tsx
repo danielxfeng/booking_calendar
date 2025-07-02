@@ -8,28 +8,12 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
-import { useAtom } from 'jotai';
 
+import FormWrapper from '@/components/BookingForm';
 import Main from '@/components/Main';
-import { formPropAtom } from '@/lib/atoms';
+import TanQuery from '@/components/TanQuery';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
-
-import BookingForm from './components/BookingForm';
-import TanQuery from './components/TanQuery';
-import { Popover, PopoverContent } from './components/ui/popover';
-
-/**
- * A popover wrapper of the upsert form.
- */
-const FormWrapper = () => {
-  const formProp = useAtom(formPropAtom);
-  return (
-    <Popover open={!!formProp}>
-      <PopoverContent className='w-[300px]'>{formProp && <BookingForm />}</PopoverContent>
-    </Popover>
-  );
-};
 
 /**
  * @summary Layout of the application.
