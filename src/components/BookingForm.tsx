@@ -148,8 +148,6 @@ const BookingForm = () => {
     else if (validSlots && hasError) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
-  console.log('roomId value from RHF:', form.getValues('roomId'));
-
   /**
    * @summary Post-process when the post/put/delete is done..
    * @description
