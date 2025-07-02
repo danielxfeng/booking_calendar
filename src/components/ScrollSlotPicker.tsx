@@ -100,7 +100,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
                 onClick={() => onSelect(value)}
                 role='option'
                 aria-selected={isSelected}
-                disabled={!slot.avail}
+                disabled={!disabled && !slot.avail} // if the form is disabled, the `disabled` property here is useless.
               >
                 {label}
               </Button>
