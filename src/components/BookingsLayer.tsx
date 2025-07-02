@@ -64,7 +64,7 @@ const BookedBlock = ({
   const roomName = ROOM_MAP.find((r) => r.id === roomId)?.name;
   return (
     <div
-      className='absolute flex items-start justify-center rounded-sm border-2 border-blue-500 bg-blue-800/20'
+      className='absolute flex items-start justify-center rounded-sm border-2 border-blue-500 bg-blue-800/20 text-xs'
       style={getPosition(col, slot.start, slot.end, roomId)}
       title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
