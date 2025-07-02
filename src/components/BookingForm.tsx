@@ -84,6 +84,9 @@ const parseErrorMsg = (error: unknown): string => {
  * @summary The View/Insert/Delete form for a booking
  * @description
  * TODO:  Allow users to modify a booking? Changing date in form?
+ * Can not find an available slot when the start is not from like 8:00, 9:00...
+ *
+ *
  */
 const BookingForm = () => {
   // Subscribe the atoms to tracking the data changing.
@@ -197,7 +200,12 @@ const BookingForm = () => {
   // upsert handler.
   const upsertMutation = useMutation({
     mutationFn: (data: UpsertBooking) => {
-      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, { body: data });
+      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, {
+        // Backend uses different field names.
+        roomId: data.roomId,
+        startTime: data.start,
+        endTime: data.end,
+      });
     },
     onSuccess: () => {
       delayRefreshAndQuit(start);
@@ -334,7 +342,10 @@ const BookingForm = () => {
           )}
           {/* Return info(possible) */}
           {(deleteMutation.isSuccess || upsertMutation.isSuccess) && (
-            <p>Cool! The operation was successful, we are closing the form...</p>
+            <p className='text-center text-sm font-semibold text-green-500'>
+              Cool! The operation was successful, <br />
+              we are closing the form...
+            </p>
           )}
 
           {/* Btns */}
