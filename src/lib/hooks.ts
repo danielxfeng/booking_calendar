@@ -19,7 +19,9 @@ import { normalizeStartDate } from '@/lib/normalizeStartDate';
  * When the incoming start is not Monday, it fallbacks to the previous Monday.
  */
 const useStartController = () => {
+  // A setter, not the subscription.
   const setStart = useSetAtom(startAtom);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   /**
@@ -27,6 +29,8 @@ const useStartController = () => {
    * @description
    * When the incoming start is invalid, it fallbacks to today.
    * When the incoming start is not Monday, it fallbacks to the previous Monday.
+   * Update after comparison.
+   * @param replace: false to remove the current url from history.
    */
   const setNewStart = (newStart: string | null, replace: boolean) => {
     const normalizedStart = normalizeStartDate(newStart);

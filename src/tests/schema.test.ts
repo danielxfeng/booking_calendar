@@ -29,6 +29,42 @@ describe('BookingSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('should pass for a booking that ends exactly at 00:00 but is same day logically (0:00-00:00)', () => {
+  const case1 = {
+    id: 1,
+    start: '2025-06-24T00:00:00',
+    end: '2025-06-25T00:00:00',
+    bookedBy: null,
+  };
+
+  const result = BookingFromApiSchema.safeParse(case1);
+  expect(result.success).toBe(true);
+});
+
+it('should pass for a booking that ends exactly at 00:00 but is same day logically (23:45-00:00)', () => {
+  const case2 = {
+    id: 2,
+    start: '2025-06-24T23:45:00',
+    end: '2025-06-25T00:00:00',
+    bookedBy: null,
+  };
+
+  const result = BookingFromApiSchema.safeParse(case2);
+  expect(result.success).toBe(true);
+});
+
+it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)', () => {
+  const case3 = {
+    id: 3,
+    start: '2025-06-24T23:45:00',
+    end: '2025-06-25T00:15:00',
+    bookedBy: null,
+  };
+
+  const result = BookingFromApiSchema.safeParse(case3);
+  expect(result.success).toBe(false);
+});
+
   it('should fail for a booking without a id', () => {
     const case1 = {
       start: '2025-06-24T10:00:00',

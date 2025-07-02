@@ -6,12 +6,13 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { Form, useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useAtom } from 'jotai';
+import { addDays, differenceInCalendarDays, format } from 'date-fns';
+import { useAtom, useAtomValue, useStore } from 'jotai';
 
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
 import {
@@ -26,31 +27,45 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { RadioGroup } from '@/components/ui/radio-group';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
-import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
+import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import { calculateSlots, getFormType, overlappingCheck } from '@/lib/bookingFormUtils';
-import type { Day } from '@/lib/calGrid';
-import { type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
-import { cn } from '@/lib/utils';
+import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUtils';
+import { ThrowInternalError } from '@/lib/errorHandler';
+import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
+import { newDate } from '@/lib/tools';
+import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
 
 /**
- * @summary Represents the state of upsert form.
+ * @summary Represents the properties of upsert form.
  * @description
  * - null: no form should be shown.
- * - editingId = null: insertion, otherwise: update.
  */
 type FormProp = {
-  editingId: number | null;
-  default: UpsertBooking;
-  startDate: Date;
-  row: number;
-  col: number;
+  startTime: Date;
+  booking?: BookingFromApi;
+  roomId?: number;
 } | null;
+
+const overlappingErrorMessage = 'The booked slots are not available.';
 
 /**
  * @summary Handle the error from posting data from API.
@@ -68,29 +83,48 @@ const parseErrorMsg = (error: unknown): string => {
 /**
  * @summary The View/Insert/Delete form for a booking
  * @description
- * When `editId` is null, the form is an `insertion` form.
- * When `bookedBy` is null, or the start time is in the past, then the booking is view only.
- * Otherwise, there is a 'delete' button.
+ * TODO:  Allow users to modify a booking? Changing date in form?
+ * Can not find an available slot when the start is not from like 8:00, 9:00...
+ *
  *
  */
 const BookingForm = () => {
   // Subscribe the atoms to tracking the data changing.
-  const [grid] = useAtom(calendarGridAtom);
-  const [start] = useAtom(startAtom);
+  const bookings = useAtomValue(bookingsAtom);
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
-  // We just need one day
-  const day: Day = grid[formProp?.col || 0];
+  // We just need the current value here, bc we can get the newest data when `bookings` is updated.
+  const start = useStore().get(startAtom);
+
+  // If formProp is null, the sheet should not be open, so it's safe here.
+  const prop = formProp!;
+
+  const startDate = newDate(start);
+
+  // We just need one day: baseTime
+  const dayShift = differenceInCalendarDays(prop.startTime, startDate);
+  if (dayShift < 0 || dayShift > 6)
+    // should not be here.
+    throw ThrowInternalError('[BookingForm]: the required date is out of range.');
+
+  // Now we have the 0:00, and bookings of the day.
+  const baseTime = addDays(startDate, dayShift);
+  const existingBookings: DayBookings = bookings[dayShift];
+
+  // Get the type of form, 'view', 'insert', 'update', and it's initialized values.
+  const [formType, defaultValues]: [FormType, UpsertBooking] = initForm(
+    prop,
+    existingBookings,
+    prop.booking,
+    prop.roomId,
+  );
 
   // Init a RHF.
   const form = useForm<UpsertBooking>({
     resolver: zodResolver(UpsertBookingSchema),
-    defaultValues: formProp?.default,
+    defaultValues: defaultValues,
     mode: 'onChange',
   });
-
-  // Get the type of form, 'view', 'insert', 'update'.
-  const formType: FormType = getFormType(formProp, grid);
 
   // Hook to track the value change.
   const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
@@ -101,32 +135,22 @@ const BookingForm = () => {
   // 2 slots is required, it mainly tracks the changing of roomId.
   // It reads the bookings from `day`, then set `unavailable` to booked slots.
   const startSlots = useMemo(() => {
-    return calculateSlots(
-      formType,
-      day,
-      'start',
-      watchedRoomId,
-      undefined,
-      formProp?.default.start,
-    );
-  }, [formType, day, formProp?.default.start, watchedRoomId]);
+    return calculateSlots(existingBookings, 'start', watchedRoomId, baseTime);
+  }, [existingBookings, watchedRoomId, baseTime]);
+
   const endSlots = useMemo(() => {
-    return calculateSlots(
-      formType,
-      day,
-      'end',
-      watchedRoomId,
-      formProp?.editingId,
-      formProp?.default.start,
-    );
-  }, [formType, day, formProp?.default.start, formProp?.editingId, watchedRoomId]);
+    return calculateSlots(existingBookings, 'end', watchedRoomId, baseTime, prop.booking?.id);
+  }, [existingBookings, watchedRoomId, prop.booking?.id, baseTime]);
 
   // To validate the overlapping booking, since the overlapping check is not included in zod.
+
   useEffect(() => {
-    const isOverlapping = overlappingCheck(watchedStart, watchedEnd, endSlots);
-    if (isOverlapping)
-      form.setError('end', { type: 'manual', message: 'The booked slots are not available.' });
-    else form.clearErrors('end');
+    const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
+
+    const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
+    if (!validSlots && currentErrorMessage !== overlappingErrorMessage)
+      form.setError('end', { type: 'manual', message: overlappingErrorMessage });
+    else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
   /**
@@ -163,7 +187,7 @@ const BookingForm = () => {
   // deletion handler.
   const deleteMutation = useMutation({
     mutationFn: () => {
-      return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${formProp?.editingId}`);
+      return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
     },
     onSuccess: () => {
       delayRefreshAndQuit(start);
@@ -176,7 +200,12 @@ const BookingForm = () => {
   // upsert handler.
   const upsertMutation = useMutation({
     mutationFn: (data: UpsertBooking) => {
-      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, { body: data });
+      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, {
+        // Backend uses different field names.
+        roomId: data.roomId,
+        startTime: data.start,
+        endTime: data.end,
+      });
     },
     onSuccess: () => {
       delayRefreshAndQuit(start);
@@ -186,42 +215,73 @@ const BookingForm = () => {
     },
   });
 
-  if (!formProp) return null; // Should not be here.
+  // Sheet title
+  const titlePrefix =
+    formType === 'insert'
+      ? 'Book a meeting room'
+      : formType === 'view'
+        ? 'Review a booking'
+        : 'Update a booking';
 
   return (
     <div
       data-role='booking-upsert-form'
-      className='flex h-screen w-screen flex-col justify-between lg:h-96 lg:w-96'
+      className='flex h-screen w-screen flex-col justify-start lg:h-96 lg:w-96'
     >
-      <h1>{formType.charAt(0).toUpperCase() + formType.slice(1)} a booking</h1>
+      <SheetHeader>
+        <SheetTitle>{titlePrefix}</SheetTitle>
+        <SheetDescription className='mt-2'>
+          You can review, create, or delete a meeting room reservation using the form below.
+        </SheetDescription>
+      </SheetHeader>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => upsertMutation.mutate(data))}
-          className='space-y-8'
+          className='space-y-8 p-4'
         >
-          {/* Date, now changing of booking date is disabled currently. */}
-          <div data-role='booked-date'>{`Booked date: {format(formProp.default.start, 'dd MMM')}`}</div>
+          <div data-role='booking-info' className='flex flex-col gap-2'>
+            {/* Date, now changing of booking date is disabled currently. */}
+            <div data-role='booked-date'>{`Date: ${format(baseTime, 'eee dd MMM')}`}</div>
+
+            {/* Optional BookedBy */}
+            {prop.booking?.bookedBy && (
+              <div data-role='booked-by'>{`Booked By: ${prop.booking?.bookedBy}`}</div>
+            )}
+
+            {/* Optional RoomId */}
+            {formType !== 'insert' && (
+              <div data-role='booked-room-name'>{`Room: ${ROOM_MAP.find((room) => room.id === prop.roomId)?.name}`}</div>
+            )}
+          </div>
+
+          {formType === 'insert' && <hr />}
+
           {/* Room id selector */}
           <FormField
             control={form.control}
             name='roomId'
             render={({ field }) => (
               <FormItem className='space-y-3'>
-                <FormLabel>Choose a meeting room: </FormLabel>
+                <FormLabel>
+                  {formType === 'insert' ? 'Choose a meeting room:' : 'The booked meeting room:'}
+                </FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={(val) => field.onChange(Number(val))}
-                    defaultValue={String(field.value)}
-                    className='flex flex-col'
-                    disabled={formType === 'view'}
+                    value={String(field.value)}
+                    className='flex'
+                    disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name }) => (
-                      <FormItem key={id} className='flex items-center gap-3'>
-                        <FormControl>
-                          <RadioGroupItem value={String(id)} />
-                        </FormControl>
-                        <FormLabel className='font-normal'>{name}</FormLabel>
-                      </FormItem>
+                      <div key={id} className='flex items-center gap-3'>
+                        <RadioGroupItem
+                          value={String(id)}
+                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary data-[state=checked]:ring-2'
+                        />
+                        <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
+                          {name}
+                        </FormLabel>
+                      </div>
                     ))}
                   </RadioGroup>
                 </FormControl>
@@ -229,25 +289,27 @@ const BookingForm = () => {
               </FormItem>
             )}
           />
+          <hr />
 
           {/* Slot selector */}
-          <div className='flex gap-3'>
+          <p className='mb-2 pb-0'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
+          <div className='flex justify-between gap-3 p-4'>
             {/* Start time selector */}
             <FormField
               control={form.control}
               name='start'
               render={({ field }) => (
-                <FormItem className='space-y-3'>
-                  <FormLabel>Start time:</FormLabel>
+                <FormItem className='flex flex-col items-center space-y-3'>
+                  <FormLabel>Start:</FormLabel>
                   <FormControl>
                     <ScrollSlotPicker
                       slots={startSlots}
                       selected={field.value}
-                      disabled={formType === 'view'}
+                      disabled={formType !== 'insert' || form.formState.isSubmitting}
                       onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='min-h-12' />
                 </FormItem>
               )}
             />
@@ -257,40 +319,41 @@ const BookingForm = () => {
               control={form.control}
               name='end'
               render={({ field }) => (
-                <FormItem className='space-y-3'>
-                  <FormLabel>End time:</FormLabel>
+                <FormItem className='flex flex-col items-center space-y-3'>
+                  <FormLabel>End:</FormLabel>
                   <FormControl>
                     <ScrollSlotPicker
                       slots={endSlots}
                       selected={field.value}
-                      disabled={formType === 'view'}
+                      disabled={formType !== 'insert' || form.formState.isSubmitting}
                       onSelect={(val) => field.onChange(val)}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage className='min-h-[1.25rem]' />
                 </FormItem>
               )}
             />
           </div>
 
+          <hr />
           {/* Root error(possible) */}
           {form.formState.errors.root && (
             <p className='text-destructive text-sm'>{form.formState.errors.root?.message}</p>
           )}
-
           {/* Return info(possible) */}
           {(deleteMutation.isSuccess || upsertMutation.isSuccess) && (
-            <p>Cool! The operation was successful, we are closing the form...</p>
+            <p className='text-center text-sm font-semibold text-green-500'>
+              Cool! The operation was successful, <br />
+              we are closing the form...
+            </p>
           )}
 
           {/* Btns */}
-          <div
-            data-role='booking-form-btns'
-            className={cn('flex justify-between', formType === 'insert' && 'justify-center')}
-          >
+          <div data-role='booking-form-btns' className='flex justify-center'>
             {/* Upsert submit */}
             {formType === 'insert' && (
               <Button
+                variant='outline'
                 type='submit'
                 disabled={form.formState.isSubmitting || !form.formState.isValid}
               >
@@ -299,13 +362,14 @@ const BookingForm = () => {
             )}
 
             {/* Delete */}
-            {formType !== 'insert' && (
+            {formType === 'update' && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   {/* The deletion btn */}
                   <Button
+                    variant='outline'
                     type='button'
-                    disabled={formType === 'view' || deleteMutation.isPending}
+                    disabled={deleteMutation.isPending || formProp?.booking?.bookedBy === null}
                     aria-label='Delete booking'
                   >
                     {deleteMutation.isPending ? 'Deleting' : 'Delete'}
@@ -323,6 +387,7 @@ const BookingForm = () => {
                     <AlertDialogAction
                       onClick={() => deleteMutation.mutate()}
                       disabled={deleteMutation.isPending}
+                      className='text-destructive'
                     >
                       {deleteMutation.isPending ? 'Deleting...' : 'Continue'}
                     </AlertDialogAction>
@@ -337,6 +402,24 @@ const BookingForm = () => {
   );
 };
 
-export default BookingForm;
+/**
+ * A sheet wrapper of the upsert form.
+ */
+const FormWrapper = () => {
+  const [formProp, setFormProp] = useAtom(formPropAtom);
+  return (
+    <Sheet
+      open={!!formProp}
+      // manual close
+      onOpenChange={(open) => {
+        if (!open) setFormProp(null);
+      }}
+    >
+      <SheetContent className='w-screen lg:w-96'>{!!formProp && <BookingForm />}</SheetContent>
+    </Sheet>
+  );
+};
+
+export default FormWrapper;
 
 export type { FormProp, FormType };

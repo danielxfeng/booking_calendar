@@ -6,116 +6,47 @@
  * @contact intra: @xifeng
  */
 
-import { addDays, format, minutesToHours } from 'date-fns';
-import { useAtom } from 'jotai';
-
-import CellComp from '@/components/CellComponent';
-import Loading from '@/components/Loading';
+import BasicGrids from '@/components/BasicGrids';
+import BookingsLayer from '@/components/BookingsLayer';
+import CalendarHeader from '@/components/CalendarHeader';
 import OperationRow from '@/components/OperationRow';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, TIME_LABEL_INTERVAL, TIME_SLOT_INTERVAL } from '@/config';
-import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
-import { newDate, styleGenerator } from '@/lib/tools';
-import { cn } from '@/lib/utils';
-
-// Help to create doms.
-const rowsCount = (24 * 60) / TIME_SLOT_INTERVAL;
-const timeLabel = rowsCount / TIME_LABEL_INTERVAL;
-const weekViewCols = Array.from({ length: 7 }, (_, i) => i);
-const dayRows = Array.from({ length: rowsCount }, (_, i) => i);
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
+import { styleGenerator } from '@/lib/tools';
 
 /**
- * @summary The main component of the application, includes:
+ * @summary The main content of the application
  * @description
- * - Operation row: pagination buttons, and a date picker.
- * - The calendar.
+ * Includes:
+ *  - Operation Panel, which syncs with the `startAtom` to set the date.
+ *  - A calendar container, includes:
+ *   - The base grids(static layer).
+ *   - Booking blocks(dynamic layer).
  */
-const Main = () => {
-  const [start] = useAtom(startAtom);
-  const [grid] = useAtom(calendarGridAtom);
-  const [formProp] = useAtom(formPropAtom);
-  const startDate = newDate(start);
+const Main = () => (
+  <div
+    data-role='main-wrapper'
+    className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
+  >
+    <div data-role='main' className='mx-4 my-12 h-fit w-fit'>
+      {/* Operation row */}
+      <OperationRow />
 
-  const styleHeight = styleGenerator(undefined, CELL_HEIGHT_PX);
-  const styleFull = styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX);
-  const styleWidth = styleGenerator(CELL_WIDTH_PX);
-  const styleContainer = {
-    display: 'grid',
-    gridTemplateColumns: `repeat(8, ${CELL_WIDTH_PX}px)`,
-    ...styleHeight,
-  };
+      {/* Calendar */}
+      <div data-role='calendar'>
+        <CalendarHeader />
 
-  return (
-    <div
-      data-role='main-wrapper'
-      className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
-    >
-      <div
-        data-role='main'
-        // Stop event response when form is open.
-        className={cn('mx-4 my-12 h-fit w-fit', formProp && 'pointer-events-none')}
-      >
-        {/* Operation row */}
-        <OperationRow startDate={startDate} />
-
-        {/* Calendar header */}
-        <div data-role='calendar-head' className='grid h-12 grid-cols-8'>
-          <div
-            key='calendar-head-side'
-            className={cn('border-border h-12 border')}
-            style={styleWidth}
-          ></div>
-          {weekViewCols.map((i) => (
-            <div
-              key={`calendar-head-${i}`}
-              className={cn('border-border h-12 border font-semibold flex justify-center items-center')}
-              style={styleWidth}
-            >
-              {format(addDays(startDate, i), 'eee  dd MMM')}
-            </div>
-          ))}
+        {/* Calendar data */}
+        <div
+          data-role='calendar-data-container'
+          className='relative'
+          style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * 24)}
+        >
+          <BasicGrids />
+          <BookingsLayer />
         </div>
-
-        {grid.length === 0 ? (
-          <Loading />
-        ) : (
-          // Calendar cells
-          <div data-role='calendar-data' className='border-border border'>
-            {/* Rows */}
-            {dayRows.map((i) => (
-              <div
-                key={`calendar-data-row-${i}`}
-                className={cn('overflow-visible')}
-                style={styleContainer}
-              >
-                {/* A row */}
-                <div
-                  className={cn(
-                    i % timeLabel !== 0 && 'invisible',
-                    i % timeLabel === 0 && 'border-t text-center',
-                  )}
-                  style={styleFull}
-                >
-                  {/* Display the time label */}
-                  {`${minutesToHours(i * TIME_SLOT_INTERVAL)}:${String((i % (60 / TIME_SLOT_INTERVAL)) * TIME_SLOT_INTERVAL).padStart(2, '0')}`}
-                </div>
-
-                {/* Cells */}
-                {weekViewCols.map((j) => (
-                  <CellComp
-                    key={`cell-${i}-${j}`}
-                    row={i}
-                    col={j}
-                    timeLabel={timeLabel}
-                    style={styleFull}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default Main;

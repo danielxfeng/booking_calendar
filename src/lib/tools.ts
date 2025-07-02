@@ -6,7 +6,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { startOfDay } from 'date-fns';
+import { addHours, format, isBefore, startOfDay } from 'date-fns';
 
 /**
  * @summary Returns a local time format of date
@@ -67,4 +67,61 @@ const styleGenerator = (
   return { ...w, ...h, ...l, ...t };
 };
 
-export { newDate, styleGenerator };
+/**
+ * @summary generate style for grid
+ * @param sizeW width
+ * @returns the style
+ */
+const gridStyleGenerator = (sizeW: number, sizeH?: number): CSSProperties => {
+  const basic = {
+    gridTemplateColumns: `repeat(8, ${sizeW}px)`,
+  };
+
+  return { ...basic, ...styleGenerator(sizeW * 8, sizeH) };
+};
+
+/**
+ * @summary to format a Date object to '2020-12-30'
+ * @param date the Date object
+ * @returns like '2020-12-30'
+ */
+const formatToDate = (date: Date) => {
+  return format(date, 'yyyy-MM-dd');
+};
+
+/**
+ * @summary to format a Date object to '2020-12-30T11:30:00'
+ * @param date the Date object
+ * @returns like '2020-12-30T11:30:00'
+ */
+const formatToDateTime = (date: Date) => {
+  return format(date, "yyyy-MM-dd'T'HH:mm:ss");
+};
+
+/**
+ * @summary Returns the Date object by given gird cell
+ * @param rowIdx the row idx
+ * @param cellBaseTime the start of today
+ */
+const timeFromCellIdx = (rowIdx: number, cellBaseTime: Date): Date => {
+  return addHours(cellBaseTime, rowIdx);
+};
+
+/**
+ * @summary Determines whether a specific time is in the past.
+ * @param paramTime the time to compare
+ * @param curr now
+ */
+const isPast = (paramTime: Date, curr: Date): boolean => {
+  return isBefore(paramTime, curr);
+};
+
+export {
+  formatToDate,
+  formatToDateTime,
+  gridStyleGenerator,
+  isPast,
+  newDate,
+  styleGenerator,
+  timeFromCellIdx,
+};

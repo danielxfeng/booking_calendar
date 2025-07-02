@@ -8,52 +8,28 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
-import { useAtom, useSetAtom } from 'jotai';
-import lodash from 'lodash';
 
-import Loading from '@/components/Loading';
+import FormWrapper from '@/components/BookingForm';
 import Main from '@/components/Main';
-import { CACHE_DURATION } from '@/config';
-import { getSlots } from '@/lib/apiFetcher';
-import { calendarGridAtom, formPropAtom, startAtom } from '@/lib/atoms';
-import { type CalGrid, calGridGenerator } from '@/lib/calGrid';
+import TanQuery from '@/components/TanQuery';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
-import { newDate } from '@/lib/tools';
-
-import BookingForm from './components/BookingForm';
-import { Popover, PopoverContent } from './components/ui/popover';
-
-/**
- * A popover wrapper of the upsert form.
- */
-const FormWrapper = () => {
-  const formProp = useAtom(formPropAtom);
-  return (
-    <Popover open={!!formProp}>
-      <PopoverContent className='w-[300px]'>{formProp && <BookingForm />}</PopoverContent>
-    </Popover>
-  );
-};
 
 /**
  * @summary Layout of the application.
  * @description
- * Mainly, the application is mainly driven by `start` atom:
- *  - When `start` changes, a data fetching (with 5-min cache) is triggered.
- *  - The fetched data (after a deep comparison) is saved to the `grid` atom.
- *  - The `start` and `grid` are bound to most of doms, so they are the main sources of re-rendering
+ * The application is data-driven
+ * - The search param is synced to `startAtom`. String type, and comparison before update
+ * are used to avoid the infinity loops.
+ *   - `startAtom` is subscribed by `date-picker` related components like `operation panel`,
+ *   and data fetcher `TanQuery`
  *
- *  - 3 ways to change the `start`
- *  - The address bar, if there is not a valid one, a normalized date is used instead.
- *  - The OperationRow, user navigation updates `start`.
- *  - The Upsert Form, when user selects a date, it may update `start`.
+ * - FormWrapper is the popover upsert form
+ * - TanQuery is a headless component, helps to fetching the data from API (with a cache),
+ * then updates the `gridAtom` after deep comparison.
  *
- *  - A deep comparison is applied before updating atoms to avoid unnecessary re-renders.
- *    - Since `start` and the address bar are 2-way synced, comparison is also to prevent infinite loops.
- *  - A 5-minute cache is applied via tanstack query to avoid unnecessary fetching.
- *  - When the Upsert form submits, the related cache is invalidated.
+ * - `bookingsAtom` is the main data structure of the application, and is subscribed by
+ * `BookingLayer`, `CalHeads`, and the Upsert form...
  */
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,9 +39,6 @@ const App = () => {
   // Fetch the params from location
   const startFromParams = searchParams.get('start');
 
-  const [start] = useAtom(startAtom);
-  const setCalendarGrid = useSetAtom(calendarGridAtom);
-
   // Update the received token, useEffect to avoid multi-set.
   useEffect(() => {
     const token = searchParams.get('token');
@@ -73,75 +46,51 @@ const App = () => {
       setToken(token);
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete('token');
-      setSearchParams(nextParams);
+      setSearchParams(nextParams, { replace: true }); // remove the url from history.
     }
   }, [searchParams, setSearchParams]);
 
-  // Update the start based on the search params.
+  // Init`startAtom` from search params on first mount
   useEffect(() => {
     setNewStart(startFromParams, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useQuery to handle the cache, api fetching
-  // And it subscribes the start.
-  const {
-    data: grid,
-    error,
-    isError,
-  } = useQuery<CalGrid>({
-    enabled: start !== null,
-    queryKey: ['slots', start],
-    queryFn: async () => {
-      const grid = calGridGenerator(await getSlots(start!), newDate(start!));
-      return grid;
-    },
-    staleTime: 1000 * 60 * CACHE_DURATION,
-  });
-
-  // Update the atom.
-  useEffect(() => {
-    if (!grid) return;
-    setCalendarGrid((prev) => {
-      return lodash.isEqual(prev, grid) ? prev : grid;
-    });
-  }, [grid, setCalendarGrid]);
-
-  // to error boundary since it makes no sense when there is no data.
-  if (isError) throw error;
-
   return (
     <div className='flex min-h-screen w-screen flex-col'>
       {/* Header */}
-      <header className='bg-accent flex h-18 items-center justify-center'>
-        <h1 className='!text-lg font-bold'>Meeting Room Booking System</h1>
+
+      <header className='text-background relative flex h-12 items-center justify-center'>
+        <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
+        <h1 className='relative z-10 !text-2xl font-bold'>Book Me</h1>
       </header>
 
       {/* Main */}
-      <main className='flex-1'>{start ? <Main /> : <Loading />}</main>
+      <main className='flex-1'>
+        <Main />
+      </main>
 
       {/* Footer */}
-      <footer className='bg-accent flex h-18 items-center justify-center'>
-        <div
-          data-role='footer-ads-left'
-          className='text-muted-foreground mx-auto text-center text-sm'
-        >
+      <footer className='bg-accent flex h-18 items-center justify-around'>
+        <div data-role='footer-ads-left' className='text-muted-foreground text-center text-sm'>
           Frontend:{' '}
           <a href='https://danielslab.dev' target='_blank' rel='noreferrer'>
             @xifeng
           </a>
         </div>
-        <div
-          data-role='footer-ads-right'
-          className='text-muted-foreground mx-auto text-center text-sm'
-        >
+        <div data-role='footer-ads-right' className='text-muted-foreground text-center text-sm'>
           Backend:{' '}
           <a href='https://github.com/ibnBaqqi' target='_blank' rel='noreferrer'>
             @sabdulba
           </a>
         </div>
       </footer>
+
+      {/* The popover form */}
       <FormWrapper />
+
+      {/* Headless component for data querying */}
+      <TanQuery />
     </div>
   );
 };

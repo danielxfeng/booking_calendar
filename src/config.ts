@@ -16,8 +16,8 @@ const NUMBERS_OF_ROOMS: number = 2;
  * @summary The available rooms. Need to replaced by an API.
  */
 const ROOM_MAP: { id: number; name: string }[] = [
-  { id: 1, name: 'small' },
-  { id: 2, name: 'big' },
+  { id: 1, name: 'big' },
+  { id: 2, name: 'small' },
 ];
 
 /**
@@ -64,7 +64,7 @@ const CACHE_DURATION: number = 5; // 5 minutes
  * We use `overflow` to support the responsive design for protecting the user experience.
  */
 const CELL_WIDTH_PX: number = 112; // 112px
-const CELL_HEIGHT_PX: number = 24; // 24px
+const CELL_HEIGHT_PX: number = 48; // 24px
 
 export {
   API_URL,

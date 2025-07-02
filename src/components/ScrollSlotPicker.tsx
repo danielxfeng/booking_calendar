@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 type Slot = { slot: Date; avail: boolean };
 
@@ -62,34 +63,52 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
   };
 
   return (
-    <ScrollArea className='h-48 w-40 rounded-md border'>
+    <div className='border-border relative h-36 w-36 rounded-md border'>
       <div
-        className='flex flex-col gap-1 p-2'
-        tabIndex={0}
-        onKeyDown={keyDownHandler}
-        role='listbox'
-        aria-activedescendant={selected}
-      >
-        {slots.map((slot: Slot) => {
-          const value = format(slot.slot, "yyyy-MM-dd'T'HH:mm:ss");
-          const label = format(slot.slot, 'HH:mm');
-          const isSelected = value === selected;
-          return (
-            <Button
-              key={value}
-              ref={isSelected ? selectedRef : undefined}
-              variant={isSelected ? 'default' : slot.avail ? 'outline' : 'ghost'}
-              disabled={!slot.avail || disabled}
-              onClick={() => onSelect(value)}
-              role='option'
-              aria-selected={isSelected}
-            >
-              {label}
-            </Button>
-          );
-        })}
-      </div>
-    </ScrollArea>
+        data-role='mask-t'
+        className={cn(
+          'pointer-events-none absolute top-0 right-0 left-0 z-10 h-8 bg-gradient-to-b from-white/80 to-transparent',
+          disabled && 'pointer-events-auto h-18',
+        )}
+      />
+      <div
+        data-role='mask-b'
+        className={cn(
+          'pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-8 bg-gradient-to-t from-white/80 to-transparent',
+          disabled && 'pointer-events-auto h-18',
+        )}
+      />
+      <ScrollArea className='h-36 w-36 rounded-md'>
+        <div
+          className='flex flex-col gap-1 p-2'
+          tabIndex={0}
+          onKeyDown={keyDownHandler}
+          role='listbox'
+          aria-activedescendant={selected}
+        >
+          {slots.map((slot: Slot) => {
+            const value = format(slot.slot, "yyyy-MM-dd'T'HH:mm:ss");
+            const label = format(slot.slot, 'HH:mm');
+            const isSelected = value === selected;
+            return (
+              <Button
+                key={value}
+                type='button'
+                ref={isSelected ? selectedRef : undefined}
+                variant={slot.avail ? 'secondary' : 'outline'}
+                className={isSelected ? '!bg-primary text-background' : undefined}
+                onClick={() => onSelect(value)}
+                role='option'
+                aria-selected={isSelected}
+                disabled={!disabled && !slot.avail} // if the form is disabled, the `disabled` property here is useless.
+              >
+                {label}
+              </Button>
+            );
+          })}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 

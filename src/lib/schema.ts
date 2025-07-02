@@ -6,7 +6,7 @@
  * @contact intra: @xifeng
  */
 
-import { differenceInDays, differenceInMinutes } from 'date-fns';
+import { addMilliseconds, differenceInMinutes, isSameDay } from 'date-fns';
 import * as z from 'zod/v4';
 
 import { TIME_SLOT_INTERVAL } from '@/config';
@@ -39,13 +39,23 @@ const meetingLengthCheck = (start: string, end: string): boolean => {
 
 /**
  * @summary Returns if the meeting is in the same day.
+ * @description
+ * TODO: Do we support inter-day booking?
  */
 const isSameDayCheck = (start: string, end: string): boolean => {
-  return differenceInDays(new Date(end), new Date(start)) == 0;
+  let endTime = new Date(end);
+
+  // There is a corner case that the end time is at 0:00 of next day.
+  if (endTime.getHours() === 0 && endTime.getMinutes() === 0)
+    endTime = addMilliseconds(endTime, -1);
+
+  return isSameDay(new Date(start), endTime);
 };
 
 /**
  * @summary A enhanced datetime.
+ * @description
+ * TODO: Is it still useful? basically we support any time.
  */
 const dateTimeSchema = z.iso.datetime({ local: true }).refine((val) => timeAdditionalCheck(val), {
   message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots.`,
