@@ -90,6 +90,15 @@ const formatToDate = (date: Date) => {
 };
 
 /**
+ * @summary to format a Date object to '2020-12-30T11:30:00'
+ * @param date the Date object
+ * @returns like '2020-12-30T11:30:00'
+ */
+const formatToDateTime = (date: Date) => {
+  return format(date, "yyyy-MM-dd'T'HH:mm:ss");
+};
+
+/**
  * @summary Returns the Date object by given gird cell
  * @param colIdx the column idx
  * @param rowIdx the row idx
@@ -108,4 +117,12 @@ const isPast = (paramTime: Date, curr: Date): boolean => {
   return isBefore(paramTime, curr);
 };
 
-export { formatToDate, gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx };
+export {
+  formatToDate,
+  formatToDateTime,
+  gridStyleGenerator,
+  isPast,
+  newDate,
+  styleGenerator,
+  timeFromCellIdx,
+};
