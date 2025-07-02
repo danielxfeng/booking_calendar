@@ -74,7 +74,7 @@ const App = () => {
       <footer className='bg-accent flex h-18 items-center justify-around'>
         <div data-role='footer-ads-left' className='text-muted-foreground text-center text-sm'>
           Frontend:{' '}
-          <a href='https://danielslab.dev' target='_blank' rel='noreferrer'>
+          <a href='www.linkedin.com/in/xin-daniel-feng' target='_blank' rel='noreferrer'>
             @xifeng
           </a>
         </div>
