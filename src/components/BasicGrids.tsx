@@ -40,7 +40,6 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
       className={cn('border-border box-border border', past ? 'bg-gray-200/80' : 'bg-gray-50')}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
       onClick={() => {
-        console.log('onclick', cellTime);
         if (past) return;
         setFormProp({ startTime: cellTime });
       }}
