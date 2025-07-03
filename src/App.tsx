@@ -58,12 +58,13 @@ const App = () => {
 
   return (
     <div className='flex min-h-screen w-screen flex-col'>
+      
       {/* Header */}
-
-      <header className='text-background relative flex h-12 items-center justify-center'>
+      {/* TODO: rename as navbar once we are reworking that bit for now can be removed. */}
+      {/* <header className='text-background relative flex h-12 items-center justify-center'>
         <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
         <h1 className='relative z-10 !text-2xl font-bold'>Book Me</h1>
-      </header>
+      </header> */}
 
       {/* Main */}
       <main className='flex-1'>

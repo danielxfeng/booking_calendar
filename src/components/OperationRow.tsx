@@ -57,7 +57,7 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='mb-8 flex h-12 items-center justify-start gap-10 lg:justify-center'
+      className='mb-5 flex h-12 items-center justify-start gap-10 lg:justify-center'
     >
       {/* Prev button */}
       <PaginationItem className='hidden lg:block'>
