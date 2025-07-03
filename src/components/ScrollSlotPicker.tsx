@@ -63,7 +63,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
   };
 
   return (
-    <div className='border-border relative h-36 w-36 rounded-md border'>
+    <div className='border-border relative h-40 w-36 rounded-md border'>
       <div
         data-role='mask-t'
         className={cn(
@@ -78,9 +78,9 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
           disabled && 'pointer-events-auto h-18',
         )}
       />
-      <ScrollArea className='h-36 w-36 rounded-md'>
+      <ScrollArea className='h-40 w-36 rounded-md'>
         <div
-          className='flex flex-col gap-1 p-2'
+          className='flex flex-col gap-1.5 px-2 py-4'
           tabIndex={0}
           onKeyDown={keyDownHandler}
           role='listbox'
@@ -96,7 +96,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
                 type='button'
                 ref={isSelected ? selectedRef : undefined}
                 variant={slot.avail ? 'secondary' : 'outline'}
-                className={isSelected ? '!bg-primary text-background' : undefined}
+                className={isSelected ? 'border-2 border-primary' : undefined}
                 onClick={() => onSelect(value)}
                 role='option'
                 aria-selected={isSelected}
