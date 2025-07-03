@@ -85,6 +85,7 @@ npm run dev
 
 ## Project Structure
 
+```
 src/
 ├── components/ # All UI components
 │ ├── ui/ # Components from ShadCN UI
@@ -114,6 +115,7 @@ src/
 │
 ├── config.ts # Global configuration
 ├── App.tsx # Application entry point
+```
 
 ## License
 
