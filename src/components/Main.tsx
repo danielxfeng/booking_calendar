@@ -27,7 +27,7 @@ const Main = () => (
     data-role='main-wrapper'
     className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
   >
-    <div data-role='main' className='mx-4 my-12 h-fit w-fit'>
+    <div data-role='main' className='mx-4 mt-5 mb-12 h-fit w-fit'>
       {/* Operation row */}
       <OperationRow />
 
