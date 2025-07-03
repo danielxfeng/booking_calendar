@@ -237,11 +237,11 @@ const BookingForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((data) => upsertMutation.mutate(data))}
-          className='space-y-8 p-4'
+          className='space-y-8 px-4'
         >
           <div data-role='booking-info' className='flex flex-col gap-2'>
             {/* Date, now changing of booking date is disabled currently. */}
-            <div data-role='booked-date'>{`Date: ${format(baseTime, 'eee dd MMM')}`}</div>
+            <div data-role='booked-date'>{format(baseTime, 'eee dd MMM')}</div>
 
             {/* Optional BookedBy */}
             {prop.booking?.bookedBy && (
@@ -262,21 +262,21 @@ const BookingForm = () => {
             name='roomId'
             render={({ field }) => (
               <FormItem className='space-y-3'>
-                <FormLabel>
+                <FormLabel className='font-bold text-sm'>
                   {formType === 'insert' ? 'Choose a meeting room:' : 'The booked meeting room:'}
                 </FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={(val) => field.onChange(Number(val))}
                     value={String(field.value)}
-                    className='flex'
+                    className='flex flex-col'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name }) => (
                       <div key={id} className='flex items-center gap-3'>
                         <RadioGroupItem
                           value={String(id)}
-                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary data-[state=checked]:ring-2'
+                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary data-[state=checked]:ring-2 p-1.5 rounded-full border-2'
                         />
                         <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
                           {name}
@@ -292,7 +292,7 @@ const BookingForm = () => {
           <hr />
 
           {/* Slot selector */}
-          <p className='mb-2 pb-0'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
+          <p className='mb-2 pb-0 font-bold text-sm'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
           <div className='flex justify-between gap-3 p-4'>
             {/* Start time selector */}
             <FormField
@@ -353,7 +353,7 @@ const BookingForm = () => {
             {/* Upsert submit */}
             {formType === 'insert' && (
               <Button
-                variant='outline'
+                className='flex w-full'
                 type='submit'
                 disabled={form.formState.isSubmitting || !form.formState.isValid}
               >

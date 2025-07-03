@@ -11,12 +11,46 @@ Abdul initialized the idea and developed an excellent backend using **Spring Boo
 
 ## Installation
 
-```bash
-git clone https://github.com/danielxfeng/booking_calendar.git
-cd booking_calendar
-npm install
-npm run dev
-```
+To run this booking calendar application locally, follow these steps:
+
+### Prerequisites
+Make sure you have the following installed on your system:
+- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/)
+
+### Step-by-step Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/danielxfeng/booking_calendar.git
+   ```
+
+2. **Navigate to the project directory**
+   ```bash
+   cd booking_calendar
+   ```
+
+3. **Install dependencies**
+   ```bash
+   npm install
+   ```
+   This will install all required packages listed in `package.json`
+
+4. **Set up environment variables**
+   Create a `.env` file in the root directory with the following content:
+   ```bash
+    cp .env.sample .env
+   ```
+   
+  > [!NOTE]
+  > Replace `http://localhost:8080` with your actual backend API URL. If you're running the backend locally
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   The application should automatically open at `http://localhost:5173` (or another port if 5173 is busy)
 
 ---
 
