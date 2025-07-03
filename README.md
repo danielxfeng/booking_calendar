@@ -28,7 +28,7 @@ npm run dev
 
 - Delete an existing booking
 
-- **Role-based access control** (ABAC):
+- **Role-based access control** (RBAC):
   - **Staff** can delete **any** booking
   - **Students** can only delete **their own** bookings
 
