@@ -71,17 +71,15 @@ const App = () => {
       </main>
 
       {/* Footer */}
-      <footer className='bg-accent flex h-18 items-center justify-around'>
-        <div data-role='footer-ads-left' className='text-muted-foreground text-center text-sm'>
-          Frontend:{' '}
-          <a href='https://www.linkedin.com/in/xin-daniel-feng' target='_blank' rel='noreferrer'>
-            @xifeng
+      <footer className='bg-accent flex h-14 items-center justify-center'>
+        <div className='text-muted-foreground text-center text-sm'>
+          Developed with 🩵 by{' '}
+          <a href='https://www.linkedin.com/in/xin-daniel-feng' target='_blank' rel='noreferrer' className='hover:underline'>
+            xifeng
           </a>
-        </div>
-        <div data-role='footer-ads-right' className='text-muted-foreground text-center text-sm'>
-          Backend:{' '}
-          <a href='https://github.com/ibnBaqqi' target='_blank' rel='noreferrer'>
-            @sabdulba
+          {' '}and{' '}
+          <a href='https://github.com/ibnBaqqi' target='_blank' rel='noreferrer' className='hover:underline'>
+            sabdulba
           </a>
         </div>
       </footer>
