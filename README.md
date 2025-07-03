@@ -5,6 +5,7 @@ Abdul initialized the idea and developed an excellent backend using **Spring Boo
 
 - **Live Preview:** [booking-calendar-chi.vercel.app](https://booking-calendar-chi.vercel.app)  
 - **GitHub Repo:** [github.com/danielxfeng/booking_calendar](https://github.com/danielxfeng/booking_calendar)
+- **Link to Backend:** [https://github.com/IbnBaqqi/book-me](https://github.com/IbnBaqqi/book-me)
 
 ---
 
@@ -46,31 +47,36 @@ npm run dev
   - They are separated to reduce re-renders and decouple UI from logic.
 
 - **TanStack Query** for auto-fetching and intelligent caching
-  Ensures a smooth user experience when switching calendar views, with minimal network requests and loading delays.
+  - Ensures a smooth user experience when switching calendar views, with minimal network requests and loading delays.
 
 - **Axios interceptor** with token expiration handling
-  Gracefully attempts to recover expired tokens without disrupting the user.
+  - Gracefully attempts to recover expired tokens without disrupting the user.
 
 - **Custom ScrollSlotPicker**
-  A UI component designed from scratch to offer an intuitive way to select time slots.
+  - A UI component designed from scratch to offer an intuitive way to select time slots.
 
 - **URL and state sync**
-  Enables deep-linking and state persistence when navigating between dates or sharing calendar views.
+  - Enables deep-linking and state persistence when navigating between dates or sharing calendar views.
 
 - **Jotai** for clean and minimalistic state management
-  Enables consistent state sharing across components.
+  - Enables consistent state sharing across components.
 
 - **Zod** schema validation integrated with **React Hook Form**
-  Ensures strong typing and robust form validation logic.
+  - Ensures strong typing and robust form validation logic.
 
 - **Vitest** for unit tests
-  Helps maintain code quality.
+  - Helps maintain code quality.
 
 ---
 
 ## Known Issues & Future Improvements
 
 - UI is unstyled (basic prototype only)
+- Support darkmode
+- Scroll in view does not work on mobile (IOS?)
+- Different color for my bookings
+- Just keep the token in memory (It's fine)
+- To Optimize the form labels.
 - No logout button
 - The "auto-find empty slot" algorithm can be optimized
 - Cannot edit existing bookings
