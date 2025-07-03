@@ -35,11 +35,11 @@ const newWeekBookings = (): WeekBookings => {
 };
 
 /**
- * @summary Generate a calendar grid from given rooms
+ * @summary Generate the data structure of weekBooking.
  *
- * @param rooms the array of rooms.
- * @param startDate the start date of calendar table.
- * @returns a table view.
+ * @param rooms the fetched data from API.
+ * @param startDate the start date of calendar.
+ * @returns an instance of WeekBooking.
  */
 const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
   // Validates the inComing data.
