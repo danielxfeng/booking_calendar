@@ -97,11 +97,11 @@ src/
 │ ├── ui/ # Components from ShadCN UI
 │ ├── BasicGrids/ # Base time × room grid layout
 │ ├── BookingForm/ # A "sheet" component for booking create/update
-│ ├── CalendarHeader/ # Week header and date navigation
+│ ├── CalendarHeader/ # Week header
 │ ├── ErrorBoundary/ # Global error fallback UI
 │ ├── Loading/ # Spinner/loading placeholder
 │ ├── Main/ # Main calendar layout entry
-│ ├── OperationRow/ # Top operation bar (add, filter, etc.)
+│ ├── OperationRow/ # Top operation bar
 │ ├── ScrollSlotPicker/ # Custom scroll-based time slot picker
 │ ├── TanQuery/ # Headless wrappers for fetching + hooks
 │
