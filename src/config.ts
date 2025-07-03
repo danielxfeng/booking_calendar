@@ -15,9 +15,9 @@ const NUMBERS_OF_ROOMS: number = 2;
 /**
  * @summary The available rooms. Need to replaced by an API.
  */
-const ROOM_MAP: { id: number; name: string }[] = [
-  { id: 1, name: 'big' },
-  { id: 2, name: 'small' },
+const ROOM_MAP: { id: number; name: string; color: string }[] = [
+  { id: 1, name: 'big', color: 'bg-blue-600/20 border-blue-500/40' },
+  { id: 2, name: 'small', color: 'bg-cyan-600/20 border-cyan-500/40' },
 ];
 
 /**

@@ -64,10 +64,13 @@ const BookedBlock = ({
   slot: BookingFromApi;
 }) => {
   const setFormProp = useSetAtom(formPropAtom);
-  const roomName = ROOM_MAP.find((r) => r.id === roomId)?.name;
+  const room = ROOM_MAP.find((r) => r.id === roomId);
+  const roomName = room?.name;
+  const roomColor = room?.color || 'bg-gray-600/20';
+  
   return (
     <div
-      className='pointer-events-auto absolute flex items-start justify-center rounded-sm border-2 border-blue-500/60 bg-blue-800/20 text-xs'
+      className={`pointer-events-auto absolute flex items-start justify-center rounded-sm border ${roomColor}`}
       style={getPosition(col, slot.start, slot.end, roomId)}
       title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
@@ -76,7 +79,8 @@ const BookedBlock = ({
         setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) })
       }
     >
-      {roomName}
+      <span className='text-xs opacity-80'>{roomName}</span>
+      
     </div>
   );
 };
