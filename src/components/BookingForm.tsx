@@ -189,7 +189,7 @@ const BookingForm = () => {
   return (
     <div
       data-role='booking-upsert-form'
-      className='flex h-screen w-screen flex-col justify-start lg:h-96 lg:w-96'
+      className='flex max-h-[100dvh] w-screen flex-col justify-start overflow-y-auto py-6 lg:h-96 lg:w-96'
     >
       <SheetHeader>
         <SheetTitle>{titlePrefix}</SheetTitle>
