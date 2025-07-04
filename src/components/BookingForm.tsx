@@ -51,6 +51,7 @@ import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
 import type { DayBookings } from '@/lib/weekBookings';
+import { Calendar, MapPin, User } from 'lucide-react';
 
 type FormType = 'view' | 'insert' | 'update';
 
@@ -239,18 +240,28 @@ const BookingForm = () => {
           onSubmit={form.handleSubmit((data) => upsertMutation.mutate(data))}
           className='space-y-8 px-4'
         >
-          <div data-role='booking-info' className='flex flex-col gap-2'>
+          <div data-role='booking-info' className='flex flex-col gap-3'>
             {/* Date, now changing of booking date is disabled currently. */}
-            <div data-role='booked-date'>{format(baseTime, 'eee dd MMM')}</div>
+            <div className='flex items-center gap-3'>
+              <Calendar className='h-4 w-4' />
+              <div data-role='booked-date' className='text-sm'>{format(baseTime, 'eee dd MMM')}</div>
+            </div>
 
             {/* Optional BookedBy */}
             {prop.booking?.bookedBy && (
-              <div data-role='booked-by'>{`Booked By: ${prop.booking?.bookedBy}`}</div>
+              <div className='flex items-center gap-3'>
+                <User className='h-4 w-4' />
+                <div data-role='booked-by' className='text-sm'>{prop.booking?.bookedBy}</div>
+              </div>
             )}
 
             {/* Optional RoomId */}
+            {/* TODO: Might be a bit repetitive with the room selector */}
             {formType !== 'insert' && (
-              <div data-role='booked-room-name'>{`Room: ${ROOM_MAP.find((room) => room.id === prop.roomId)?.name}`}</div>
+              <div className='flex items-center gap-3'>
+                <MapPin className='h-4 w-4' />
+                <div data-role='booked-room-name' className='text-sm capitalize'>{ROOM_MAP.find((room) => room.id === prop.roomId)?.name}</div>
+              </div>
             )}
           </div>
 
