@@ -105,20 +105,13 @@ Make sure you have the following installed on your system:
 
 ## Known Issues & Future Improvements
 
-- UI is unstyled (basic prototype only)
-- Support darkmode
-- Scroll in view does not work on mobile (IOS?)
-- Different color for my bookings
-- Just keep the token in memory (It's fine)
-- To Optimize the form labels.
+- UI is unstyled (Partly solved)
+- A better radio btn?
 - No logout button
 - The "auto-find empty slot" algorithm can be optimized
-- Cannot edit existing bookings
 - Booking form does not allow changing the selected date
 - Does not support inter-day bookings (Do we need that?)
-- Use different background colors for different meeting rooms
 - Display more booking info depending on block size
-- Add a fixed table header for better scroll alignment
 - Add more tests (unit, integration, E2E)
 
 ---
