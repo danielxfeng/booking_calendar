@@ -6,7 +6,7 @@
  * @contact intra: @xifeng
  */
 
-import { addDays, format, isMonday, previousMonday } from 'date-fns';
+import { addDays, format, isMonday, isSameDay, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
 import { CELL_WIDTH_PX } from '@/config';
@@ -25,11 +25,11 @@ const CalendarHeader = () => {
 
   // Set start date, fallback to today.
   let startDate = new Date(start);
+  const today = new Date();
   if (isNaN(startDate.getTime())) {
-    const today = new Date();
     startDate = isMonday(today) ? today : previousMonday(today);
   }
-  const weekArr = Array.from({ length: 7 }, (_, i) => format(addDays(startDate, i), 'eee dd MMM'));
+  const weekArr = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
 
   return (
@@ -42,17 +42,23 @@ const CalendarHeader = () => {
       ></div>
 
       {/* Week day headers */}
-      {weekArr.map((v) => (
-        <div
-          key={`calendar-head-${v}`}
-          className={cn(
-            'box-border flex h-12 items-center justify-center border text-sm font-semibold',
-          )}
-          style={styleWidth}
-        >
-          {v}
-        </div>
-      ))}
+      {weekArr.map((d) => {
+        const day = format(d, 'eee');
+        const date = format(d, 'dd MMM');
+        return (
+          <div
+            key={`calendar-head-${day}`}
+            className={cn(
+              'box-border flex h-12 flex-col items-center justify-center border text-xs',
+              isSameDay(d, today) && 'font-bold',
+            )}
+            style={styleWidth}
+          >
+            <div>{day}</div>
+            <div>{date}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };

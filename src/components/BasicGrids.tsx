@@ -69,7 +69,7 @@ const BasicGrids = memo(() => {
           {/* Label */}
           <div
             key={`cal-side-row-${row}`}
-            className='border-border box-border flex items-center justify-center border text-sm font-semibold'
+            className='border-border box-border flex items-center justify-center border text-xs font-semibold'
             style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
           >
             {`${row.toString().padStart(2, '0')}:00`}
