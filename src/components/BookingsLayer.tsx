@@ -11,9 +11,10 @@ import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import Loading from '@/components/Loading';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, ROOM_MAP } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, CURR_USER_COLOR, ROOM_MAP } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
+import { getUser } from '@/lib/userStore';
 import type { WeekBookings } from '@/lib/weekBookings';
 
 /**
@@ -66,8 +67,14 @@ const BookedBlock = ({
   const setFormProp = useSetAtom(formPropAtom);
   const room = ROOM_MAP.find((r) => r.id === roomId);
   const roomName = room?.name;
-  const roomColor = room?.color || 'bg-gray-600/20';
-  
+
+  const user = getUser();
+  //const user = { intra: 'Daniel', role: 'null', token: 'd' }; //for local debugging
+  const isCurrUser = slot.bookedBy != null && slot.bookedBy == user?.intra;
+
+  // order: 1 currUser 2 room's color, 3 fallback
+  const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
+
   return (
     <div
       className={`pointer-events-auto absolute flex items-start justify-center rounded-sm border ${roomColor}`}
@@ -75,12 +82,13 @@ const BookedBlock = ({
       title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
-      onClick={() =>
-        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) })
-      }
+      onClick={() => {
+        // only staff or booked student can review/edit a booking.
+        if (user?.role !== 'staff' && !isCurrUser) return;
+        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
+      }}
     >
       <span className='text-xs opacity-80'>{roomName}</span>
-      
     </div>
   );
 };

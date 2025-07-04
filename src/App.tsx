@@ -14,7 +14,7 @@ import Main from '@/components/Main';
 import TanQuery from '@/components/TanQuery';
 import { Toaster } from '@/components/ui/sonner';
 import { useStartController } from '@/lib/hooks';
-import { setToken } from '@/lib/tokenStore';
+import { setUser } from '@/lib/userStore';
 
 /**
  * @summary Layout of the application.
@@ -44,9 +44,14 @@ const App = () => {
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
-      setToken(token);
+      const intra = searchParams.get('intra');
+      const rawRole = searchParams.get('role');
+      const role = rawRole === 'student' || rawRole === 'staff' ? rawRole : null;
+      setUser({ token, intra, role });
       const nextParams = new URLSearchParams(searchParams);
       nextParams.delete('token');
+      nextParams.delete('intra');
+      nextParams.delete('role');
       setSearchParams(nextParams, { replace: true }); // remove the url from history.
     }
   }, [searchParams, setSearchParams]);
