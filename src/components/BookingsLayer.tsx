@@ -84,7 +84,8 @@ const BookedBlock = ({
       }`}
       onClick={() => {
         // only staff or booked student can review/edit a booking.
-        if (user?.role !== 'staff' && !isCurrUser) return;
+        // TEMP: Permission check disabled until backend returns `intra` and `role`
+        // if (user?.role !== 'staff' && !isCurrUser) return;
         setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
       }}
     >
