@@ -401,7 +401,6 @@ const BookingForm = () => {
                     <AlertDialogAction
                       onClick={() => deleteMutation.mutate()}
                       disabled={deleteMutation.isPending}
-                      className='text-destructive'
                     >
                       {deleteMutation.isPending ? 'Deleting...' : 'Continue'}
                     </AlertDialogAction>
