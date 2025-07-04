@@ -6,9 +6,10 @@
  */
 
 import axios from 'axios';
+import { getToken, setToken } from '@/lib/tokenStore';
+
 
 import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
-import { getUser, setUser } from '@/lib/userStore';
 
 // Init a singleton instance
 const axiosFetcher = axios.create({
@@ -18,14 +19,9 @@ const axiosFetcher = axios.create({
 
 // Attach the token to requests.
 axiosFetcher.interceptors.request.use((config) => {
-  const isAuthDisabled = import.meta.env.VITE_IS_AUTH === 'false' || 
-                        import.meta.env.VITE_IS_AUTH === false ||
-                        import.meta.env.VITE_IS_AUTH === '0' ||
-                        import.meta.env.VITE_IS_AUTH === 0;
-  
-  if (isAuthDisabled) return config;
+  if (import.meta.env.VITE_IS_AUTH === 'false') return config;
 
-  const token = getUser()?.token;
+  const token = getToken();
   if (!token) {
     window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
     return Promise.reject(new axios.Cancel('No token, redirecting.'));
@@ -43,7 +39,7 @@ axiosFetcher.interceptors.response.use(
       error.response?.status === 403 ||
       error.response?.status === 498
     ) {
-      setUser(null);
+      setToken(null);
       window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
       return Promise.reject(new axios.Cancel('No token, redirecting.'));
     }
