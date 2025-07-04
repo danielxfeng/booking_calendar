@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router';
 import FormWrapper from '@/components/BookingForm';
 import Main from '@/components/Main';
 import TanQuery from '@/components/TanQuery';
+import { Toaster } from '@/components/ui/sonner';
 import { useStartController } from '@/lib/hooks';
 import { setToken } from '@/lib/tokenStore';
 
@@ -58,7 +59,6 @@ const App = () => {
 
   return (
     <div className='flex min-h-screen w-screen flex-col'>
-      
       {/* Header */}
       {/* TODO: rename as navbar once we are reworking that bit for now can be removed. */}
       {/* <header className='text-background relative flex h-12 items-center justify-center'>
@@ -75,11 +75,21 @@ const App = () => {
       <footer className='bg-accent flex h-14 items-center justify-center'>
         <div className='text-muted-foreground text-center text-sm'>
           Developed with 🩵 by{' '}
-          <a href='https://www.linkedin.com/in/xin-daniel-feng' target='_blank' rel='noreferrer' className='hover:underline'>
+          <a
+            href='https://www.linkedin.com/in/xin-daniel-feng'
+            target='_blank'
+            rel='noreferrer'
+            className='hover:underline'
+          >
             xifeng
-          </a>
-          {' '}and{' '}
-          <a href='https://github.com/ibnBaqqi' target='_blank' rel='noreferrer' className='hover:underline'>
+          </a>{' '}
+          and{' '}
+          <a
+            href='https://github.com/ibnBaqqi'
+            target='_blank'
+            rel='noreferrer'
+            className='hover:underline'
+          >
             sabdulba
           </a>
         </div>
@@ -90,6 +100,9 @@ const App = () => {
 
       {/* Headless component for data querying */}
       <TanQuery />
+
+      {/* A toaster for sending notification */}
+      <Toaster position='top-center' duration={2000} richColors />
     </div>
   );
 };

@@ -9,6 +9,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import * as Sentry from '@sentry/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import App from '@/App';
@@ -16,14 +17,12 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 
 import '@/index.css';
 import './instrument';
-import * as Sentry from '@sentry/react';
-
 
 const queryClient = new QueryClient();
 
 const container = document.getElementById('root')!;
 const root = createRoot(container, {
-    // Callback called when an error is thrown and not caught by an ErrorBoundary.
+  // Callback called when an error is thrown and not caught by an ErrorBoundary.
   onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
     console.warn('Uncaught error', error, errorInfo.componentStack);
   }),
