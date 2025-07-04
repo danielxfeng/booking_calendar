@@ -6,12 +6,9 @@
  */
 
 import axios from 'axios';
-import { getToken, setToken } from '@/lib/tokenStore';
-
 
 import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
-
 
 // Init a singleton instance
 const axiosFetcher = axios.create({
