@@ -50,7 +50,7 @@ const CalendarHeader = () => {
             key={`calendar-head-${day}`}
             className={cn(
               'box-border flex h-12 flex-col items-center justify-center border text-xs',
-              isSameDay(d, today) && 'font-bold',
+              isSameDay(d, today) && 'text-red-500 font-bold',
             )}
             style={styleWidth}
           >
