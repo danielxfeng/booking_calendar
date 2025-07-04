@@ -251,7 +251,7 @@ const BookingForm = () => {
             {prop.booking?.bookedBy && (
               <div className='flex items-center gap-3'>
                 <User className='h-4 w-4' />
-                <div data-role='booked-by' className='text-sm capitalize'>{prop.booking?.bookedBy}</div>
+                <div data-role='booked-by' className='text-sm'>{prop.booking?.bookedBy}</div>
               </div>
             )}
 
