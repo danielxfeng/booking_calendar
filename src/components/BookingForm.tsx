@@ -188,7 +188,7 @@ const BookingForm = () => {
       return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
     },
     onSuccess: () => {
-      handleSuccess(start, 'Cool! Your meeting room is booked.');
+      handleSuccess(start, 'Your booking is successfully canceled.');
     },
     onError: (error: unknown) => {
       handleError(error);
@@ -206,7 +206,7 @@ const BookingForm = () => {
       });
     },
     onSuccess: () => {
-      handleSuccess(start, 'Your booking is successfully canceled.');
+      handleSuccess(start, 'Cool! Your meeting room is booked.');
     },
     onError: (error: unknown) => {
       handleError(error);
