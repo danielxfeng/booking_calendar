@@ -69,7 +69,7 @@ const BookedBlock = ({
   const roomName = room?.name;
 
   const user = getUser();
-  //const user = { intra: 'Daniel', role: 'null', token: 'd' }; for local debugging
+  //const user = { intra: 'Daniel', role: 'null', token: 'd' }; //for local debugging
   const isCurrUser = slot.bookedBy != null && slot.bookedBy == user?.intra;
 
   // order: 1 currUser 2 room's color, 3 fallback
@@ -82,9 +82,11 @@ const BookedBlock = ({
       title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
-      onClick={() =>
-        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) })
-      }
+      onClick={() => {
+        // only staff or booked student can review/edit a booking.
+        if (user?.role !== 'staff' && !isCurrUser) return;
+        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
+      }}
     >
       <span className='text-xs opacity-80'>{roomName}</span>
     </div>
