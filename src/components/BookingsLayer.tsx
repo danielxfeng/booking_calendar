@@ -17,11 +17,6 @@ import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
 import type { WeekBookings } from '@/lib/weekBookings';
 
-/**
- * @summary A helper function to get the position of a booking block
- * @describe
- * Basically it calculates the offset based on the start time, end time, and roomId.
- */
 const getPosition = (col: number, start: string, end: string, roomId: number): CSSProperties => {
   const totalHeight = CELL_HEIGHT_PX * 24;
   const totalWidth = CELL_WIDTH_PX * 8;
@@ -48,13 +43,7 @@ const getPosition = (col: number, start: string, end: string, roomId: number): C
   return { position: 'absolute', top, left, width, height };
 };
 
-/**
- * @summary a booked block
- * @description
- * TODO:
- * how to support different background colors for different meeting rooms?
- * displays different data depends on the space?
- */
+// TODO:displays different data depends on the space?
 const BookedBlock = ({
   roomId,
   col,
@@ -94,9 +83,6 @@ const BookedBlock = ({
   );
 };
 
-/**
- * @summary the covered layer of booked slots
- */
 const BookingsLayer = () => {
   const start = useAtomValue(startAtom);
   const bookings: WeekBookings = useAtomValue(bookingsAtom);

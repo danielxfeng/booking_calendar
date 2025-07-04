@@ -19,18 +19,10 @@ import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
 import { formatToDate, newDate } from '@/lib/tools';
 
-/**
- * @summary An operation row includes:
- * @description
- * NavLeft, DatePicker, Today, NavRight. The pagination buttons only display on desktop view.
- * like: <-, Mon 05 Jun - Sun 12 Jun, Today,  ->
- * - Subscribe the `startAtom`
- */
 const OperationRow = () => {
   const { setNewStart } = useStartController();
   const start = useAtomValue(startAtom);
 
-  // helper for date picker.
   const [open, setOpen] = useState(false);
 
   // To prevent there is not a start.
@@ -38,11 +30,8 @@ const OperationRow = () => {
 
   const startDate = newDate(start);
 
-  // helper for pagination.
   const prevMon = formatToDate(previousMonday(startDate));
   const nextMon = formatToDate(nextMonday(startDate));
-
-  // helper for displaying the date picker.
   const nextSun = nextSunday(startDate);
 
   // // navigate to updated start date.

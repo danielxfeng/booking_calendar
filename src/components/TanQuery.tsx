@@ -38,13 +38,11 @@ const TanQuery = memo(() => {
     staleTime: 1000 * 60 * CACHE_DURATION,
   });
 
-  // Update the atom, deep comparison first.
   useEffect(() => {
     if (!bookings) return;
     setBookingsAtom((prev) => (isEqual(prev, bookings) ? prev : bookings));
   }, [bookings, setBookingsAtom]);
 
-  // Redirect to error boundary.
   useEffect(() => {
     if (isError) {
       ThrowInvalidIncomingDataErr('Data fetching error.');

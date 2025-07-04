@@ -56,11 +56,7 @@ import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
 
-/**
- * @summary Represents the properties of upsert form.
- * @description
- * - null: no form should be shown.
- */
+// set to null to close the form.
 type FormProp = {
   startTime: Date;
   booking?: BookingFromApi;
@@ -69,9 +65,6 @@ type FormProp = {
 
 const overlappingErrorMessage = 'The booked slots are not available.';
 
-/**
- * @summary Handle the error from posting data from API.
- */
 const parseErrorMsg = (error: unknown): string => {
   if (error instanceof AxiosError) {
     return error.response?.data?.message ?? error.message ?? 'Server responded with an error.';
@@ -82,20 +75,12 @@ const parseErrorMsg = (error: unknown): string => {
   return 'Unknown error occurred.';
 };
 
-/**
- * @summary The View/Insert/Delete form for a booking
- * @description
- * TODO:  Allow users to modify a booking? Changing date in form?
- * Can not find an available slot when the start is not from like 8:00, 9:00...
- *
- *
- */
+// TODO:  Allow users to modify a booking? Changing date in form?
+// TODO:  Can not find an available slot when the start is not from like 8:00, 9:00...
 const BookingForm = () => {
-  // Subscribe the atoms to tracking the data changing.
   const bookings = useAtomValue(bookingsAtom);
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
-  // We just need the current value here, bc we can get the newest data when `bookings` is updated.
   const start = useStore().get(startAtom);
 
   // If formProp is null, the sheet should not be open, so it's safe here.
@@ -103,7 +88,6 @@ const BookingForm = () => {
 
   const startDate = newDate(start);
 
-  // We just need one day: baseTime
   const dayShift = differenceInCalendarDays(prop.startTime, startDate);
   if (dayShift < 0 || dayShift > 6)
     // should not be here.
@@ -113,7 +97,6 @@ const BookingForm = () => {
   const baseTime = addDays(startDate, dayShift);
   const existingBookings: DayBookings = bookings[dayShift];
 
-  // Get the type of form, 'view', 'insert', 'update', and it's initialized values.
   const [formType, defaultValues]: [FormType, UpsertBooking] = initForm(
     prop,
     existingBookings,
@@ -121,21 +104,17 @@ const BookingForm = () => {
     prop.roomId,
   );
 
-  // Init a RHF.
   const form = useForm<UpsertBooking>({
     resolver: zodResolver(UpsertBookingSchema),
     defaultValues: defaultValues,
     mode: 'onChange',
   });
 
-  // Hook to track the value change.
   const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
     control: form.control,
     name: ['roomId', 'start', 'end'],
   });
 
-  // 2 slots is required, it mainly tracks the changing of roomId.
-  // It reads the bookings from `day`, then set `unavailable` to booked slots.
   const startSlots = useMemo(() => {
     return calculateSlots(existingBookings, 'start', watchedRoomId, baseTime);
   }, [existingBookings, watchedRoomId, baseTime]);
@@ -144,8 +123,7 @@ const BookingForm = () => {
     return calculateSlots(existingBookings, 'end', watchedRoomId, baseTime, prop.booking?.id);
   }, [existingBookings, watchedRoomId, prop.booking?.id, baseTime]);
 
-  // To validate the overlapping booking, since the overlapping check is not included in zod.
-
+  // To validate the overlapping booking
   useEffect(() => {
     const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
 
@@ -155,11 +133,6 @@ const BookingForm = () => {
     else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
-  /**
-   * @summary Post-process when the post/put/delete is done..
-   * @description
-   * We clear the cache, and clear the atoms here, and send a notification.
-   */
   const handleSuccess = (start: string, msg: string) => {
     toast.success(msg);
     queryClient.invalidateQueries({
@@ -168,9 +141,6 @@ const BookingForm = () => {
     setFormProp(null);
   };
 
-  /**
-   * @summary Post-process when the post/put/delete is on error.
-   */
   const handleError = (error: unknown) => {
     queryClient.invalidateQueries({ queryKey: ['slots', start] });
     form.setError('root', {
@@ -179,10 +149,8 @@ const BookingForm = () => {
     });
   };
 
-  // tanStack query to handle the API request.
   const queryClient = useQueryClient();
 
-  // deletion handler.
   const deleteMutation = useMutation({
     mutationFn: () => {
       return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
@@ -195,11 +163,9 @@ const BookingForm = () => {
     },
   });
 
-  // upsert handler.
   const upsertMutation = useMutation({
     mutationFn: (data: UpsertBooking) => {
       return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, {
-        // Backend uses different field names.
         roomId: data.roomId,
         startTime: data.start,
         endTime: data.end,
@@ -213,7 +179,6 @@ const BookingForm = () => {
     },
   });
 
-  // Sheet title
   const titlePrefix =
     formType === 'insert'
       ? 'Book a meeting room'
@@ -238,7 +203,7 @@ const BookingForm = () => {
           className='space-y-8 px-4'
         >
           <div data-role='booking-info' className='flex flex-col gap-3'>
-            {/* Date, now changing of booking date is disabled currently. */}
+            {/* Date */}
             <div className='flex items-center gap-3'>
               <Calendar className='h-4 w-4' />
               <div data-role='booked-date' className='text-sm'>
@@ -415,9 +380,6 @@ const BookingForm = () => {
   );
 };
 
-/**
- * A sheet wrapper of the upsert form.
- */
 const FormWrapper = () => {
   const [formProp, setFormProp] = useAtom(formPropAtom);
   return (

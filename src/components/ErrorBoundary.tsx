@@ -8,9 +8,6 @@
 import type { ReactNode } from 'react';
 import { Component } from 'react';
 
-/**
- * @summary To handle the error.
- */
 class ErrorBoundary extends Component<
   { children: ReactNode },
   { hasError: boolean; error?: Error }

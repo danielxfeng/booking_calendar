@@ -16,31 +16,12 @@ import { Toaster } from '@/components/ui/sonner';
 import { useStartController } from '@/lib/hooks';
 import { setUser } from '@/lib/userStore';
 
-/**
- * @summary Layout of the application.
- * @description
- * The application is data-driven
- * - The search param is synced to `startAtom`. String type, and comparison before update
- * are used to avoid the infinity loops.
- *   - `startAtom` is subscribed by `date-picker` related components like `operation panel`,
- *   and data fetcher `TanQuery`
- *
- * - FormWrapper is the popover upsert form
- * - TanQuery is a headless component, helps to fetching the data from API (with a cache),
- * then updates the `gridAtom` after deep comparison.
- *
- * - `bookingsAtom` is the main data structure of the application, and is subscribed by
- * `BookingLayer`, `CalHeads`, and the Upsert form...
- */
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  // The custom hook to manage the start and the search params.
   const { setNewStart } = useStartController();
 
-  // Fetch the params from location
   const startFromParams = searchParams.get('start');
 
-  // Update the received token, useEffect to avoid multi-set.
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
@@ -56,7 +37,6 @@ const App = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Init`startAtom` from search params on first mount
   useEffect(() => {
     setNewStart(startFromParams, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,13 +80,10 @@ const App = () => {
         </div>
       </footer>
 
-      {/* The popover form */}
       <FormWrapper />
 
-      {/* Headless component for data querying */}
       <TanQuery />
 
-      {/* A toaster for sending notification */}
       <Toaster position='top-center' duration={2000} richColors />
     </div>
   );

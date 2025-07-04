@@ -10,13 +10,11 @@ import axios from 'axios';
 import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
 
-// Init a singleton instance
 const axiosFetcher = axios.create({
   baseURL: API_URL,
   timeout: FETCHER_TIMEOUT,
 });
 
-// Attach the token to requests.
 axiosFetcher.interceptors.request.use((config) => {
   if (import.meta.env.VITE_IS_AUTH === 'false') return config;
 
@@ -29,7 +27,6 @@ axiosFetcher.interceptors.request.use((config) => {
   return config;
 });
 
-// Redirects to auth page on 401, or 498.
 axiosFetcher.interceptors.response.use(
   (response) => response,
   (error) => {

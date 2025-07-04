@@ -14,34 +14,21 @@ import { TIME_SLOT_INTERVAL } from '@/config';
 const MIN_MEETING_MINUTES = 15;
 const MAX_USERNAME_LENGTH = 100;
 
-/**
- * @summary Returns if the time is valid
- */
 const timeAdditionalCheck = (datetime: string): boolean => {
   const date = new Date(datetime);
   if (isNaN(date.getTime())) return false;
   return date.getMinutes() % TIME_SLOT_INTERVAL === 0;
 };
 
-/**
- * @summary Returns if the start time is in future.
- */
 const laterThanNowCheck = (start: string): boolean => {
   return differenceInMinutes(new Date(start), new Date()) >= MIN_MEETING_MINUTES;
 };
 
-/**
- * @summary Returns if the meeting match the minimal length.
- */
 const meetingLengthCheck = (start: string, end: string): boolean => {
   return differenceInMinutes(new Date(end), new Date(start)) >= MIN_MEETING_MINUTES;
 };
 
-/**
- * @summary Returns if the meeting is in the same day.
- * @description
- * TODO: Do we support inter-day booking?
- */
+// TODO: Do we support inter-day booking?
 const isSameDayCheck = (start: string, end: string): boolean => {
   let endTime = new Date(end);
 
@@ -52,18 +39,11 @@ const isSameDayCheck = (start: string, end: string): boolean => {
   return isSameDay(new Date(start), endTime);
 };
 
-/**
- * @summary A enhanced datetime.
- * @description
- * TODO: Is it still useful? basically we support any time.
- */
+// TODO: Is it still useful? basically we support any time.
 const dateTimeSchema = z.iso.datetime({ local: true }).refine((val) => timeAdditionalCheck(val), {
   message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots.`,
 });
 
-/**
- * @summary A booking from API
- */
 const BookingFromApiSchema = z
   .object({
     id: z.int().positive(),
@@ -83,28 +63,16 @@ const BookingFromApiSchema = z
 
 const BookingsFromApiSchema = z.array(BookingFromApiSchema);
 
-/**
- * @summary The bookings for a room.
- */
 const RoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
   slots: BookingsFromApiSchema,
 });
 
-/**
- * @summary The array of bookings for rooms
- */
 const RoomsSchema = z.array(RoomSchema);
 
-/**
- * @summary The schema to validate a iso date
- */
 const DateSchema = z.iso.date();
 
-/**
- * @summary The form value of upsert a new booking
- */
 const UpsertBookingSchema = z
   .object({
     roomId: z.int(),

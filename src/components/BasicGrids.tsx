@@ -24,12 +24,8 @@ type BasicCellProps = {
   curr: Date;
 };
 
-/**
- * @summary A basic grid
- * @description
- * TODO: now `isPast` just checks the start time, so the available booking time starts from `next hour`
- * And when onClick, the `past` may be stale, it can also be optimized.
- */
+// TODO: now `isPast` just checks the start time, so the available booking time starts from `next hour`
+// And when onClick, the `past` may be stale, it can also be optimized.
 const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const setFormProp = useSetAtom(formPropAtom);
   const cellBaseTime = addDays(baseTime, col);
@@ -47,11 +43,7 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   );
 };
 
-/**
- * @summary A full static layer contains 8 (7 + time indicator) * 24 grids
- * @describe
- * - Subscribe the `startAtom`
- */
+// 8 (7 + time indicator) * 24 grids
 const BasicGrids = memo(() => {
   const curr = new Date();
   const start = useAtomValue(startAtom);

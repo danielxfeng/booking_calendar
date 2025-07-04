@@ -12,34 +12,19 @@ import { useSetAtom } from 'jotai';
 import { startAtom } from '@/lib/atoms';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';
 
-/**
- * @summary Update the start, and search params.
- * @description
- * When the incoming start is invalid, it fallbacks to today.
- * When the incoming start is not Monday, it fallbacks to the previous Monday.
- */
 const useStartController = () => {
   // A setter, not the subscription.
   const setStart = useSetAtom(startAtom);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  /**
-   * @summary Update the start, and search params.
-   * @description
-   * When the incoming start is invalid, it fallbacks to today.
-   * When the incoming start is not Monday, it fallbacks to the previous Monday.
-   * Update after comparison.
-   * @param replace: false to remove the current url from history.
-   */
   const setNewStart = (newStart: string | null, replace: boolean) => {
     const normalizedStart = normalizeStartDate(newStart);
-    // Update the setStart
+
     setStart((prev) => {
       return normalizedStart === prev ? prev : normalizedStart;
     });
 
-    //Update the Url
     if (searchParams.get('start') === normalizedStart) return;
 
     const newParams = new URLSearchParams(searchParams);

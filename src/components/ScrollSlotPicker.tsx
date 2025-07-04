@@ -21,9 +21,6 @@ type ScrollTimePickerProps = {
   onSelect: (val: string) => void;
 };
 
-/**
- * @summary Returns if it's an IOS device.
- */
 const iosDetector = (): boolean => {
   if (typeof navigator === 'undefined') return false;
 
@@ -33,15 +30,10 @@ const iosDetector = (): boolean => {
   return false;
 };
 
-/**
- * @summary A slot picker made buy ScrollArea and buttons.
- */
 const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePickerProps) => {
   const selectedRef = useRef<HTMLButtonElement | null>(null);
 
-  // To scroll the selected item to the center of the dom.
-  // So sad IOS does not support `smooth`, and they also prevent `scroll` when there is a `smooth`.
-  // So for IOS device, scroll animation is disabled.
+  // IOS does not support `smooth`
   useEffect(() => {
     if (selectedRef.current) {
       if (!iosDetector())
@@ -50,11 +42,9 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
     }
   }, [selected]);
 
-  // Keyboard support
   const keyDownHandler = (e: React.KeyboardEvent) => {
     if (disabled) return;
 
-    // we just need up/down
     if (!['ArrowUp', 'ArrowDown'].includes(e.key)) return;
 
     e.preventDefault();
@@ -67,10 +57,8 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
 
     while (true) {
       selectedIdx += iter;
-      // Out of bound check.
       if (selectedIdx < 0 || selectedIdx >= slots.length) break;
 
-      // Select the available value.
       if (slots[selectedIdx].avail) {
         onSelect(format(slots[selectedIdx].slot, "yyyy-MM-dd'T'HH:mm:ss"));
         break;

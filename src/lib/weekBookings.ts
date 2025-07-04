@@ -13,18 +13,12 @@ import { type Room, type Rooms, RoomsSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
 
 /**
- * @summary Bookings in a week, main data structure of this application.
+ * @summary main data structure of this application.
  */
 type WeekBookings = DayBookings[];
 
-/**
- * @summary Bookings in One day.
- */
 type DayBookings = Record<number, Room>;
 
-/**
- * @summary Init a new empty WeekBookings.
- */
 const newWeekBookings = (): WeekBookings => {
   const weekBookings: WeekBookings = [];
   for (let i = 0; i < 7; i++) {
@@ -34,15 +28,7 @@ const newWeekBookings = (): WeekBookings => {
   return weekBookings;
 };
 
-/**
- * @summary Generate the data structure of weekBooking.
- *
- * @param rooms the fetched data from API.
- * @param startDate the start date of calendar.
- * @returns an instance of WeekBooking.
- */
 const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
-  // Validates the inComing data.
   const validatedRooms = RoomsSchema.safeParse(rooms);
   if (!validatedRooms.success) ThrowInvalidIncomingDataErr(JSON.stringify(validatedRooms.error));
   const data = validatedRooms.data!;
@@ -54,25 +40,20 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
   const bookingIdSet = new Set<number>();
 
   for (const room of data) {
-    // Skip the meeting rooms which are not in Room map.
     if (!ROOM_MAP.some((r) => r.id === room.roomId)) continue;
 
     for (const slot of room.slots) {
       const bookingStartTime = new Date(slot.start);
       const col = differenceInCalendarDays(bookingStartTime, startDate);
 
-      // Skip the slots which are not in range.
       if (col < 0 || col > 6) continue;
 
-      // Duplicated booking id check.
       if (bookingIdSet.has(slot.id))
         ThrowInvalidIncomingDataErr('[weekBookingsGenerator]: Duplicated slot id was found.');
       bookingIdSet.add(slot.id);
 
-      // Append to the WeekBookings.
       const dayBookings: DayBookings = weekBookings[col];
 
-      // Init the data structure on need.
       if (!dayBookings[room.roomId]) {
         dayBookings[room.roomId] = {
           roomId: room.roomId,
@@ -85,18 +66,17 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
     }
   }
 
-  // Sort by start time O(n log(n)), to simplify the overlap checking from O(n2) to O(n);
   weekBookings.forEach((day) => {
     Object.values(day).forEach((room) => {
       room.slots.sort((a, b) => (a.start > b.start ? 1 : -1));
     });
   });
 
-  // Overlapping check, O(n), n = numbers of slots
+  // Overlapping check
   let overlapping = false;
   for (const day of weekBookings) {
     for (const room of Object.values(day)) {
-      if (room.slots.length < 2) continue; // Shortcut.
+      if (room.slots.length < 2) continue;
       for (let i = 0; i < room.slots.length - 1; i++) {
         if (room.slots[i].end > room.slots[i + 1].start) {
           overlapping = true;

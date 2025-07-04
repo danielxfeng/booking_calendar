@@ -14,12 +14,6 @@ import { startAtom } from '@/lib/atoms';
 import { gridStyleGenerator, styleGenerator } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
-/**
- * @summary To display a header of the calendar
- * @description
- * - Subscribe the `start`Atom
- * TODO: fix this? maybe.
- */
 const CalendarHeader = () => {
   const start = useAtomValue(startAtom);
 

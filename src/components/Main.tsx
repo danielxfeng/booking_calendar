@@ -13,15 +13,6 @@ import OperationRow from '@/components/OperationRow';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
 import { styleGenerator } from '@/lib/tools';
 
-/**
- * @summary The main content of the application
- * @description
- * Includes:
- *  - Operation Panel, which syncs with the `startAtom` to set the date.
- *  - A calendar container, includes:
- *   - The base grids(static layer).
- *   - Booking blocks(dynamic layer).
- */
 const Main = () => (
   <div
     data-role='main-wrapper'

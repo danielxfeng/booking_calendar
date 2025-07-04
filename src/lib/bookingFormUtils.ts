@@ -18,14 +18,6 @@ import type { DayBookings } from '@/lib/weekBookings';
 import type { BookingFromApi, UpsertBooking } from './schema';
 import { formatToDateTime } from './tools';
 
-/**
- * @summary Returns form formType, and the default values
- * @description
- * - if there is no `currBooking`, it's an `insertion` form.
- * - Then there should be an existing booking.
- *   - If the booking is expired, or the bookedBy is null, the type is `view`
- *   - Otherwise, it is `update`
- */
 const initForm = (
   formProp: Exclude<FormProp, null>,
   existingBookings: DayBookings,
@@ -84,12 +76,6 @@ const initForm = (
   }
 };
 
-/**
- * @summary Calculate a slots.
- * @description
- * The idea is to iterate the bookings, if there is a existing booking, set the slot to unavailable.
- * The current booking is an exception.
- */
 const calculateSlots = (
   existingBookings: DayBookings,
   filedType: 'start' | 'end',
@@ -99,7 +85,6 @@ const calculateSlots = (
 ): Slot[] => {
   if (roomId === undefined) return []; // should not be here.
 
-  // Init an empty slots.
   const slots: Slot[] = [];
   let curr = baseTime;
   while (isSameDay(baseTime, curr)) {
@@ -107,7 +92,6 @@ const calculateSlots = (
     curr = addMinutes(curr, TIME_SLOT_INTERVAL);
   }
 
-  // Disable slots in existing Bookings
   if (existingBookings[roomId]) {
     existingBookings[roomId].slots.forEach((slot) => {
       // We skip ourself.
@@ -121,7 +105,6 @@ const calculateSlots = (
       );
       const endIndex = Math.ceil(differenceInMinutes(bookingEnd, baseTime) / TIME_SLOT_INTERVAL);
 
-      // Change all slots between the startIndex and endIndex to unavailable.
       for (let i = startIndex; i < endIndex; i++) slots[i].avail = false;
     });
   }

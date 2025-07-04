@@ -13,11 +13,6 @@ import { axiosFetcher } from '@/lib/axiosFetcher';
 import type { Rooms } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
 
-/**
- * @summary Fetch available slots for a given week.
- * @param start start ISO date string (e.g. "2025-06-23"), should be Monday
- * @returns
- */
 const getSlots = async (start: string): Promise<Rooms> => {
   const end = format(nextSunday(newDate(start)), 'yyyy-MM-dd');
 
