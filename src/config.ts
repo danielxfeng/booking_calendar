@@ -21,6 +21,11 @@ const ROOM_MAP: { id: number; name: string; color: string }[] = [
 ];
 
 /**
+ * summary Background color for current user.
+ */
+const CURR_USER_COLOR: string = 'bg-orange-600/20 border-orange-500/40';
+
+/**
  * The time slot interval
  */
 const TIME_SLOT_INTERVAL: number = 15; // Must divide evenly into 60 (e.g., 5, 10, 15, 30).
@@ -71,6 +76,7 @@ export {
   CACHE_DURATION,
   CELL_HEIGHT_PX,
   CELL_WIDTH_PX,
+  CURR_USER_COLOR,
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
