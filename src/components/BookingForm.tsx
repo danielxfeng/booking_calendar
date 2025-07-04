@@ -160,8 +160,8 @@ const BookingForm = () => {
    * @description
    * We clear the cache, and clear the atoms here, and send a notification.
    */
-  const handleSuccess = (start: string) => {
-    toast.success('Booking created!');
+  const handleSuccess = (start: string, msg: string) => {
+    toast.success(msg);
     queryClient.invalidateQueries({
       queryKey: ['slots', start],
     });
@@ -188,7 +188,7 @@ const BookingForm = () => {
       return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
     },
     onSuccess: () => {
-      handleSuccess(start);
+      handleSuccess(start, 'Cool! Your meeting room is booked.');
     },
     onError: (error: unknown) => {
       handleError(error);
@@ -206,7 +206,7 @@ const BookingForm = () => {
       });
     },
     onSuccess: () => {
-      handleSuccess(start);
+      handleSuccess(start, 'Your booking is successfully canceled.');
     },
     onError: (error: unknown) => {
       handleError(error);
