@@ -22,15 +22,31 @@ type ScrollTimePickerProps = {
 };
 
 /**
+ * @summary Returns if it's an IOS device.
+ */
+const iosDetector = (): boolean => {
+  if (typeof navigator === 'undefined') return false;
+
+  const agent = navigator.userAgent;
+
+  if (agent.includes('iPhone') || agent.includes('iPad')) return true;
+  return false;
+};
+
+/**
  * @summary A slot picker made buy ScrollArea and buttons.
  */
 const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePickerProps) => {
   const selectedRef = useRef<HTMLButtonElement | null>(null);
 
   // To scroll the selected item to the center of the dom.
+  // So sad IOS does not support `smooth`, and they also prevent `scroll` when there is a `smooth`.
+  // So for IOS device, scroll animation is disabled.
   useEffect(() => {
     if (selectedRef.current) {
-      selectedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!iosDetector())
+        selectedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      else selectedRef.current.scrollIntoView({ block: 'center' });
     }
   }, [selected]);
 
@@ -96,7 +112,7 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
                 type='button'
                 ref={isSelected ? selectedRef : undefined}
                 variant={slot.avail ? 'secondary' : 'outline'}
-                className={isSelected ? 'border-2 border-primary' : undefined}
+                className={isSelected ? 'border-primary border-2' : undefined}
                 onClick={() => onSelect(value)}
                 role='option'
                 aria-selected={isSelected}
