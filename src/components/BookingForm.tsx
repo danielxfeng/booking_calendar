@@ -13,6 +13,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { useAtom, useAtomValue, useStore } from 'jotai';
+import { Calendar, MapPin, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
 import {
@@ -51,7 +53,6 @@ import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
 import type { DayBookings } from '@/lib/weekBookings';
-import { Calendar, MapPin, User } from 'lucide-react';
 
 type FormType = 'view' | 'insert' | 'update';
 
@@ -157,18 +158,14 @@ const BookingForm = () => {
   /**
    * @summary Post-process when the post/put/delete is done..
    * @description
-   * We clear the cache, and clear the atoms here.
-   * There are several side effects:
-   * - The form is cleared and closed since the formProp is gone.
-   * - The calendar is re-rendered since the cache is re-built
+   * We clear the cache, and clear the atoms here, and send a notification.
    */
-  const delayRefreshAndQuit = (start: string) => {
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: ['slots', start],
-      });
-      setFormProp(null);
-    }, 2000);
+  const handleSuccess = (start: string, msg: string) => {
+    toast.success(msg);
+    queryClient.invalidateQueries({
+      queryKey: ['slots', start],
+    });
+    setFormProp(null);
   };
 
   /**
@@ -191,7 +188,7 @@ const BookingForm = () => {
       return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
     },
     onSuccess: () => {
-      delayRefreshAndQuit(start);
+      handleSuccess(start, 'Cool! Your meeting room is booked.');
     },
     onError: (error: unknown) => {
       handleError(error);
@@ -209,7 +206,7 @@ const BookingForm = () => {
       });
     },
     onSuccess: () => {
-      delayRefreshAndQuit(start);
+      handleSuccess(start, 'Your booking is successfully canceled.');
     },
     onError: (error: unknown) => {
       handleError(error);
@@ -244,14 +241,18 @@ const BookingForm = () => {
             {/* Date, now changing of booking date is disabled currently. */}
             <div className='flex items-center gap-3'>
               <Calendar className='h-4 w-4' />
-              <div data-role='booked-date' className='text-sm'>{format(baseTime, 'eee dd MMM')}</div>
+              <div data-role='booked-date' className='text-sm'>
+                {format(baseTime, 'eee dd MMM')}
+              </div>
             </div>
 
             {/* Optional BookedBy */}
             {prop.booking?.bookedBy && (
               <div className='flex items-center gap-3'>
                 <User className='h-4 w-4' />
-                <div data-role='booked-by' className='text-sm'>{prop.booking?.bookedBy}</div>
+                <div data-role='booked-by' className='text-sm'>
+                  {prop.booking?.bookedBy}
+                </div>
               </div>
             )}
 
@@ -260,7 +261,9 @@ const BookingForm = () => {
             {formType !== 'insert' && (
               <div className='flex items-center gap-3'>
                 <MapPin className='h-4 w-4' />
-                <div data-role='booked-room-name' className='text-sm capitalize'>{ROOM_MAP.find((room) => room.id === prop.roomId)?.name}</div>
+                <div data-role='booked-room-name' className='text-sm capitalize'>
+                  {ROOM_MAP.find((room) => room.id === prop.roomId)?.name}
+                </div>
               </div>
             )}
           </div>
@@ -273,7 +276,7 @@ const BookingForm = () => {
             name='roomId'
             render={({ field }) => (
               <FormItem className='space-y-3'>
-                <FormLabel className='font-bold text-sm'>
+                <FormLabel className='text-sm font-bold'>
                   {formType === 'insert' ? 'Choose a meeting room:' : 'The booked meeting room:'}
                 </FormLabel>
                 <FormControl>
@@ -287,7 +290,7 @@ const BookingForm = () => {
                       <div key={id} className='flex items-center gap-3'>
                         <RadioGroupItem
                           value={String(id)}
-                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary data-[state=checked]:ring-2 p-1.5 rounded-full border-2'
+                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary rounded-full border-2 p-1.5 data-[state=checked]:ring-2'
                         />
                         <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
                           {name}
@@ -303,7 +306,7 @@ const BookingForm = () => {
           <hr />
 
           {/* Slot selector */}
-          <p className='mb-2 pb-0 font-bold text-sm'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
+          <p className='mb-2 pb-0 text-sm font-bold'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
           <div className='flex justify-between gap-3 p-4'>
             {/* Start time selector */}
             <FormField
