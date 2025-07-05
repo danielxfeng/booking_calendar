@@ -189,7 +189,7 @@ const BookingForm = () => {
   return (
     <div
       data-role='booking-upsert-form'
-      className='flex max-h-[100dvh] w-screen flex-col justify-start overflow-y-auto py-6 lg:h-96 lg:w-96'
+      className='flex h-full w-screen flex-col justify-start py-6 lg:h-96 lg:w-96'
     >
       <SheetHeader>
         <SheetTitle>{titlePrefix}</SheetTitle>
@@ -374,6 +374,9 @@ const BookingForm = () => {
               </AlertDialog>
             )}
           </div>
+
+          {/* In mobile view, I don't know why py-6 in parent does not work */}
+          <div className='invisible' aria-label='hidden'>placeholder</div>
         </form>
       </Form>
     </div>
@@ -390,7 +393,9 @@ const FormWrapper = () => {
         if (!open) setFormProp(null);
       }}
     >
-      <SheetContent className='w-screen lg:w-96'>{!!formProp && <BookingForm />}</SheetContent>
+      <SheetContent className='w-screen overflow-y-auto lg:w-96'>
+        {!!formProp && <BookingForm />}
+      </SheetContent>
     </Sheet>
   );
 };
