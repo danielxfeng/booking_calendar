@@ -5,7 +5,7 @@ import type { Rooms } from '../src/lib/schema';
 
 const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm:ss");
 
-const generateMockedDate = (start: string): Rooms => {
+const generateMockedData = (start: string): Rooms => {
   const base = parseISO(start);
   return [
     {
@@ -34,6 +34,12 @@ const generateMockedDate = (start: string): Rooms => {
           id: 8,
           start: formatLocal(addDays(addMinutes(base, 180), 5)), // 3:00
           end: formatLocal(addDays(addMinutes(base, 300), 5)), // 4:00
+          bookedBy: 'Daniel',
+        },
+        {
+          id: 9,
+          start: formatLocal(addDays(addMinutes(base, 1320), 6)), // 22:00
+          end: formatLocal(addDays(addMinutes(base, 1380), 6)), // 23:00
           bookedBy: 'Daniel',
         },
       ],
@@ -75,12 +81,26 @@ const mocks: MockMethod[] = [
   {
     url: '/reservation',
     method: 'get',
-    timeout: 0,
+    timeout: 400,
     response: ({ query }) => {
       const { start } = query;
-      return generateMockedDate(start);
+      return generateMockedData(start);
     },
+  },
+  {
+    url: '/reservation',
+    method: 'post',
+    timeout: 400,
+    response: {},
+  },
+  {
+    url: /^\/reservation\/[^/]+$/ as unknown as string,
+    method: 'delete',
+    timeout: 400,
+    response: {},
   },
 ];
 
 export default mocks;
+
+export { generateMockedData };
