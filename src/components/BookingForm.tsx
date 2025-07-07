@@ -334,9 +334,11 @@ const BookingForm = () => {
               <Button
                 className='flex w-full'
                 type='submit'
-                disabled={form.formState.isSubmitting || !form.formState.isValid}
+                disabled={
+                  form.formState.isSubmitting || upsertMutation.isPending || !form.formState.isValid
+                }
               >
-                {form.formState.isSubmitting ? 'Booking' : 'Book'}
+                {form.formState.isSubmitting || upsertMutation.isPending ? 'Booking' : 'Book'}
               </Button>
             )}
 
