@@ -118,7 +118,8 @@ const calculateSlots = (
 const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean => {
   let inRange: boolean = false;
   for (const slot of endSlots) {
-    if (isEqual(new Date(start), slot.slot)) inRange = true;
+    if (isEqual(new Date(start), addMinutes(slot.slot, -TIME_SLOT_INTERVAL))) inRange = true;
+
     if (inRange) {
       if (!slot.avail) return false;
       if (isEqual(new Date(end), slot.slot)) return true;
