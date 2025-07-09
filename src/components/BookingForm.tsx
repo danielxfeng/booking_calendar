@@ -13,7 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { useAtom, useAtomValue, useStore } from 'jotai';
-import { Calendar, Loader, MapPin, User } from 'lucide-react';
+import { Calendar, Check, Loader, MapPin, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
@@ -52,6 +52,7 @@ import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUti
 import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -250,18 +251,29 @@ const BookingForm = () => {
                   <RadioGroup
                     onValueChange={(val) => field.onChange(Number(val))}
                     value={String(field.value)}
-                    className='flex flex-col'
+                    className='grid grid-cols-2 gap-2'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name }) => (
-                      <div key={id} className='flex items-center gap-3'>
-                        <RadioGroupItem
-                          value={String(id)}
-                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary rounded-full border-2 p-1.5 data-[state=checked]:ring-2'
-                        />
-                        <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
+                      <div
+                        key={id}
+                        className='bg-muted hover:border-primary flex items-center justify-between rounded-sm border border-transparent p-4 shadow-sm transition-all duration-200 ease-in-out'
+                        // TODO: onClick event
+                      >
+                        <FormLabel className='cursor-pointer text-xs' htmlFor={`room-${id}`}>
                           {name}
                         </FormLabel>
+                        <RadioGroupItem
+                          value={String(id)}
+                          className='data-[state=checked]:bg-primary/80 data-[state=checked]:ring-primary/80 relative h-5 w-5 shrink-0 rounded-full border-2 p-1.5'
+                        >
+                          <Check
+                            className={cn(
+                              'absolute inset-0 m-auto h-4 w-4 opacity-0',
+                              field.value === id && 'text-muted opacity-100 transition-opacity',
+                            )}
+                          />
+                        </RadioGroupItem>
                       </div>
                     ))}
                   </RadioGroup>
