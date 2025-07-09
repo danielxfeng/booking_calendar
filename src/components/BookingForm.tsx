@@ -366,7 +366,14 @@ const BookingForm = () => {
                     disabled={deleteMutation.isPending || formProp?.booking?.bookedBy === null}
                     aria-label='Delete booking'
                   >
-                    {deleteMutation.isPending ? 'Deleting' : 'Delete'}
+                    {deleteMutation.isPending ? (
+                      <span className='flex items-center justify-center gap-2'>
+                        <Loader className='h-4 w-4' />
+                        Deleting
+                      </span>
+                    ) : (
+                      'Delete'
+                    )}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
