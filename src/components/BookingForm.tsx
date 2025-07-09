@@ -13,7 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { useAtom, useAtomValue, useStore } from 'jotai';
-import { Calendar, MapPin, User } from 'lucide-react';
+import { Calendar, Loader, MapPin, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
@@ -186,6 +186,8 @@ const BookingForm = () => {
         ? 'Review a booking'
         : 'Update a booking';
 
+  const isUpsertBusy = form.formState.isSubmitting || upsertMutation.isPending;
+
   return (
     <div
       data-role='booking-upsert-form'
@@ -272,7 +274,7 @@ const BookingForm = () => {
 
           {/* Slot selector */}
           <p className='mb-2 pb-0 text-sm font-bold'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
-          <div className='flex gap-10 py-4 justify-center'>
+          <div className='flex justify-center gap-10 py-4'>
             {/* Start time selector */}
             <FormField
               control={form.control}
@@ -334,11 +336,16 @@ const BookingForm = () => {
               <Button
                 className='flex w-full'
                 type='submit'
-                disabled={
-                  form.formState.isSubmitting || upsertMutation.isPending || !form.formState.isValid
-                }
+                disabled={isUpsertBusy || !form.formState.isValid}
               >
-                {form.formState.isSubmitting || upsertMutation.isPending ? 'Booking' : 'Book'}
+                {isUpsertBusy ? (
+                  <span className='flex items-center justify-center gap-2'>
+                    <Loader className='h-4 w-4' />
+                    Booking
+                  </span>
+                ) : (
+                  'Book'
+                )}
               </Button>
             )}
 
