@@ -133,6 +133,12 @@ const BookingForm = () => {
     else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
+  useEffect(() => {
+    if (form.formState.isValid && form.formState.errors['root']) {
+      form.clearErrors('root');
+    }
+  }, [form, form.formState.isValid]);
+
   const handleSuccess = (start: string, msg: string) => {
     toast.success(msg);
     queryClient.invalidateQueries({
