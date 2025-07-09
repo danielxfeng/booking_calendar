@@ -107,11 +107,9 @@ Make sure you have the following installed on your system:
 
 - UI is unstyled (Partly solved)
 - A better radio btn?
-- No logout button
-- The "auto-find empty slot" algorithm can be optimized
+- A mobile view
+- Drag
 - Booking form does not allow changing the selected date
-- Does not support inter-day bookings (Do we need that?)
-- Display more booking info depending on block size
 - Add more tests (unit, integration, E2E)
 
 ---
