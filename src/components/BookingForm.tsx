@@ -254,22 +254,25 @@ const BookingForm = () => {
                     className='grid grid-cols-2 gap-2'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
-                    {ROOM_MAP.map(({ id, name }) => (
+                    {ROOM_MAP.map(({ id, name, color }) => (
                       <FormLabel
                         key={id}
                         htmlFor={`room-${id}`}
-                        className='bg-muted hover:border-primary flex items-center justify-between rounded-sm border border-transparent p-4 shadow-sm transition-all duration-200 ease-in-out'
+                        className={cn(
+                          'flex items-center justify-between rounded-sm border border-transparent p-4 shadow-sm transition-all duration-200 ease-in-out hover:opacity-80',
+                          color,
+                        )}
                       >
                         <span className='cursor-pointer text-xs'>{name}</span>
                         <RadioGroupItem
                           id={`room-${id}`}
                           value={String(id)}
-                          className='data-[state=checked]:bg-primary/80 data-[state=checked]:ring-primary/80 relative h-5 w-5 shrink-0 rounded-full border-2 p-1.5'
+                          className=' data-[state=checked]:ring-primary/50 border-muted hover:ring-primary/30 relative h-5 w-5 shrink-0 rounded-full border p-1.5 hover:ring-1 hover:ring-offset-1 data-[state=checked]:ring-1 data-[state=checked]:ring-offset-1'
                         >
                           <Check
                             className={cn(
                               'absolute inset-0 m-auto h-4 w-4 opacity-0',
-                              field.value === id && 'text-muted opacity-100 transition-opacity',
+                              field.value === id && 'text-primary opacity-100 transition-opacity',
                             )}
                           />
                         </RadioGroupItem>
