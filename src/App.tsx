@@ -6,7 +6,7 @@
  * @contact intra: @xifeng
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useStore } from 'jotai';
 
@@ -18,14 +18,23 @@ import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
 import { setUser } from '@/lib/userStore';
 
+import { ThrowBackendError } from './lib/errorHandler';
+
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [err, setErr] = useState<string | null>(null);
   const { setNewStart } = useStartController();
 
   const startFromParams = searchParams.get('start');
   const unSubscribedStart = useStore().get(startAtom);
 
   useEffect(() => {
+    const errFromBackend = searchParams.get('err');
+    if (errFromBackend) {
+      setErr(errFromBackend);
+      return;
+    }
+
     const token = searchParams.get('token');
     if (token) {
       const intra = searchParams.get('intra');
@@ -46,6 +55,8 @@ const App = () => {
     setNewStart(newStart, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (err) ThrowBackendError(err);
 
   return (
     <div className='flex min-h-screen w-screen flex-col'>
