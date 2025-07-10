@@ -8,11 +8,13 @@
 
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
+import { useStore } from 'jotai';
 
 import FormWrapper from '@/components/BookingForm';
 import Main from '@/components/Main';
 import TanQuery from '@/components/TanQuery';
 import { Toaster } from '@/components/ui/sonner';
+import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
 import { setUser } from '@/lib/userStore';
 
@@ -21,6 +23,7 @@ const App = () => {
   const { setNewStart } = useStartController();
 
   const startFromParams = searchParams.get('start');
+  const unSubscribedStart = useStore().get(startAtom);
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -33,12 +36,14 @@ const App = () => {
       nextParams.delete('token');
       nextParams.delete('intra');
       nextParams.delete('role');
+      if (unSubscribedStart !== '') nextParams.set('start', unSubscribedStart);
       setSearchParams(nextParams, { replace: true }); // remove the url from history.
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, unSubscribedStart]);
 
   useEffect(() => {
-    setNewStart(startFromParams, true);
+    const newStart = startFromParams ?? unSubscribedStart;
+    setNewStart(newStart, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
