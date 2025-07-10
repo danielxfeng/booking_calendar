@@ -255,15 +255,14 @@ const BookingForm = () => {
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name }) => (
-                      <div
+                      <FormLabel
                         key={id}
+                        htmlFor={`room-${id}`}
                         className='bg-muted hover:border-primary flex items-center justify-between rounded-sm border border-transparent p-4 shadow-sm transition-all duration-200 ease-in-out'
-                        // TODO: onClick event
                       >
-                        <FormLabel className='cursor-pointer text-xs' htmlFor={`room-${id}`}>
-                          {name}
-                        </FormLabel>
+                        <span className='cursor-pointer text-xs'>{name}</span>
                         <RadioGroupItem
+                          id={`room-${id}`}
                           value={String(id)}
                           className='data-[state=checked]:bg-primary/80 data-[state=checked]:ring-primary/80 relative h-5 w-5 shrink-0 rounded-full border-2 p-1.5'
                         >
@@ -274,7 +273,7 @@ const BookingForm = () => {
                             )}
                           />
                         </RadioGroupItem>
-                      </div>
+                      </FormLabel>
                     ))}
                   </RadioGroup>
                 </FormControl>
