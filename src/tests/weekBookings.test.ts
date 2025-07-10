@@ -47,7 +47,7 @@ describe('weekBookingsGenerator', () => {
           {
             id: 103,
             start: '2025-06-25T09:00:00',
-            end: '2025-06-25T09:45:00',
+            end: '2025-06-25T09:30:00',
             bookedBy: 'Alice',
           },
         ],
@@ -59,7 +59,7 @@ describe('weekBookingsGenerator', () => {
           {
             id: 200,
             start: '2025-06-25T09:00:00',
-            end: '2025-06-25T09:45:00',
+            end: '2025-06-25T09:30:00',
             bookedBy: 'Alice',
           },
           {
@@ -185,8 +185,8 @@ describe('weekBookingsGenerator', () => {
           },
           {
             id: 2,
-            start: '2025-06-25T10:15',
-            end: '2025-06-25T10:45',
+            start: '2025-06-25T10:00',
+            end: '2025-06-25T11:00',
             bookedBy: 'D2',
           },
         ],

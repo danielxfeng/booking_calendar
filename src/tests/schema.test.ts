@@ -9,7 +9,7 @@ describe('BookingSchema', () => {
     const case1 = {
       id: 1,
       start: '2025-06-24T10:00:00',
-      end: '2025-06-24T10:15:00',
+      end: '2025-06-24T10:30:00',
       bookedBy: 'Daniel',
     };
 
@@ -41,10 +41,10 @@ describe('BookingSchema', () => {
   expect(result.success).toBe(true);
 });
 
-it('should pass for a booking that ends exactly at 00:00 but is same day logically (23:45-00:00)', () => {
+it('should pass for a booking that ends exactly at 00:00 but is same day logically (23:30-00:00)', () => {
   const case2 = {
     id: 2,
-    start: '2025-06-24T23:45:00',
+    start: '2025-06-24T23:30:00',
     end: '2025-06-25T00:00:00',
     bookedBy: null,
   };
@@ -53,11 +53,11 @@ it('should pass for a booking that ends exactly at 00:00 but is same day logical
   expect(result.success).toBe(true);
 });
 
-it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)', () => {
+it('should fail for a booking that ends at 00:30 (next day, invalid inter-day)', () => {
   const case3 = {
     id: 3,
-    start: '2025-06-24T23:45:00',
-    end: '2025-06-25T00:15:00',
+    start: '2025-06-24T23:30:00',
+    end: '2025-06-25T00:30:00',
     bookedBy: null,
   };
 
@@ -115,7 +115,7 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
     const case1 = {
       id: 1,
       start: '2025-06-24T10:20:00',
-      end: '2025-06-24T10:45:00',
+      end: '2025-06-24T10:50:00',
       bookedBy: null,
     };
 
@@ -126,7 +126,7 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
   it('should fail for a booking without a end', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:15:00',
+      start: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -137,8 +137,8 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
   it('should fail for a booking without a valid end(same as start)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:15:00',
-      end: '2025-06-24T10:15:00',
+      start: '2025-06-24T10:30:00',
+      end: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -149,8 +149,8 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
   it('should fail for a booking without a user', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:15:00',
-      end: '2025-06-24T10:15:00',
+      start: '2025-06-24T10:30:00',
+      end: '2025-06-24T10:30:00',
     };
 
     const result = BookingFromApiSchema.safeParse(case1);
@@ -160,8 +160,8 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
   it('should fail for a booking without a valid user(empty)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:15:00',
-      end: '2025-06-24T10:15:00',
+      start: '2025-06-24T10:30:00',
+      end: '2025-06-24T10:30:00',
       bookedBy: '   ',
     };
 
@@ -172,8 +172,8 @@ it('should fail for a booking that ends at 00:15 (next day, invalid inter-day)',
   it('should fail for a inter day booking', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:15:00',
-      end: '2025-06-25T10:45:00',
+      start: '2025-06-24T10:30:00',
+      end: '2025-06-25T10:30:00',
       bookedBy: '   ',
     };
 
@@ -249,13 +249,13 @@ describe('DateSchema', () => {
   });
 
   it('should fail for a invalid date', () => {
-    const case1 = '2025-06-24T10:15:00';
+    const case1 = '2025-06-24T10:30:00';
     const result = DateSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
 
   it('should fail for a null input', () => {
-    const case1 = '2025-06-24T10:15:00';
+    const case1 = '2025-06-24T10:30:00';
     const result = DateSchema.safeParse(case1);
     expect(result.success).toBe(false);
   });
