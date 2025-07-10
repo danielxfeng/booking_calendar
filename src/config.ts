@@ -20,7 +20,7 @@ const CURR_USER_COLOR: string = 'bg-orange-600/20 border-orange-500/40';
 /**
  * The time slot interval
  */
-const TIME_SLOT_INTERVAL: number = 15; // Must divide evenly into 60 (e.g., 5, 10, 15, 30).
+const TIME_SLOT_INTERVAL: number = 30; // Must divide evenly into 60 (e.g., 5, 10, 15, 30).
 
 if (60 % TIME_SLOT_INTERVAL !== 0)
   ThrowInternalError('TIME_SLOT_INTERVAL must divide evenly into 60');

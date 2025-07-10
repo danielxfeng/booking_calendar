@@ -15,9 +15,15 @@ import { CELL_HEIGHT_PX, CELL_WIDTH_PX, CURR_USER_COLOR, ROOM_MAP } from '@/conf
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
+import { cn } from '@/lib/utils';
 import type { WeekBookings } from '@/lib/weekBookings';
 
-const getPosition = (col: number, start: string, end: string, roomId: number): CSSProperties => {
+const getPositionAndStyle = (
+  col: number,
+  start: string,
+  end: string,
+  roomId: number,
+): CSSProperties & { h: number } => {
   const totalHeight = CELL_HEIGHT_PX * 24;
   const totalWidth = CELL_WIDTH_PX * 8;
 
@@ -34,16 +40,15 @@ const getPosition = (col: number, start: string, end: string, roomId: number): C
   const height = ((endMin - startMin) / (24 * 60)) * totalHeight;
 
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
-  if (roomIdx === -1) return {};
+  if (roomIdx === -1) return { h: 0 };
 
   const roomCount = ROOM_MAP.length;
   const width = CELL_WIDTH_PX / roomCount;
   const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
 
-  return { position: 'absolute', top, left, width, height };
+  return { position: 'absolute', top, left, width, height, h: height };
 };
 
-// TODO:displays different data depends on the space?
 const BookedBlock = ({
   roomId,
   col,
@@ -64,10 +69,12 @@ const BookedBlock = ({
   // order: 1 currUser 2 room's color, 3 fallback
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
+  const { h: height, ...style } = getPositionAndStyle(col, slot.start, slot.end, roomId);
+
   return (
     <div
       className={`pointer-events-auto absolute flex items-start justify-center rounded-sm border ${roomColor}`}
-      style={getPosition(col, slot.start, slot.end, roomId)}
+      style={style}
       title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
@@ -78,7 +85,16 @@ const BookedBlock = ({
         setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
       }}
     >
-      <span className='text-xs opacity-80'>{roomName}</span>
+      <span
+        className={cn(
+          'w-full truncate px-1 py-1 text-center text-xs whitespace-nowrap opacity-80',
+          height < 16 && 'py-0 leading-none',
+        )}
+      >
+        {/* TEMP: disabled until backend returns `intra` and `role`
+        {user.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : ''} */}
+        {slot.bookedBy && height >= 12 ? slot.bookedBy : ''}
+      </span>
     </div>
   );
 };
