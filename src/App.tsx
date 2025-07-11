@@ -28,6 +28,7 @@ const App = () => {
   const startFromParams = searchParams.get('start');
   const unSubscribedStart = useStore().get(startAtom);
 
+  // To handle the params from backend.
   useEffect(() => {
     const errFromBackend = searchParams.get('err');
     if (errFromBackend) {
