@@ -8,12 +8,13 @@
 import { useState } from 'react';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
-import { ChevronDownIcon } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 
 import Loading from '@/components/Loading';
+import { MyPaginationNext, MyPaginationPrev } from '@/components/MyPagination';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { PaginationItem } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
@@ -46,56 +47,53 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='mb-5 flex h-12 items-center justify-start gap-10 lg:justify-center'
+      className='flex items-center gap-1 rounded-lg bg-muted/50 px-2 py-1 backdrop-blur-sm'
     >
-      {/* Prev button */}
-      <PaginationItem className='hidden lg:block'>
-        <PaginationPrevious
-          className='!text-primary/80'
-          onClick={() => setNewStart(prevMon, false)}
-        />
+      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
+        <MyPaginationPrev className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(prevMon, false)} />
       </PaginationItem>
 
-      {/* Date picker */}
+      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
+        <MyPaginationNext className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(nextMon, false)} />
+      </PaginationItem>
+
+      <div className='h-4 w-px bg-border' />
+
       <div>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant='outline'
+              variant='ghost'
               id='date'
-              className='w-60 justify-between text-sm font-normal'
+              className='flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'
               aria-label='Choose start date'
             >
-              {`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}
-              <ChevronDownIcon />
+              <CalendarDays className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
+          <PopoverContent
+            className='flex w-auto flex-col items-center overflow-hidden p-4 shadow-lg'
+            align='end'
+          >
+            <span className='mb-3 text-sm font-medium text-muted-foreground'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
             <Calendar
               mode='single'
               selected={startDate}
               captionLayout='dropdown'
               onSelect={(date) => dateSelectHandler(date)}
             />
+            <Button
+              variant='default'
+              className='mt-3 w-full text-sm'
+              onClick={() => {
+                dateSelectHandler(new Date());
+              }}
+            >
+              Today
+            </Button>
           </PopoverContent>
         </Popover>
       </div>
-
-      {/* Today */}
-      <Button
-        variant='outline'
-        className='text-sm'
-        onClick={() => {
-          dateSelectHandler(new Date());
-        }}
-      >
-        Today
-      </Button>
-
-      {/* Next button */}
-      <PaginationItem className='hidden lg:block'>
-        <PaginationNext className='!text-primary/80' onClick={() => setNewStart(nextMon, false)} />
-      </PaginationItem>
     </div>
   );
 };

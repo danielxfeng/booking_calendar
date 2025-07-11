@@ -19,6 +19,7 @@ import { useStartController } from '@/lib/hooks';
 import { setUser } from '@/lib/userStore';
 
 import { ThrowBackendError } from './lib/errorHandler';
+import OperationRow from './components/OperationRow';
 
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,15 +61,25 @@ const App = () => {
 
   return (
     <div className='flex min-h-screen w-screen flex-col'>
-      {/* Header */}
-      {/* TODO: rename as navbar once we are reworking that bit for now can be removed. */}
-      {/* <header className='text-background relative flex h-12 items-center justify-center'>
-        <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
-        <h1 className='relative z-10 !text-2xl font-bold'>Book Me</h1>
-      </header> */}
+      <header className='sticky shadow-sm top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60'>
+        <div className='container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8'>
+          <div className='flex items-center gap-3'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm'>
+              <span className='text-sm font-bold text-primary-foreground'>B</span>
+            </div>
+            <h1 className='text-xl font-semibold tracking-tight text-foreground sm:text-2xl'>
+              Bookme
+            </h1>
+          </div>
+          
+          <div className='flex items-center gap-2'>
+            <OperationRow />
+          </div>
+        </div>
+      </header>
 
       {/* Main */}
-      <main className='flex-1'>
+      <main className='flex-1 mt-8'>
         <Main />
       </main>
 

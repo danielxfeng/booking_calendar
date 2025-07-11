@@ -3,6 +3,16 @@ import { MockMethod } from 'vite-plugin-mock';
 
 import type { Rooms } from '../src/lib/schema';
 
+const DELAY: 'fast' | 'slow' | 'timeout' = 'slow';
+
+const delayMap = {
+  fast: 0,
+  slow: 400,
+  timeout: 5000,
+};
+
+const delayNb = delayMap[DELAY];
+
 const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm:ss");
 
 const generateMockedData = (start: string): Rooms => {
@@ -90,13 +100,13 @@ const mocks: MockMethod[] = [
   {
     url: '/reservation',
     method: 'post',
-    timeout: 400,
+    timeout: delayNb,
     response: {},
   },
   {
     url: /^\/reservation\/[^/]+$/ as unknown as string,
     method: 'delete',
-    timeout: 400,
+    timeout: delayNb,
     response: {},
   },
 ];
