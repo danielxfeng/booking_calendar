@@ -251,7 +251,7 @@ const BookingForm = () => {
                   <RadioGroup
                     onValueChange={(val) => field.onChange(Number(val))}
                     value={String(field.value)}
-                    className='grid grid-cols-2 gap-2'
+                    className='grid grid-cols-2 gap-10 px-4'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name, color }) => (
@@ -260,11 +260,11 @@ const BookingForm = () => {
                         id={`room-${id}`}
                         value={String(id)}
                         className={cn(
-                          'data-[state=checked]:border-2 data-[state=checked]:border-primary flex items-center justify-center rounded-sm py-3 shadow-sm cursor-pointer',
+                          'data-[state=checked]:border-2 data-[state=checked]:border-primary flex items-center justify-center rounded-sm py-1.5 shadow-sm cursor-pointer',
                           color,
                         )}
                       >
-                        <span className='text-xs'>{name}</span>
+                        <span className='text-sm'>{name}</span>
                       </RadioGroupItem>
                     ))}
                   </RadioGroup>
