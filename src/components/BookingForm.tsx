@@ -133,6 +133,12 @@ const BookingForm = () => {
     else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
   }, [watchedStart, watchedEnd, endSlots, form]);
 
+  useEffect(() => {
+    if (form.formState.isValid && form.formState.errors['root']) {
+      form.clearErrors('root');
+    }
+  }, [form, form.formState.isValid]);
+
   const handleSuccess = (start: string, msg: string) => {
     toast.success(msg);
     queryClient.invalidateQueries({
@@ -273,7 +279,7 @@ const BookingForm = () => {
           <hr />
 
           {/* Slot selector */}
-          <p className='mb-2 pb-0 text-sm font-bold'>{`${formType === 'update' ? 'Select' : 'Review'} slots:`}</p>
+          <p className='mb-2 pb-0 text-sm font-bold'>{`${formType === 'insert' ? 'Select' : 'Review'} slots:`}</p>
           <div className='flex justify-center gap-10 py-4'>
             {/* Start time selector */}
             <FormField
@@ -360,7 +366,14 @@ const BookingForm = () => {
                     disabled={deleteMutation.isPending || formProp?.booking?.bookedBy === null}
                     aria-label='Delete booking'
                   >
-                    {deleteMutation.isPending ? 'Deleting' : 'Delete'}
+                    {deleteMutation.isPending ? (
+                      <span className='flex items-center justify-center gap-2'>
+                        <Loader className='h-4 w-4' />
+                        Deleting
+                      </span>
+                    ) : (
+                      'Delete'
+                    )}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
