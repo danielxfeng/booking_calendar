@@ -47,46 +47,44 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='flex items-center justify-start lg:justify-center lg:gap-2'
+      className='flex items-center gap-1 rounded-lg bg-muted/50 px-2 py-1 backdrop-blur-sm'
     >
-      {/* Prev button */}
-      <PaginationItem className='block transform transition duration-400 hover:-translate-y-1'>
-        <MyPaginationPrev className='!text-primary' onClick={() => setNewStart(prevMon, false)} />
+      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
+        <MyPaginationPrev className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(prevMon, false)} />
       </PaginationItem>
 
-      {/* Next button */}
-      <PaginationItem className='block transform transition duration-400 hover:-translate-y-1'>
-        <MyPaginationNext className='!text-primary' onClick={() => setNewStart(nextMon, false)} />
+      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
+        <MyPaginationNext className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
 
-      {/* Date picker */}
+      <div className='h-4 w-px bg-border' />
+
       <div>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant='ghost'
               id='date'
-              className='transform transition duration-400 hover:-translate-y-1'
+              className='flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'
               aria-label='Choose start date'
             >
-              <CalendarDays />
+              <CalendarDays className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' />
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='flex w-auto flex-col items-center overflow-hidden p-3'
+            className='flex w-auto flex-col items-center overflow-hidden p-4 shadow-lg'
             align='end'
           >
-            <span className='text-sm font-semibold'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
+            <span className='mb-3 text-sm font-medium text-muted-foreground'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
             <Calendar
               mode='single'
               selected={startDate}
               captionLayout='dropdown'
               onSelect={(date) => dateSelectHandler(date)}
             />
-            {/* Today */}
             <Button
               variant='default'
-              className='w-full text-sm'
+              className='mt-3 w-full text-sm'
               onClick={() => {
                 dateSelectHandler(new Date());
               }}
