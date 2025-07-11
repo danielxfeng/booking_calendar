@@ -50,11 +50,11 @@ const OperationRow = () => {
       className='flex items-center gap-1 rounded-lg bg-muted/50 px-2 py-1 backdrop-blur-sm'
     >
       <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
-        <MyPaginationPrev className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(prevMon, false)} />
+        <MyPaginationPrev className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(prevMon, false)} />
       </PaginationItem>
 
       <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
-        <MyPaginationNext className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(nextMon, false)} />
+        <MyPaginationNext className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
 
       <div className='h-4 w-px bg-border' />
