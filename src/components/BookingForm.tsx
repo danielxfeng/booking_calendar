@@ -52,6 +52,7 @@ import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUti
 import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 import type { DayBookings } from '@/lib/weekBookings';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -256,19 +257,21 @@ const BookingForm = () => {
                   <RadioGroup
                     onValueChange={(val) => field.onChange(Number(val))}
                     value={String(field.value)}
-                    className='flex flex-col'
+                    className='grid grid-cols-2 gap-10 px-4'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
-                    {ROOM_MAP.map(({ id, name }) => (
-                      <div key={id} className='flex items-center gap-3'>
-                        <RadioGroupItem
-                          value={String(id)}
-                          className='data-[state=checked]:bg-primary data-[state=checked]:ring-primary rounded-full border-2 p-1.5 data-[state=checked]:ring-2'
-                        />
-                        <FormLabel className='cursor-pointer font-normal' htmlFor={`room-${id}`}>
-                          {name}
-                        </FormLabel>
-                      </div>
+                    {ROOM_MAP.map(({ id, name, color }) => (
+                      <RadioGroupItem
+                        key={id}
+                        id={`room-${id}`}
+                        value={String(id)}
+                        className={cn(
+                          'data-[state=checked]:border-2 data-[state=checked]:border-primary flex items-center justify-center rounded-sm py-1.5 shadow-sm cursor-pointer',
+                          color,
+                        )}
+                      >
+                        <span className='text-sm'>{name}</span>
+                      </RadioGroupItem>
                     ))}
                   </RadioGroup>
                 </FormControl>
