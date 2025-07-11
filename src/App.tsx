@@ -16,6 +16,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { useStartController } from '@/lib/hooks';
 import { setUser } from '@/lib/userStore';
 
+import OperationRow from './components/OperationRow';
+
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { setNewStart } = useStartController();
@@ -46,10 +48,13 @@ const App = () => {
     <div className='flex min-h-screen w-screen flex-col'>
       {/* Header */}
       {/* TODO: rename as navbar once we are reworking that bit for now can be removed. */}
-      {/* <header className='text-background relative flex h-12 items-center justify-center'>
-        <div className='bg-primary/85 pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-black/5' />
-        <h1 className='relative z-10 !text-2xl font-bold'>Book Me</h1>
-      </header> */}
+      <header className='bg-muted relative flex h-12 w-full items-center justify-center'>
+        <div className='flex w-full max-w-4xl items-center justify-between px-2'>
+          <h1 className='!text-2xl font-bold'>Book Me</h1>
+          {/* Operation row */}
+          <OperationRow />
+        </div>
+      </header>
 
       {/* Main */}
       <main className='flex-1'>

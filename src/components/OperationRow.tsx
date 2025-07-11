@@ -8,12 +8,13 @@
 import { useState } from 'react';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
-import { CalendarDays, ChevronDownIcon } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 
 import Loading from '@/components/Loading';
+import { MyPaginationNext, MyPaginationPrev } from '@/components/MyPagination';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { PaginationItem } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks';
@@ -46,14 +47,16 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='mb-5 flex h-12 items-center justify-start gap-1 lg:justify-center lg:gap-10'
+      className='flex items-center justify-start lg:justify-center lg:gap-2'
     >
       {/* Prev button */}
-      <PaginationItem className='block'>
-        <PaginationPrevious
-          className='!text-primary/80'
-          onClick={() => setNewStart(prevMon, false)}
-        />
+      <PaginationItem className='block transform transition duration-400 hover:-translate-y-1'>
+        <MyPaginationPrev className='!text-primary' onClick={() => setNewStart(prevMon, false)} />
+      </PaginationItem>
+
+      {/* Next button */}
+      <PaginationItem className='block transform transition duration-400 hover:-translate-y-1'>
+        <MyPaginationNext className='!text-primary' onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
 
       {/* Date picker */}
@@ -63,19 +66,17 @@ const OperationRow = () => {
             <Button
               variant='ghost'
               id='date'
-              className='lg:border-border lg:hover:bg-muted justify-between text-sm font-normal lg:w-60 lg:border lg:bg-transparent'
+              className='transform transition duration-400 hover:-translate-y-1'
               aria-label='Choose start date'
             >
-              <span className='hidden lg:inline-block'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
-              <CalendarDays className='lg:hidden' />
-              <ChevronDownIcon className='hidden lg:inline-block' />
+              <CalendarDays />
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className='flex w-auto flex-col items-center overflow-hidden p-0 p-2'
-            align='start'
+            className='flex w-auto flex-col items-center overflow-hidden p-3'
+            align='end'
           >
-            <span className='text-sm font-semibold lg:hidden'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
+            <span className='text-sm font-semibold'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
             <Calendar
               mode='single'
               selected={startDate}
@@ -95,11 +96,6 @@ const OperationRow = () => {
           </PopoverContent>
         </Popover>
       </div>
-
-      {/* Next button */}
-      <PaginationItem className='block'>
-        <PaginationNext className='!text-primary/80' onClick={() => setNewStart(nextMon, false)} />
-      </PaginationItem>
     </div>
   );
 };
