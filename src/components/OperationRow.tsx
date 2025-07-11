@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
-import { ChevronDownIcon } from 'lucide-react';
+import { CalendarDays, ChevronDownIcon } from 'lucide-react';
 
 import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
@@ -46,10 +46,10 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='mb-5 flex h-12 items-center justify-start gap-10 lg:justify-center'
+      className='mb-5 flex h-12 items-center justify-start gap-1 lg:justify-center lg:gap-10'
     >
       {/* Prev button */}
-      <PaginationItem className='hidden lg:block'>
+      <PaginationItem className='block'>
         <PaginationPrevious
           className='!text-primary/80'
           onClick={() => setNewStart(prevMon, false)}
@@ -61,39 +61,43 @@ const OperationRow = () => {
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant='outline'
+              variant='ghost'
               id='date'
-              className='w-60 justify-between text-sm font-normal'
+              className='lg:border-border lg:hover:bg-muted justify-between text-sm font-normal lg:w-60 lg:border lg:bg-transparent'
               aria-label='Choose start date'
             >
-              {`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}
-              <ChevronDownIcon />
+              <span className='hidden lg:inline-block'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
+              <CalendarDays className='lg:hidden' />
+              <ChevronDownIcon className='hidden lg:inline-block' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='w-auto overflow-hidden p-0' align='start'>
+          <PopoverContent
+            className='flex w-auto flex-col items-center overflow-hidden p-0 p-2'
+            align='start'
+          >
+            <span className='text-sm font-semibold lg:hidden'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
             <Calendar
               mode='single'
               selected={startDate}
               captionLayout='dropdown'
               onSelect={(date) => dateSelectHandler(date)}
             />
+            {/* Today */}
+            <Button
+              variant='default'
+              className='w-full text-sm'
+              onClick={() => {
+                dateSelectHandler(new Date());
+              }}
+            >
+              Today
+            </Button>
           </PopoverContent>
         </Popover>
       </div>
 
-      {/* Today */}
-      <Button
-        variant='outline'
-        className='text-sm'
-        onClick={() => {
-          dateSelectHandler(new Date());
-        }}
-      >
-        Today
-      </Button>
-
       {/* Next button */}
-      <PaginationItem className='hidden lg:block'>
+      <PaginationItem className='block'>
         <PaginationNext className='!text-primary/80' onClick={() => setNewStart(nextMon, false)} />
       </PaginationItem>
     </div>
