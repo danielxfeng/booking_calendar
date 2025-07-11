@@ -13,7 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { useAtom, useAtomValue, useStore } from 'jotai';
-import { Calendar, Check, Loader, MapPin, User } from 'lucide-react';
+import { Calendar, Loader, MapPin, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 import ScrollSlotPicker from '@/components/ScrollSlotPicker';
@@ -255,28 +255,17 @@ const BookingForm = () => {
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
                   >
                     {ROOM_MAP.map(({ id, name, color }) => (
-                      <FormLabel
+                      <RadioGroupItem
                         key={id}
-                        htmlFor={`room-${id}`}
+                        id={`room-${id}`}
+                        value={String(id)}
                         className={cn(
-                          'flex items-center justify-between rounded-sm border border-transparent p-4 shadow-sm transition-all duration-200 ease-in-out hover:opacity-80',
+                          'data-[state=checked]:border-2 data-[state=checked]:border-primary flex items-center justify-center rounded-sm py-3 shadow-sm cursor-pointer',
                           color,
                         )}
                       >
-                        <span className='cursor-pointer text-xs'>{name}</span>
-                        <RadioGroupItem
-                          id={`room-${id}`}
-                          value={String(id)}
-                          className=' data-[state=checked]:ring-primary/50 border-muted hover:ring-primary/30 relative h-5 w-5 shrink-0 rounded-full border p-1.5 hover:ring-1 hover:ring-offset-1 data-[state=checked]:ring-1 data-[state=checked]:ring-offset-1'
-                        >
-                          <Check
-                            className={cn(
-                              'absolute inset-0 m-auto h-4 w-4 opacity-0',
-                              field.value === id && 'text-primary opacity-100 transition-opacity',
-                            )}
-                          />
-                        </RadioGroupItem>
-                      </FormLabel>
+                        <span className='text-xs'>{name}</span>
+                      </RadioGroupItem>
                     ))}
                   </RadioGroup>
                 </FormControl>
