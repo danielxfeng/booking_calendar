@@ -7,11 +7,11 @@
  * @contact intra: @xifeng
  */
 
-import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual, isSameDay } from 'date-fns';
+import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
 
 import type { FormProp, FormType } from '@/components/BookingForm';
 import type { Slot } from '@/components/ScrollSlotPicker';
-import { ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
+import { OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { DayBookings } from '@/lib/weekBookings';
 
@@ -86,8 +86,10 @@ const calculateSlots = (
   if (roomId === undefined) return []; // should not be here.
 
   const slots: Slot[] = [];
-  let curr = baseTime;
-  while (isSameDay(baseTime, curr)) {
+  const firstSlot = addMinutes(baseTime, OPEN_HOURS_IDX[0] * TIME_SLOT_INTERVAL);
+  let curr = firstSlot;
+  const end = addMinutes(baseTime, OPEN_HOURS_IDX[1] * TIME_SLOT_INTERVAL);
+  while (isBefore(curr, end)) {
     slots.push({ slot: curr, avail: true });
     curr = addMinutes(curr, TIME_SLOT_INTERVAL);
   }
@@ -101,9 +103,9 @@ const calculateSlots = (
       const bookingEnd = new Date(slot.end);
 
       const startIndex = Math.floor(
-        differenceInMinutes(bookingStart, baseTime) / TIME_SLOT_INTERVAL,
+        differenceInMinutes(bookingStart, firstSlot) / TIME_SLOT_INTERVAL,
       );
-      const endIndex = Math.ceil(differenceInMinutes(bookingEnd, baseTime) / TIME_SLOT_INTERVAL);
+      const endIndex = Math.ceil(differenceInMinutes(bookingEnd, firstSlot) / TIME_SLOT_INTERVAL);
 
       for (let i = startIndex; i < endIndex; i++) slots[i].avail = false;
     });

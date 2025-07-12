@@ -77,7 +77,6 @@ const parseErrorMsg = (error: unknown): string => {
 };
 
 // TODO:  Allow users to modify a booking? Changing date in form?
-// TODO:  Can not find an available slot when the start is not from like 8:00, 9:00...
 const BookingForm = () => {
   const bookings = useAtomValue(bookingsAtom);
   const [formProp, setFormProp] = useAtom(formPropAtom);
