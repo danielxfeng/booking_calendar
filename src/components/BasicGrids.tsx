@@ -18,7 +18,7 @@ const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 // One row per hour
 const rowsArr = Array.from(
-  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0] + 1) / slotsInAHour },
+  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
   (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
 );
 
