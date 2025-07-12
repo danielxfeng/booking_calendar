@@ -26,15 +26,16 @@ if (60 % TIME_SLOT_INTERVAL !== 0)
   ThrowInternalError('TIME_SLOT_INTERVAL must divide evenly into 60');
 
 /**
- * The open hours of the meeting rooms.
+ * The open hours of the meeting rooms,
+ * [start, end], must align with TIME_SLOT_INTERVAL, and on hour
  */
-const OPEN_HOURS: [string, string] = ['06:00', '21:00']; // [start, end], must align with TIME_SLOT_INTERVAL
+const OPEN_HOURS: [string, string] = ['06:00', '21:00'];
 
 const getOpenHoursIdx = (time: string): number => {
   const [hour, minute] = time.split(':').map(Number);
   const minutes = hour * 60 + minute;
-  if (minutes % TIME_SLOT_INTERVAL !== 0)
-    ThrowInternalError('open hours must align with TIME_SLOT_INTERVAL');
+  if (minutes % TIME_SLOT_INTERVAL !== 0 || minute != 0)
+    ThrowInternalError('open hours must align with TIME_SLOT_INTERVAL, and on hour');
   return minutes / TIME_SLOT_INTERVAL;
 };
 
