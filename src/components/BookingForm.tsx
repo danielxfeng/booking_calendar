@@ -330,13 +330,6 @@ const BookingForm = () => {
           {form.formState.errors.root && (
             <p className='text-destructive text-sm'>{form.formState.errors.root?.message}</p>
           )}
-          {/* Return info(possible) */}
-          {(deleteMutation.isSuccess || upsertMutation.isSuccess) && (
-            <p className='text-center text-sm font-semibold text-green-500'>
-              Cool! The operation was successful, <br />
-              we are closing the form...
-            </p>
-          )}
 
           {/* Btns */}
           <div data-role='booking-form-btns' className='flex justify-center'>
