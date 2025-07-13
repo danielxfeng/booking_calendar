@@ -10,8 +10,11 @@ import BasicGrids from '@/components/BasicGrids';
 import BookingsLayer from '@/components/BookingsLayer';
 import CalendarHeader from '@/components/CalendarHeader';
 import RoomMap from '@/components/RoomMap';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 import { styleGenerator } from '@/lib/tools';
+
+const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
+const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
 const Main = () => (
   <div
@@ -29,7 +32,7 @@ const Main = () => (
         <div
           data-role='calendar-data-container'
           className='relative'
-          style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * 24)}
+          style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
         >
           <BasicGrids />
           <BookingsLayer />
