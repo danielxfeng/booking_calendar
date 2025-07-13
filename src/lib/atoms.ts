@@ -9,11 +9,14 @@ import { atom } from 'jotai';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
 import type { FormProp } from '@/components/BookingForm';
+import { ROOM_MAP, type RoomProp } from '@/config';
 import type { WeekBookings } from '@/lib/weekBookings';
 
 const formPropAtom = atom<FormProp>(null);
 
 const bookingsAtom = atom<WeekBookings>([]);
+
+const roomsAtom = atom<RoomProp[]>(ROOM_MAP);
 
 // A wrapper of `sessionStorage`. the reviver is to convert `null` to '' since the type of store is `string`.
 const storage = createJSONStorage<string>(() => sessionStorage, {
@@ -25,4 +28,4 @@ const storage = createJSONStorage<string>(() => sessionStorage, {
  */
 const startAtom = atomWithStorage<string>('start', '', storage);
 
-export { bookingsAtom, formPropAtom, startAtom };
+export { bookingsAtom, formPropAtom, roomsAtom, startAtom };
