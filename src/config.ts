@@ -8,8 +8,8 @@
 import { ThrowInternalError } from './lib/errorHandler';
 
 const ROOM_MAP: { id: number; name: string; color: string }[] = [
-  { id: 1, name: 'Big', color: 'bg-slate-400/70 border-slate-500/50' },
-  { id: 2, name: 'Small', color: 'bg-slate-300/70 border-slate-400/50' },
+  { id: 1, name: 'Big', color: 'bg-blue-200 border-blue-300' },
+  { id: 2, name: 'Small', color: 'bg-blue-50 border-blue-200' },
 ];
 
 /**

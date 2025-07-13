@@ -92,8 +92,8 @@ const BookedBlock = ({
         )}
       >
         {/* TEMP: disabled until backend returns `intra` and `role`
-        {user.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : ''} */}
-        {slot.bookedBy && height >= 12 ? slot.bookedBy : ''}
+        {user.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'} */}
+        {slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'}
       </span>
     </div>
   );
