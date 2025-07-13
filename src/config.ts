@@ -58,7 +58,7 @@ const CACHE_DURATION: number = 5; // 5 minutes
  * The size of a cell of the calendar view.
  */
 const CELL_WIDTH_PX: number = 112; // 112px
-const CELL_HEIGHT_PX: number = 48; // 24px
+const CELL_HEIGHT_PX: number = 64; // 24px
 
 export {
   API_URL,
