@@ -26,4 +26,8 @@ const ThrowFetchingError = (error: unknown): never => {
   }
 };
 
-export { ThrowFetchingError, ThrowInternalError, ThrowInvalidIncomingDataErr };
+const ThrowBackendError = (message: string): never => {
+  throw new Error(`Status: 502. Message: An error from backend: ${message}`);
+};
+
+export { ThrowBackendError, ThrowFetchingError, ThrowInternalError, ThrowInvalidIncomingDataErr };
