@@ -1,13 +1,25 @@
+import { useAtom } from 'jotai';
 import { MapPin } from 'lucide-react';
 
 import { ROOM_MAP } from '@/config';
+import { roomsAtom } from '@/lib/atoms';
 import { cn } from '@/lib/utils';
 
 const RoomMap = () => {
+  const [rooms, setRooms] = useAtom(roomsAtom);
+  const toggleHandler = (id: number) => {
+    setRooms((prev) => {
+      return prev.some((r) => r.id === id)
+        ? prev.filter((r) => r.id !== id)
+        : [...prev, ROOM_MAP.find((r) => r.id === id)!];
+    });
+  };
+
   return (
     <div data-role='room-map' className='mb-4 flex w-fit items-center justify-start gap-4 text-sm'>
-      <div data-role='room-map-label' className='font-semibold flex gap-1 items-center'>
-        <MapPin className='h-4 w-4' />Meeting rooms:
+      <div data-role='room-map-label' className='flex items-center gap-1 font-semibold'>
+        <MapPin className='h-4 w-4' />
+        Meeting rooms:
       </div>
       <div data-role='room-map-list' className='flex w-fit gap-2 text-sm'>
         {ROOM_MAP.map((room) => (
@@ -16,9 +28,11 @@ const RoomMap = () => {
             data-role='room-map-room'
             key={room.id}
             className={cn(
-              `transition-colors rounded-full border px-4 py-0.5 font-medium shadow-sm ${room.color} focus:outline-none focus:ring-2 focus:ring-blue-300`,
+              `rounded-full border px-4 py-0.5 font-medium shadow-sm transition-colors ${room.color}`,
+              rooms.some((r) => r.id === room.id) && 'ring-2 ring-blue-300 outline-none',
             )}
             style={{ minWidth: 60 }}
+            onClick={() => toggleHandler(room.id)}
           >
             {room.name}
           </button>
