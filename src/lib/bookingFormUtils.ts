@@ -86,6 +86,9 @@ const calculateSlots = (
   if (roomId === undefined) return []; // should not be here.
 
   const slots: Slot[] = [];
+
+  // Generate slot start times based on openHours.
+  // For example: openHours = ["06:00", "21:00"] and TIME_SLOT_INTERVAL = 30, the last startTime should be 20:30
   const firstSlot = addMinutes(baseTime, OPEN_HOURS_IDX[0] * TIME_SLOT_INTERVAL);
   let curr = firstSlot;
   const end = addMinutes(baseTime, OPEN_HOURS_IDX[1] * TIME_SLOT_INTERVAL);

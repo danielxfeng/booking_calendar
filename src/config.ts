@@ -34,7 +34,7 @@ const OPEN_HOURS: [string, string] = ['06:00', '21:00'];
 const getOpenHoursIdx = (time: string): number => {
   const [hour, minute] = time.split(':').map(Number);
   const minutes = hour * 60 + minute;
-  if (minutes % TIME_SLOT_INTERVAL !== 0 || minute != 0)
+  if (minutes % TIME_SLOT_INTERVAL !== 0 || minute !== 0)
     ThrowInternalError('open hours must align with TIME_SLOT_INTERVAL, and on hour');
   return minutes / TIME_SLOT_INTERVAL;
 };
