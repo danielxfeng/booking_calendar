@@ -49,8 +49,8 @@ const App = () => {
       <header className='sticky shadow-sm top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60'>
         <div className='container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center gap-3'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm'>
-              <span className='text-sm font-bold text-primary-foreground'>B</span>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg  bg-gradient-to-br from-purple-800 to-blue-600/80 shadow-sm'>
+              <span className='text-sm font-bold text-primary-foreground '>B</span>
             </div>
             <h1 className='text-xl font-semibold tracking-tight text-foreground sm:text-2xl'>
               Bookme
