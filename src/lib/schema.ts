@@ -9,15 +9,19 @@
 import { addMilliseconds, differenceInMinutes, isSameDay } from 'date-fns';
 import * as z from 'zod/v4';
 
-import { TIME_SLOT_INTERVAL } from '@/config';
+import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 
 const MIN_MEETING_MINUTES = 15;
 const MAX_USERNAME_LENGTH = 100;
 
-const timeAdditionalCheck = (datetime: string): boolean => {
+const isSlotTimeWithinOpenHours = (datetime: string): boolean => {
   const date = new Date(datetime);
   if (isNaN(date.getTime())) return false;
-  return date.getMinutes() % TIME_SLOT_INTERVAL === 0;
+
+  const minutes = date.getHours() * 60 + date.getMinutes();
+  if (minutes % TIME_SLOT_INTERVAL !== 0) return false; // Align with TIME_SLOT_INTERVAL
+  const slotIdx = minutes / TIME_SLOT_INTERVAL;
+  return slotIdx >= OPEN_HOURS_IDX[0] && slotIdx <= OPEN_HOURS_IDX[1]; // Within OpenHours.
 };
 
 const laterThanNowCheck = (start: string): boolean => {
@@ -28,7 +32,6 @@ const meetingLengthCheck = (start: string, end: string): boolean => {
   return differenceInMinutes(new Date(end), new Date(start)) >= MIN_MEETING_MINUTES;
 };
 
-// TODO: Do we support inter-day booking?
 const isSameDayCheck = (start: string, end: string): boolean => {
   let endTime = new Date(end);
 
@@ -39,10 +42,11 @@ const isSameDayCheck = (start: string, end: string): boolean => {
   return isSameDay(new Date(start), endTime);
 };
 
-// TODO: Is it still useful? basically we support any time.
-const dateTimeSchema = z.iso.datetime({ local: true }).refine((val) => timeAdditionalCheck(val), {
-  message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots.`,
-});
+const dateTimeSchema = z.iso
+  .datetime({ local: true })
+  .refine((val) => isSlotTimeWithinOpenHours(val), {
+    message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots, and within open hours.`,
+  });
 
 const BookingFromApiSchema = z
   .object({

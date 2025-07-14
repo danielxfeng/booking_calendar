@@ -11,12 +11,21 @@ import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import Loading from '@/components/Loading';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, CURR_USER_COLOR, ROOM_MAP } from '@/config';
+import {
+  CELL_HEIGHT_PX,
+  CELL_WIDTH_PX,
+  CURR_USER_COLOR,
+  OPEN_HOURS_IDX,
+  ROOM_MAP,
+  TIME_SLOT_INTERVAL,
+} from '@/config';
 import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
 import type { WeekBookings } from '@/lib/weekBookings';
+
+const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 const getPositionAndStyle = (
   col: number,
@@ -25,9 +34,6 @@ const getPositionAndStyle = (
   roomId: number,
   roomsCount: number,
 ): CSSProperties & { h: number } => {
-  const totalHeight = CELL_HEIGHT_PX * 24;
-  const totalWidth = CELL_WIDTH_PX * 8;
-
   const startTime = new Date(start);
   const endTime = new Date(end);
 
@@ -37,12 +43,16 @@ const getPositionAndStyle = (
   // If endTime is "00:00", it is "24:00"
   const endMin = endMin_ === 0 ? 24 * 60 : endMin_;
 
-  const top = (startMin / (24 * 60)) * totalHeight;
-  const height = ((endMin - startMin) / (24 * 60)) * totalHeight;
+  const heightPerSlot = CELL_HEIGHT_PX / slotsInAHour;
+  const startSlotIdx = startMin / TIME_SLOT_INTERVAL - OPEN_HOURS_IDX[0];
+  const endSlotIdx = endMin / TIME_SLOT_INTERVAL - OPEN_HOURS_IDX[0];
+  const top = startSlotIdx * heightPerSlot;
+  const height = (endSlotIdx - startSlotIdx) * heightPerSlot;
 
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
+  const totalWidth = CELL_WIDTH_PX * 8;
   const width = CELL_WIDTH_PX / roomsCount;
   const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
 

@@ -9,12 +9,19 @@ import { memo } from 'react';
 import { addDays } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 import { formPropAtom, startAtom } from '@/lib/atoms';
 import { gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
-const rowsArr = Array.from({ length: 24 }, (_, i) => i);
+const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
+
+// One row per hour
+const rowsArr = Array.from(
+  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
+  (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
+);
+
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
 
 type BasicCellProps = {
@@ -24,8 +31,6 @@ type BasicCellProps = {
   curr: Date;
 };
 
-// TODO: now `isPast` just checks the start time, so the available booking time starts from `next hour`
-// And when onClick, the `past` may be stale, it can also be optimized.
 const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const setFormProp = useSetAtom(formPropAtom);
   const cellBaseTime = addDays(baseTime, col);
