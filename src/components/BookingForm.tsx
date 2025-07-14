@@ -45,7 +45,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RadioGroup } from '@/components/ui/radio-group';
 import {
@@ -258,9 +257,9 @@ const BookingForm = () => {
 
           {/* Date */}
           <div className='flex flex-col gap-3'>
-            <Label htmlFor='date' className='text-sm font-bold'>
+            <div className='text-sm font-bold'>
               {formType === 'insert' ? 'Choose a date:' : 'The booked date:'}
-            </Label>
+            </div>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
