@@ -1,157 +1,154 @@
-# Book Me - an event calendar (frontend)
+# Book Me - Meeting room booking calendar
 
-This project is a meeting room reservation system built by me and [Abdul](https://github.com/IbnBaqqi), for **Hive Helsinki**.
-Abdul initialized the idea and developed an excellent backend using **Spring Boot**, while I focused on building the **frontend**.
+A modern, intuitive room booking system built by [Daniel](https://github.com/danielxfeng) and [Abdul](https://github.com/IbnBaqqi) for **Hive Helsinki**.
 
-- **Live Preview:** [booking-calendar-chi.vercel.app](https://booking-calendar-chi.vercel.app)  
-- **GitHub Repo:** [github.com/danielxfeng/booking_calendar](https://github.com/danielxfeng/booking_calendar)
-- **Link to Backend:** [https://github.com/IbnBaqqi/book-me](https://github.com/IbnBaqqi/book-me)
+![Booking Calendar Interface](./public/screenshot.png)
 
----
+<br>
 
-## Installation
+## The Story
 
-To run this booking calendar application locally, follow these steps:
+At Hive Helsinki, students need to request room bookings from staff members, creating a manual workflow that's time-consuming. As students ourselves, we saw an opportunity to apply what we learned in school to solve a real-world problem.
+
+**Book Me** was born from this need - a streamlined room booking system that eliminates the manual overhead while providing a smooth, modern user experience.
+
+- **Live Demo:** [booking-calendar-chi.vercel.app](https://booking-calendar-chi.vercel.app)
+- **Frontend Repo:** [github.com/danielxfeng/booking_calendar](https://github.com/danielxfeng/booking_calendar)
+- **Backend Repo:** [github.com/IbnBaqqi/book-me](https://github.com/IbnBaqqi/book-me)
+
+<br><br>
+
+## Features
+
+- 📅 **Weekly Calendar View** - Scrollable timeline showing all room bookings
+- ✨ **One-Click Booking** - Add new reservations with intuitive time slot selection
+- 🗑️ **Smart Deletion** - Role-based access control for booking management
+<!-- - 📱 **Mobile-First** - Responsive design optimized for all devices -->
+- 🔒 **Conflict Prevention** - Built-in validation prevents double-bookings
+- 🎨 **Modern UI** - Clean, accessible interface with smooth animations
+
+### Role-Based Access Control
+- **Staff** can manage all bookings across the system
+- **Students** can only modify their own reservations
+
+<br>
+
+## Tech Stack
+
+- **Frontend:** React + TypeScript + Vite
+- **UI Components:** ShadCN/UI + Tailwind CSS
+- **State Management:** Jotai for lightweight, reactive state
+- **Data Fetching:** TanStack Query for intelligent caching
+- **Form Handling:** React Hook Form + Zod validation
+- **HTTP Client:** Axios with automatic token refresh
+- **Testing:** Vitest for unit testing
+
+<br>
+
+## Getting Started
 
 ### Prerequisites
-Make sure you have the following installed on your system:
-- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/)
+- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/) or use [nvm](https://github.com/nvm-sh/nvm)
 
-### Step-by-step Installation
+### Local Development
 
 1. **Clone the repository**
    ```bash
    git clone https://github.com/danielxfeng/booking_calendar.git
-   ```
-
-2. **Navigate to the project directory**
-   ```bash
    cd booking_calendar
    ```
 
-3. **Install dependencies**
+2. **Install dependencies**
    ```bash
    npm install
    ```
-   This will install all required packages listed in `package.json`
 
-4. **Set up environment variables**
-   Create a `.env` file in the root directory with the following content:
+3. **Set up environment variables**
    ```bash
-    cp .env.sample .env
+   cp .env.sample .env
    ```
    
-  > [!NOTE]
-  > Replace `http://localhost:8080` with your actual backend API URL. If you're running the backend locally
+   Update the `.env` file with your backend API URL:
+   ```env
+   VITE_API_URL=http://localhost:8080
+   ```
 
-5. **Start the development server**
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser**
-   The application should automatically open at `http://localhost:5173` (or another port if 5173 is busy)
+5. **Open your browser**
+   Navigate to `http://localhost:5173` to see the application
 
----
+<br>
 
-## Features
+## Contributing
 
-- View weekly room bookings in a scrollable calendar view
+We welcome contributions! Here's how you can help:
 
-- Add a new booking with room and time selection
+### Development Setup
 
-- Delete an existing booking
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make your changes**
+4. **Run tests**
+   ```bash
+   npm test
+   ```
+5. **Submit a pull request**
 
-- **Role-based access control** (RBAC):
-  - **Staff** can delete **any** booking
-  - **Students** can only delete **their own** bookings
+### Code Style
 
-- Built-in conflict prevention for overlapping bookings
+- Follow the existing TypeScript patterns
+- Use Prettier for code formatting
+- Write tests for new features
+- Update documentation as needed
 
-- Mobile responsiveness achieved via **horizontal scrolling** — better suited than drag-and-drop for small screens
+### Areas for Contribution
 
-- Lightweight, **unstyled** prototype focused on functionality
+- 🎨 UI/UX improvements
+- 🧪 Additional test coverage
+- 📱 Mobile experience enhancements
+- 🚀 Performance optimizations
+- 🐛 Bug fixes
 
----
 
-## Tech Highlights
 
-- **Three-layer stacked layout**
-  - Base grid, booking overlays, and a floating form layer.
-  - They are separated to reduce re-renders and decouple UI from logic.
-
-- **TanStack Query** for auto-fetching and intelligent caching
-  - Ensures a smooth user experience when switching calendar views, with minimal network requests and loading delays.
-
-- **Axios interceptor** with token expiration handling
-  - Gracefully attempts to recover expired tokens without disrupting the user.
-
-- **Custom ScrollSlotPicker**
-  - A UI component designed from scratch to offer an intuitive way to select time slots.
-
-- **URL and state sync**
-  - Enables deep-linking and state persistence when navigating between dates or sharing calendar views.
-
-- **Jotai** for clean and minimalistic state management
-  - Enables consistent state sharing across components.
-
-- **Zod** schema validation integrated with **React Hook Form**
-  - Ensures strong typing and robust form validation logic.
-
-- **Vitest** for unit tests
-  - Helps maintain code quality.
-
----
-
-## Known Issues & Future Improvements
-
-- UI is unstyled (Partly solved)
-- A better radio btn?
-- A mobile view
-- Drag
-- Booking form does not allow changing the selected date
-- Add more tests (unit, integration, E2E)
-
----
-
-## Project Structure
+## Project Architecture
 
 ```
 src/
-├── components/ # All UI components
-│ ├── ui/ # Components from ShadCN UI
-│ ├── BasicGrids/ # Base time × room grid layout
-│ ├── BookingForm/ # A "sheet" component for booking create/update
-│ ├── CalendarHeader/ # Week header
-│ ├── ErrorBoundary/ # Global error fallback UI
-│ ├── Loading/ # Spinner/loading placeholder
-│ ├── Main/ # Main calendar layout entry
-│ ├── OperationRow/ # Top operation bar
-│ ├── ScrollSlotPicker/ # Custom scroll-based time slot picker
-│ ├── TanQuery/ # Headless wrappers for fetching + hooks
-│
-├── lib/ # Logic, utilities, and global state
-│ ├── apiFetcher.ts # Fetcher for calendar API
-│ ├── atoms.ts # Jotai atoms
-│ ├── axiosFetcher.ts # Axios instance with token handling
-│ ├── bookingFormUtils.ts # BookingForm helpers
-│ ├── errorHandler.ts # Error handling
-│ ├── hooks/ # # Custom hooks: useStartController to manage the `start` atom
-│ ├── normalizeStartDate.ts # Aligns start date from URL to calendar view
-│ ├── schema.ts # Zod schemas for validation
-│ ├── tokenStore.ts # Token persistence and sync
-│ ├── tools.ts # Helper functions
-│ ├── utils.ts # Utility function from ShadCN UI
-│ ├── weekBookings.ts # Core data structure + generator
-│
-├── config.ts # Global configuration
-├── App.tsx # Application entry point
+├── components/          # UI components
+│   ├── ui/             # ShadCN/UI components
+│   ├── BookingForm/    # Booking creation/editing
+│   ├── CalendarHeader/ # Week navigation
+│   ├── Main/           # Main calendar layout
+│   └── ScrollSlotPicker/ # Custom time picker
+├── lib/                # Core logic & utilities
+│   ├── atoms.ts        # Jotai state management
+│   ├── apiFetcher.ts   # API communication
+│   ├── schema.ts       # Zod validation schemas
+│   └── weekBookings.ts # Calendar data structures
+└── tests/              # Unit tests
 ```
+
+
+
+## Known Issues & Roadmap
+
+- [ ] Enhanced mobile experience
+- [ ] Drag-and-drop booking interface
+- [ ] Advanced filtering and search
+- [ ] Email notifications
+- [ ] Calendar export functionality
+- [ ] Integration with external calendar systems
+
+
 
 ## License
 
-MIT
-
-## ScreenShot
-
-![Booking Calendar Screenshot](./public/screenshot.png)
+MIT License - feel free to use this project for your own needs!
