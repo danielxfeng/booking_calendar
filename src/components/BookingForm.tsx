@@ -45,13 +45,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
+import { API_URL, ENDPOINT_SLOTS, LONGEST_STUDENT_MEETING, ROOM_MAP } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUtils';
+import {
+  bookingLengthCheck,
+  calculateSlots,
+  initForm,
+  overlappingCheck,
+} from '@/lib/bookingFormUtils';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
+import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
 import type { DayBookings } from '@/lib/weekBookings';
 
@@ -64,7 +70,7 @@ type FormProp = {
   roomId?: number;
 } | null;
 
-const overlappingErrorMessage = 'The booked slots are not available.';
+const invalidMeetingErrorMessage = `The selected time conflicts with existing bookings or exceeds the ${LONGEST_STUDENT_MEETING}-hour limit.`;
 
 const parseErrorMsg = (error: unknown): string => {
   if (error instanceof AxiosError) {
@@ -78,6 +84,7 @@ const parseErrorMsg = (error: unknown): string => {
 
 // TODO:  Allow users to modify a booking? Changing date in form?
 const BookingForm = () => {
+  const user = getUser();
   const bookings = useAtomValue(bookingsAtom);
   const [formProp, setFormProp] = useAtom(formPropAtom);
 
@@ -125,13 +132,16 @@ const BookingForm = () => {
 
   // To validate the overlapping booking
   useEffect(() => {
-    const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
+    const validSlots =
+      overlappingCheck(watchedStart, watchedEnd, endSlots) &&
+      bookingLengthCheck(watchedStart, watchedEnd, user?.role);
 
     const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
-    if (!validSlots && currentErrorMessage !== overlappingErrorMessage)
-      form.setError('end', { type: 'manual', message: overlappingErrorMessage });
-    else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
-  }, [watchedStart, watchedEnd, endSlots, form]);
+    if (!validSlots && currentErrorMessage !== invalidMeetingErrorMessage)
+      form.setError('end', { type: 'manual', message: invalidMeetingErrorMessage });
+    else if (validSlots && currentErrorMessage === invalidMeetingErrorMessage)
+      form.clearErrors('end');
+  }, [watchedStart, watchedEnd, endSlots, form, user?.role]);
 
   useEffect(() => {
     if (form.formState.isValid && form.formState.errors['root']) {
@@ -265,7 +275,7 @@ const BookingForm = () => {
                         id={`room-${id}`}
                         value={String(id)}
                         className={cn(
-                          'data-[state=checked]:border-2 data-[state=checked]:border-primary flex items-center justify-center rounded-sm py-1.5 shadow-sm cursor-pointer',
+                          'data-[state=checked]:border-primary flex cursor-pointer items-center justify-center rounded-sm py-1.5 shadow-sm data-[state=checked]:border-2',
                           color,
                         )}
                       >

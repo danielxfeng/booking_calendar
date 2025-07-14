@@ -11,7 +11,7 @@ import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'dat
 
 import type { FormProp, FormType } from '@/components/BookingForm';
 import type { Slot } from '@/components/ScrollSlotPicker';
-import { OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
+import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { DayBookings } from '@/lib/weekBookings';
 
@@ -133,4 +133,13 @@ const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean
   return true; // should not be here.
 };
 
-export { calculateSlots, initForm, overlappingCheck };
+const bookingLengthCheck = (
+  start: string,
+  end: string,
+  role: 'student' | 'staff' | null | undefined,
+): boolean => {
+  if (role === 'staff') return true;
+  return differenceInMinutes(new Date(end), new Date(start)) <= LONGEST_STUDENT_MEETING * 60;
+};
+
+export { bookingLengthCheck, calculateSlots, initForm, overlappingCheck };
