@@ -150,6 +150,7 @@ const BookingForm = () => {
     }
   }, [form, form.formState.isValid]);
 
+  // When the date picker value changes, update the date of `start` and `end`.
   useEffect(() => {
     const [startV, endV] = form.getValues(['start', 'end']);
     const newDate = addDays(startDate, dayShift);
