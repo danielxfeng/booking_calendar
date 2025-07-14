@@ -11,22 +11,29 @@ import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import Loading from '@/components/Loading';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, CURR_USER_COLOR, ROOM_MAP } from '@/config';
-import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
+import {
+  CELL_HEIGHT_PX,
+  CELL_WIDTH_PX,
+  CURR_USER_COLOR,
+  OPEN_HOURS_IDX,
+  ROOM_MAP,
+  TIME_SLOT_INTERVAL,
+} from '@/config';
+import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
 import type { WeekBookings } from '@/lib/weekBookings';
+
+const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 const getPositionAndStyle = (
   col: number,
   start: string,
   end: string,
   roomId: number,
+  roomsCount: number,
 ): CSSProperties & { h: number } => {
-  const totalHeight = CELL_HEIGHT_PX * 24;
-  const totalWidth = CELL_WIDTH_PX * 8;
-
   const startTime = new Date(start);
   const endTime = new Date(end);
 
@@ -36,14 +43,17 @@ const getPositionAndStyle = (
   // If endTime is "00:00", it is "24:00"
   const endMin = endMin_ === 0 ? 24 * 60 : endMin_;
 
-  const top = (startMin / (24 * 60)) * totalHeight;
-  const height = ((endMin - startMin) / (24 * 60)) * totalHeight;
+  const heightPerSlot = CELL_HEIGHT_PX / slotsInAHour;
+  const startSlotIdx = startMin / TIME_SLOT_INTERVAL - OPEN_HOURS_IDX[0];
+  const endSlotIdx = endMin / TIME_SLOT_INTERVAL - OPEN_HOURS_IDX[0];
+  const top = startSlotIdx * heightPerSlot;
+  const height = (endSlotIdx - startSlotIdx) * heightPerSlot;
 
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
-  const roomCount = ROOM_MAP.length;
-  const width = CELL_WIDTH_PX / roomCount;
+  const totalWidth = CELL_WIDTH_PX * 8;
+  const width = CELL_WIDTH_PX / roomsCount;
   const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
 
   return { position: 'absolute', top, left, width, height, h: height };
@@ -53,10 +63,12 @@ const BookedBlock = ({
   roomId,
   col,
   slot,
+  roomsCount,
 }: {
   roomId: number;
   col: number;
   slot: BookingFromApi;
+  roomsCount: number;
 }) => {
   const setFormProp = useSetAtom(formPropAtom);
   const room = ROOM_MAP.find((r) => r.id === roomId);
@@ -69,7 +81,13 @@ const BookedBlock = ({
   // order: 1 currUser 2 room's color, 3 fallback
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
-  const { h: height, ...style } = getPositionAndStyle(col, slot.start, slot.end, roomId);
+  const { h: height, ...style } = getPositionAndStyle(
+    col,
+    slot.start,
+    slot.end,
+    roomId,
+    roomsCount,
+  );
 
   return (
     <div
@@ -101,6 +119,7 @@ const BookedBlock = ({
 
 const BookingsLayer = () => {
   const start = useAtomValue(startAtom);
+  const rooms = useAtomValue(roomsAtom);
   const bookings: WeekBookings = useAtomValue(bookingsAtom);
   const isPending =
     useIsFetching({
@@ -115,11 +134,19 @@ const BookingsLayer = () => {
       ) : (
         <>
           {bookings.map((day, col) =>
-            Object.values(day).map((room) =>
-              room.slots.map((slot) => (
-                <BookedBlock key={slot.id} roomId={room.roomId} col={col} slot={slot} />
-              )),
-            ),
+            Object.values(day)
+              .filter((booking) => rooms.some((room) => room.id === booking.roomId))
+              .map((room) =>
+                room.slots.map((slot) => (
+                  <BookedBlock
+                    key={slot.id}
+                    roomId={room.roomId}
+                    col={col}
+                    slot={slot}
+                    roomsCount={rooms.length}
+                  />
+                )),
+              ),
           )}
         </>
       )}
