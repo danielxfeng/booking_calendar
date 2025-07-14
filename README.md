@@ -1,6 +1,7 @@
 # Book Me - Meeting room booking calendar
 
 A modern, intuitive room booking system built by [Daniel](https://github.com/danielxfeng) and [Abdul](https://github.com/IbnBaqqi) for **Hive Helsinki**.
+Big thanks to [Jordane](https://github.com/jgengo), former CTO of Hive Helsinki, for his in-depth code reviews and many valuable suggestions via PRs and Discord.
 
 ![Booking Calendar Interface](./public/screenshot.png)
 
