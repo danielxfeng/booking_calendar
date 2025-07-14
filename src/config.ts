@@ -17,7 +17,7 @@ const ROOM_MAP: RoomProp[] = [
 /**
  * summary Background color for current user.
  */
-const CURR_USER_COLOR: string = 'bg-orange-600/20 border-orange-500/40';
+const CURR_USER_COLOR: string = 'bg-purple-300 border-purple-500';
 
 /**
  * The time slot interval
