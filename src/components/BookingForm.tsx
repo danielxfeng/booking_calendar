@@ -266,7 +266,7 @@ const BookingForm = () => {
                 <Button
                   variant='outline'
                   id='date'
-                  className='w-full justify-between font-normal'
+                  className='w-full justify-between font-normal disabled:opacity-100'
                   disabled={formType !== 'insert' || isUpsertBusy}
                 >
                   {format(bookingDate, 'EEE dd MMM')}
