@@ -11,7 +11,14 @@ import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 import Loading from '@/components/Loading';
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, CURR_USER_COLOR, ROOM_MAP } from '@/config';
+import {
+  CELL_HEIGHT_PX,
+  CELL_WIDTH_PX,
+  CURR_USER_COLOR,
+  OPEN_HOURS_IDX,
+  ROOM_MAP,
+  TIME_SLOT_INTERVAL,
+} from '@/config';
 import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
@@ -45,6 +52,7 @@ const getPositionAndStyle = (
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
+  const totalWidth = CELL_WIDTH_PX * 8;
   const width = CELL_WIDTH_PX / roomsCount;
   const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
 
