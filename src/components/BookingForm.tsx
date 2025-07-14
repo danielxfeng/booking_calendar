@@ -221,10 +221,7 @@ const BookingForm = () => {
   const isUpsertBusy = form.formState.isSubmitting || upsertMutation.isPending;
 
   return (
-    <div
-      data-role='booking-upsert-form'
-      className='flex flex-col justify-start py-6 lg:h-96 lg:w-96'
-    >
+    <div data-role='booking-upsert-form' className='flex flex-col justify-start py-6 lg:w-96'>
       <SheetHeader>
         <SheetTitle>{titlePrefix}</SheetTitle>
         <SheetDescription className='mt-2'>
@@ -463,7 +460,7 @@ const FormWrapper = () => {
         if (!open) setFormProp(null);
       }}
     >
-      <SheetContent className='z-50 w-full overflow-y-auto lg:w-96'>
+      <SheetContent className='z-50 h-full w-full overflow-y-auto lg:w-96'>
         {!!formProp && <BookingForm />}
       </SheetContent>
     </Sheet>
