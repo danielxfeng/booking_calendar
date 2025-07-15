@@ -5,7 +5,7 @@
  * @contact intra: @xifeng
  */
 
-import type { CSSProperties } from 'react';
+import { type CSSProperties, useState } from 'react';
 import { useIsFetching } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -122,9 +122,40 @@ const BookedBlock = ({
   );
 };
 
-const BookingsLayer = () => {
+type HoverGridProps = {
+  col: number;
+  row: number;
+  startTime: Date;
+  roomId: number;
+};
+
+const parseHoverGridProps = (x: number, y: number): HoverGridProps => {
+  // TODO: to be implemented.
+  return { col: x, row: y, startTime: new Date(), roomId: 0 };
+};
+
+/**
+ * @summary A pure static grid for display a hover effect.
+ */
+const HoverGrid = ({ hoverGridProps }: { hoverGridProps: HoverGridProps }) => {
+  // TODO: to be implemented.
+  hoverGridProps.col = 0;
+  return <></>;
+};
+
+/**
+ * @description
+ * A free zone with transparent bg, and absolute booking blocks on it.
+ * Display a temp hover grid on hover for helping user start a new booking.
+ */
+const BookingsLayer = ({
+  containerRef,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) => {
   const start = useAtomValue(startAtom);
   const rooms = useAtomValue(roomsAtom);
+  const setFormProp = useSetAtom(formPropAtom);
   const bookings: WeekBookings = useAtomValue(bookingsAtom);
   const isPending =
     useIsFetching({
@@ -132,8 +163,31 @@ const BookingsLayer = () => {
       predicate: (query) => query.state.status === 'pending',
     }) > 0;
 
+  // A temp cell to handle the hover/click event on empty space.
+  const [hoverGridProps, setHoverGridProps] = useState<HoverGridProps | null>(null);
+
   return (
-    <div className='pointer-events-none absolute top-0 left-0 z-10 h-full w-full'>
+    <div
+      className='absolute top-0 left-0 z-10 h-full w-full'
+      onPointerLeave={() => setHoverGridProps(null)} // cancel hover
+      // trigger a `insertion` form
+      onClick={() => {
+        if (!hoverGridProps) return;
+        setFormProp({
+          roomId: hoverGridProps.roomId,
+          startTime: hoverGridProps.startTime,
+          channel: 'sheet',
+        });
+      }}
+      onPointerMove={(e: React.PointerEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left + containerRef.current.scrollLeft;
+        const y = e.clientY - rect.top + containerRef.current.scrollTop;
+
+        setHoverGridProps(parseHoverGridProps(x, y));
+      }}
+    >
       {isPending ? (
         <Loading />
       ) : (
@@ -153,6 +207,7 @@ const BookingsLayer = () => {
                 )),
               ),
           )}
+          {hoverGridProps && <HoverGrid hoverGridProps={hoverGridProps} />}
         </>
       )}
     </div>
