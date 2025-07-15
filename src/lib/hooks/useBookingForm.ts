@@ -10,7 +10,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import { addDays, differenceInCalendarDays } from 'date-fns';
 import { useAtomValue, useSetAtom, useStore } from 'jotai';
 import { toast } from 'sonner';
@@ -18,7 +17,7 @@ import { toast } from 'sonner';
 import { API_URL, ENDPOINT_SLOTS } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUtils';
+import { calculateSlots, initForm, overlappingCheck, parseErrorMsg } from '@/lib/bookingFormUtils';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { BookingFromApi, UpsertBooking } from '@/lib/schema';
 import { UpsertBookingSchema } from '@/lib/schema';
@@ -33,16 +32,6 @@ type FormProp = {
   booking?: BookingFromApi;
   roomId?: number;
 } | null;
-
-const parseErrorMsg = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    return error.response?.data?.message ?? error.message ?? 'Server responded with an error.';
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return 'Unknown error occurred.';
-};
 
 const overlappingErrorMessage = 'The booked slots are not available.';
 
@@ -196,4 +185,4 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
 
 export default useBookingForm;
 
-export type { FormProp };
+export type { FormProp, FormType };
