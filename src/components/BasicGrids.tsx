@@ -7,10 +7,10 @@
 
 import { memo } from 'react';
 import { addDays } from 'date-fns';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
-import { formPropAtom, startAtom } from '@/lib/atoms';
+import { startAtom } from '@/lib/atoms';
 import { gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
@@ -32,7 +32,6 @@ type BasicCellProps = {
 };
 
 const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
-  const setFormProp = useSetAtom(formPropAtom);
   const cellBaseTime = addDays(baseTime, col);
   const cellTime = timeFromCellIdx(row, cellBaseTime);
   const past = isPast(cellTime, curr);
@@ -42,18 +41,17 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
         'border-border box-border border',
         past
           ? 'bg-gray-100/98'
-          : 'relative cursor-pointer overflow-hidden bg-gradient-to-br transition-all duration-300 ease-out hover:scale-[1.02] hover:border-blue-300/60 hover:from-blue-100/80 hover:to-indigo-100/60 hover:shadow-md',
+          : // TODO: move the hover style later.
+            'relative cursor-pointer overflow-hidden bg-gradient-to-br transition-all duration-300 ease-out hover:scale-[1.02] hover:border-blue-300/60 hover:from-blue-100/80 hover:to-indigo-100/60 hover:shadow-md',
       )}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-      onClick={() => {
-        if (past) return;
-        setFormProp({ startTime: cellTime, channel: 'sheet' });
-      }}
     ></div>
   );
 };
 
-// 8 (7 + time indicator) * 24 grids
+/**
+ * @summary A pure static grids layout to display a week view. 8 (7 + time indicator) * 24 grids
+ */
 const BasicGrids = memo(() => {
   const curr = new Date();
   const start = useAtomValue(startAtom);
