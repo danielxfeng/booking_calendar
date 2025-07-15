@@ -8,7 +8,7 @@
 import { atom } from 'jotai';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
-import type { FormProp } from '@/components/BookingForm';
+import type { FormProp } from '@/components/bookingForm/BookingForm';
 import { ROOM_MAP, type RoomProp } from '@/config';
 import type { WeekBookings } from '@/lib/weekBookings';
 

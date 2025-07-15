@@ -9,8 +9,8 @@
 
 import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
 
-import type { FormProp, FormType } from '@/components/BookingForm';
-import type { Slot } from '@/components/ScrollSlotPicker';
+import type { FormProp, FormType } from '@/components/bookingForm/BookingForm';
+import type { Slot } from '@/components/bookingForm/ScrollSlotPicker';
 import { OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { DayBookings } from '@/lib/weekBookings';

@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useStore } from 'jotai';
 
-import FormWrapper from '@/components/BookingForm';
+import FormWrapper from '@/components/bookingForm/BookingForm';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Main from '@/components/Main';
@@ -70,7 +70,7 @@ const App = () => {
 
       <Footer />
 
-      <FormWrapper />      
+      <FormWrapper />
       <TanQuery />
       <Toaster position='top-center' duration={2000} richColors />
     </div>

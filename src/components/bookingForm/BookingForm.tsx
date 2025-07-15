@@ -23,7 +23,7 @@ import { useAtom, useAtomValue, useStore } from 'jotai';
 import { ChevronDownIcon, Loader, User } from 'lucide-react';
 import { toast } from 'sonner';
 
-import ScrollSlotPicker from '@/components/ScrollSlotPicker';
+import ScrollSlotPicker from '@/components/bookingForm/ScrollSlotPicker';
 import {
   AlertDialog,
   AlertDialogAction,
