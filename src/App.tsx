@@ -18,7 +18,7 @@ import TanQuery from '@/components/TanQuery';
 import { Toaster } from '@/components/ui/sonner';
 import { startAtom } from '@/lib/atoms';
 import { ThrowBackendError } from '@/lib/errorHandler';
-import { useStartController } from '@/lib/hooks';
+import { useStartController } from '@/lib/hooks/useStartController';
 import { setUser } from '@/lib/userStore';
 
 const App = () => {

@@ -1,6 +1,6 @@
 /**
- * @file hooks.tsx
- * @summary my hooks
+ * @file useStartController.tsx
+ * @summary a custom hook for `start`.
  *
  * @author Xin (Daniel) Feng
  * @contact intra: @xifeng
