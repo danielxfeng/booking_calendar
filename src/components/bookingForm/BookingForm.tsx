@@ -5,12 +5,8 @@
  * @contact intra: @xifeng
  */
 
-import { useEffect, useMemo, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 import {
   addDays,
   differenceInCalendarDays,
@@ -19,9 +15,8 @@ import {
   isBefore,
   startOfToday,
 } from 'date-fns';
-import { useAtom, useAtomValue, useStore } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, Loader, User } from 'lucide-react';
-import { toast } from 'sonner';
 
 import ScrollSlotPicker from '@/components/bookingForm/ScrollSlotPicker';
 import {
@@ -54,162 +49,32 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { API_URL, ENDPOINT_SLOTS, ROOM_MAP } from '@/config';
-import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
-import { axiosFetcher } from '@/lib/axiosFetcher';
-import { calculateSlots, initForm, overlappingCheck } from '@/lib/bookingFormUtils';
-import { ThrowInternalError } from '@/lib/errorHandler';
-import { type BookingFromApi, type UpsertBooking, UpsertBookingSchema } from '@/lib/schema';
-import { changeDate, newDate } from '@/lib/tools';
+import { ROOM_MAP } from '@/config';
+import { formPropAtom } from '@/lib/atoms';
+import useBookingForm from '@/lib/hooks/useBookingForm';
 import { cn } from '@/lib/utils';
-import type { DayBookings } from '@/lib/weekBookings';
-
-type FormType = 'view' | 'insert' | 'update';
-
-// set to null to close the form.
-type FormProp = {
-  startTime: Date;
-  booking?: BookingFromApi;
-  roomId?: number;
-} | null;
-
-const overlappingErrorMessage = 'The booked slots are not available.';
-
-const parseErrorMsg = (error: unknown): string => {
-  if (error instanceof AxiosError) {
-    return error.response?.data?.message ?? error.message ?? 'Server responded with an error.';
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return 'Unknown error occurred.';
-};
 
 // TODO:  Can not find an available slot when the start is not from like 8:00, 9:00...
 const BookingForm = () => {
-  const bookings = useAtomValue(bookingsAtom);
-  const [formProp, setFormProp] = useAtom(formPropAtom);
-  const start = useStore().get(startAtom);
-  // If formProp is null, the sheet should not be open, so it's safe here.
-  const prop = formProp!;
-
-  const startDate = newDate(start);
-  const [dayShift, setDayShift] = useState<number>(
-    differenceInCalendarDays(prop.startTime, startDate),
-  );
+  const formProp = useAtomValue(formPropAtom);
   // For date picker
   const [open, setOpen] = useState(false);
-
-  if (dayShift < 0 || dayShift > 6)
-    // should not be here.
-    throw ThrowInternalError('[BookingForm]: the required date is out of range.');
-
-  // Now we have the 0:00, and bookings of the day.
-  const bookingDate = addDays(startDate, dayShift);
-  const existingBookings: DayBookings = bookings[dayShift];
-
-  const [formType, defaultValues]: [FormType, UpsertBooking] = initForm(
-    prop,
-    existingBookings,
-    prop.booking,
-    prop.roomId,
-  );
-
-  const form = useForm<UpsertBooking>({
-    resolver: zodResolver(UpsertBookingSchema),
-    defaultValues: defaultValues,
-    mode: 'onChange',
-  });
-
-  const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
-    control: form.control,
-    name: ['roomId', 'start', 'end'],
-  });
-
-  const startSlots = useMemo(() => {
-    return calculateSlots(existingBookings, 'start', watchedRoomId, bookingDate);
-  }, [existingBookings, watchedRoomId, bookingDate]);
-
-  const endSlots = useMemo(() => {
-    return calculateSlots(existingBookings, 'end', watchedRoomId, bookingDate, prop.booking?.id);
-  }, [existingBookings, watchedRoomId, prop.booking?.id, bookingDate]);
-
-  // To validate the overlapping booking
-  useEffect(() => {
-    const validSlots = overlappingCheck(watchedStart, watchedEnd, endSlots);
-
-    const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
-    if (!validSlots && currentErrorMessage !== overlappingErrorMessage)
-      form.setError('end', { type: 'manual', message: overlappingErrorMessage });
-    else if (validSlots && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
-  }, [watchedStart, watchedEnd, endSlots, form]);
-
-  useEffect(() => {
-    if (form.formState.isValid && form.formState.errors['root']) {
-      form.clearErrors('root');
-    }
-  }, [form, form.formState.isValid]);
-
-  // When the date picker value changes, update the date of `start` and `end`.
-  useEffect(() => {
-    const [startV, endV] = form.getValues(['start', 'end']);
-    const newDate = addDays(startDate, dayShift);
-
-    const nextStart = changeDate(startV, newDate);
-    const nextEnd = changeDate(endV, newDate);
-
-    // start and end should be at the same day!
-    if (nextStart !== startV) {
-      form.setValue('start', nextStart);
-      form.setValue('end', nextEnd);
-    }
-  }, [dayShift, form, startDate]);
-
-  const handleSuccess = (start: string, msg: string) => {
-    toast.success(msg);
-    queryClient.invalidateQueries({
-      queryKey: ['slots', start],
-    });
-    setFormProp(null);
-  };
-
-  const handleError = (error: unknown) => {
-    queryClient.invalidateQueries({ queryKey: ['slots', start] });
-    form.setError('root', {
-      type: 'server',
-      message: parseErrorMsg(error),
-    });
-  };
-
-  const queryClient = useQueryClient();
-
-  const deleteMutation = useMutation({
-    mutationFn: () => {
-      return axiosFetcher.delete(`${API_URL}/${ENDPOINT_SLOTS}/${prop.booking?.id}`);
-    },
-    onSuccess: () => {
-      handleSuccess(start, 'Your booking is successfully canceled.');
-    },
-    onError: (error: unknown) => {
-      handleError(error);
-    },
-  });
-
-  const upsertMutation = useMutation({
-    mutationFn: (data: UpsertBooking) => {
-      return axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, {
-        roomId: data.roomId,
-        startTime: data.start,
-        endTime: data.end,
-      });
-    },
-    onSuccess: () => {
-      handleSuccess(start, 'Cool! Your meeting room is booked.');
-    },
-    onError: (error: unknown) => {
-      handleError(error);
-    },
-  });
+  // If formProp is null, the sheet should not be open, so it's safe here.
+  const prop = formProp!;
+  const {
+    form,
+    formType,
+    dayShift,
+    setDayShift,
+    startDate,
+    bookingDate,
+    startSlots,
+    endSlots,
+    isUpsertBusy,
+    isDeleteBusy,
+    onSubmit,
+    onDelete,
+  } = useBookingForm(prop);
 
   const titlePrefix =
     formType === 'insert'
@@ -217,8 +82,6 @@ const BookingForm = () => {
       : formType === 'view'
         ? 'Review a booking'
         : 'Update a booking';
-
-  const isUpsertBusy = form.formState.isSubmitting || upsertMutation.isPending;
 
   return (
     <div data-role='booking-upsert-form' className='flex flex-col justify-start py-6 lg:w-96'>
@@ -229,10 +92,7 @@ const BookingForm = () => {
         </SheetDescription>
       </SheetHeader>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit((data) => upsertMutation.mutate(data))}
-          className='space-y-8 px-4'
-        >
+        <form onSubmit={onSubmit} className='space-y-8 px-4'>
           {/* Optional BookedBy */}
           {prop.booking?.bookedBy && (
             <div className='flex items-center gap-3'>
@@ -411,10 +271,10 @@ const BookingForm = () => {
                   <Button
                     variant='outline'
                     type='button'
-                    disabled={deleteMutation.isPending || formProp?.booking?.bookedBy === null}
+                    disabled={isDeleteBusy || prop.booking?.bookedBy === null}
                     aria-label='Delete booking'
                   >
-                    {deleteMutation.isPending ? (
+                    {isDeleteBusy ? (
                       <span className='flex items-center justify-center gap-2'>
                         <Loader className='h-4 w-4' />
                         Deleting
@@ -433,11 +293,8 @@ const BookingForm = () => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => deleteMutation.mutate()}
-                      disabled={deleteMutation.isPending}
-                    >
-                      {deleteMutation.isPending ? 'Deleting...' : 'Continue'}
+                    <AlertDialogAction onClick={onDelete} disabled={isDeleteBusy}>
+                      {isDeleteBusy ? 'Deleting...' : 'Continue'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -452,9 +309,10 @@ const BookingForm = () => {
 
 const FormWrapper = () => {
   const [formProp, setFormProp] = useAtom(formPropAtom);
+  const isOpen = !!formProp && formProp.channel === 'sheet';
   return (
     <Sheet
-      open={!!formProp}
+      open={isOpen}
       // manual close
       onOpenChange={(open) => {
         if (!open) setFormProp(null);
@@ -468,5 +326,3 @@ const FormWrapper = () => {
 };
 
 export default FormWrapper;
-
-export type { FormProp, FormType };
