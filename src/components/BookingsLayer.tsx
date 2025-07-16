@@ -98,8 +98,7 @@ const BookedBlock = ({
       }`}
       onClick={() => {
         // only staff or booked student can review/edit a booking.
-        // TEMP: Permission check disabled until backend returns `intra` and `role`
-        // if (user?.role !== 'staff' && !isCurrUser) return;
+        if (user?.role !== 'staff' && !isCurrUser) return;
         setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
       }}
     >
@@ -109,9 +108,7 @@ const BookedBlock = ({
           height < 16 && 'py-0 leading-none',
         )}
       >
-        {/* TEMP: disabled until backend returns `intra` and `role`
-        {user.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'} */}
-        {slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'}
+        {user?.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'}
       </span>
     </div>
   );
