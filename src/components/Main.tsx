@@ -22,11 +22,10 @@ const Main = () => {
   const containerRef = useRef(null);
   return (
     <div
-      ref={containerRef}
       data-role='main-wrapper'
-      className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
+      className='flex w-full items-start justify-start lg:items-center lg:justify-center'
     >
-      <div data-role='main' className='mx-4 mt-5 mb-12 h-fit w-fit'>
+      <div data-role='main' className='mx-4 mt-5 mb-12 h-fit'>
         <RoomMap />
 
         {/* Calendar */}
@@ -35,8 +34,9 @@ const Main = () => {
 
           {/* Calendar data */}
           <div
+            ref={containerRef}
             data-role='calendar-data-container'
-            className='relative'
+            className='relative overflow-x-scroll bg-background'
             style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
           >
             <BasicGrids />

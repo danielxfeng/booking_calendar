@@ -7,8 +7,9 @@
 
 import { type CSSProperties, useState } from 'react';
 import { useIsFetching } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { addDays, addMinutes, differenceInCalendarDays, format, isBefore } from 'date-fns';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { isEqual as lodashIsEqual } from 'lodash';
 
 import Loading from '@/components/Loading';
 import {
@@ -17,10 +18,12 @@ import {
   CURR_USER_COLOR,
   OPEN_HOURS_IDX,
   ROOM_MAP,
+  type RoomProp,
   TIME_SLOT_INTERVAL,
 } from '@/config';
 import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
+import { newDate } from '@/lib/tools';
 import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
 import type { WeekBookings } from '@/lib/weekBookings';
@@ -28,7 +31,7 @@ import type { WeekBookings } from '@/lib/weekBookings';
 const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 const getPositionAndStyle = (
-  col: number,
+  startOfWeek: string,
   start: string,
   end: string,
   roomId: number,
@@ -52,21 +55,22 @@ const getPositionAndStyle = (
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
-  const totalWidth = CELL_WIDTH_PX * 8;
   const width = CELL_WIDTH_PX / roomsCount;
-  const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
+
+  const col = differenceInCalendarDays(startTime, new Date(startOfWeek)) + 1;
+  const left = col * CELL_WIDTH_PX + roomIdx * width;
 
   return { position: 'absolute', top, left, width, height, h: height };
 };
 
 const BookedBlock = ({
   roomId,
-  col,
+  start,
   slot,
   roomsCount,
 }: {
   roomId: number;
-  col: number;
+  start: string;
   slot: BookingFromApi;
   roomsCount: number;
 }) => {
@@ -82,7 +86,7 @@ const BookedBlock = ({
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
   const { h: height, ...style } = getPositionAndStyle(
-    col,
+    start,
     slot.start,
     slot.end,
     roomId,
@@ -119,25 +123,65 @@ const BookedBlock = ({
   );
 };
 
-type HoverGridProps = {
-  col: number;
-  row: number;
-  startTime: Date;
-  roomId: number;
-};
-
-const parseHoverGridProps = (x: number, y: number): HoverGridProps => {
-  // TODO: to be implemented.
-  return { col: x, row: y, startTime: new Date(), roomId: 0 };
-};
+type HoverGridProps = CSSProperties & { startTime: Date; endTime: Date; roomId: number };
 
 /**
  * @summary A pure static grid for display a hover effect.
  */
 const HoverGrid = ({ hoverGridProps }: { hoverGridProps: HoverGridProps }) => {
-  // TODO: to be implemented.
-  hoverGridProps.col = 0;
-  return <></>;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { startTime, endTime, roomId, ...style } = hoverGridProps;
+  return (
+    <div
+      className='pointer-events-none z-40 scale-[1.02] rounded-md border border-blue-300/60 bg-gradient-to-br from-blue-100/80 to-indigo-100/60 shadow-md transition-all duration-300 ease-out'
+      style={style}
+    />
+  );
+};
+
+const findSlotAndStyle = (
+  e: React.PointerEvent<HTMLDivElement>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  start: string,
+  rooms: RoomProp[],
+  curr: Date,
+): HoverGridProps | null => {
+  if (!containerRef.current) return null;
+
+  // Remove the offset from scroll.
+  const rect = containerRef.current.getBoundingClientRect();
+  const x = e.clientX - rect.left + containerRef.current.scrollLeft;
+  const y = e.clientY - rect.top + containerRef.current.scrollTop;
+
+  const days = Math.floor(x / CELL_WIDTH_PX) - 1;
+
+  // time Label.
+  if (days === -1) return null;
+
+  const heightPerSlot = CELL_HEIGHT_PX / (60 / TIME_SLOT_INTERVAL);
+  const timeIdx = Math.floor(y / heightPerSlot);
+
+  const slotOffsetMin = (timeIdx + OPEN_HOURS_IDX[0]) * TIME_SLOT_INTERVAL;
+  const targetDay = addDays(newDate(start), days);
+  const startTime = addMinutes(targetDay, slotOffsetMin);
+
+  const endTime = addMinutes(startTime, TIME_SLOT_INTERVAL);
+  if (isBefore(endTime, curr)) return null;
+
+  const widthPerRoom = CELL_WIDTH_PX / rooms.length;
+  const roomIdx = Math.floor((x - (days + 1) * CELL_WIDTH_PX) / widthPerRoom);
+  const roomId = rooms[roomIdx].id;
+
+  return {
+    position: 'absolute',
+    top: timeIdx * heightPerSlot,
+    left: (days + 1) * CELL_WIDTH_PX + roomIdx * widthPerRoom,
+    width: widthPerRoom,
+    height: heightPerSlot,
+    startTime,
+    endTime,
+    roomId,
+  };
 };
 
 /**
@@ -162,34 +206,50 @@ const BookingsLayer = ({
 
   // A temp cell to handle the hover/click event on empty space.
   const [hoverGridProps, setHoverGridProps] = useState<HoverGridProps | null>(null);
+  const curr = new Date();
 
   return (
     <div
       className='absolute top-0 left-0 z-10 h-full w-full'
       onPointerLeave={() => setHoverGridProps(null)} // cancel hover
       // trigger a `insertion` form
-      onClick={() => {
-        if (!hoverGridProps) return;
-        setFormProp({
-          roomId: hoverGridProps.roomId,
-          startTime: hoverGridProps.startTime,
-          channel: 'sheet',
+      onClick={(e: React.PointerEvent<HTMLDivElement>) => {
+        // Draw a hover grid since PointerMove does not work on mobile.
+        const hoverGridProps = findSlotAndStyle(e, containerRef, start, rooms, curr);
+        if (!hoverGridProps) {
+          setHoverGridProps(null);
+          return;
+        }
+        setHoverGridProps((prev) => {
+          return lodashIsEqual(prev, hoverGridProps) ? prev : hoverGridProps;
         });
+
+        // next tick to wait for the hover grid.
+        setTimeout(() => {
+          setFormProp({
+            roomId: hoverGridProps.roomId,
+            startTime: hoverGridProps.startTime,
+            channel: 'sheet',
+          });
+          setHoverGridProps(null);
+        }, 0);
       }}
       onPointerMove={(e: React.PointerEvent<HTMLDivElement>) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left + containerRef.current.scrollLeft;
-        const y = e.clientY - rect.top + containerRef.current.scrollTop;
-
-        setHoverGridProps(parseHoverGridProps(x, y));
+        const hoverGridProps = findSlotAndStyle(e, containerRef, start, rooms, curr);
+        if (!hoverGridProps) {
+          setHoverGridProps(null);
+          return;
+        }
+        setHoverGridProps((prev) => {
+          return lodashIsEqual(prev, hoverGridProps) ? prev : hoverGridProps;
+        });
       }}
     >
       {isPending ? (
         <Loading />
       ) : (
         <>
-          {bookings.map((day, col) =>
+          {bookings.map((day) =>
             Object.values(day)
               .filter((booking) => rooms.some((room) => room.id === booking.roomId))
               .map((room) =>
@@ -197,7 +257,7 @@ const BookingsLayer = ({
                   <BookedBlock
                     key={slot.id}
                     roomId={room.roomId}
-                    col={col}
+                    start={start}
                     slot={slot}
                     roomsCount={rooms.length}
                   />

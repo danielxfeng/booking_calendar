@@ -37,13 +37,7 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn(
-        'border-border box-border border',
-        past
-          ? 'bg-gray-100/98'
-          : // TODO: move the hover style later.
-            'relative cursor-pointer overflow-hidden bg-gradient-to-br transition-all duration-300 ease-out hover:scale-[1.02] hover:border-blue-300/60 hover:from-blue-100/80 hover:to-indigo-100/60 hover:shadow-md',
-      )}
+      className={cn('border-border box-border border', past ? 'bg-gray-100/98' : 'bg-transparent')}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
     ></div>
   );

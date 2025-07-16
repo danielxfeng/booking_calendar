@@ -27,7 +27,7 @@ const CalendarHeader = () => {
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
 
   return (
-    <div data-role='calendar-head' className='grid h-12' style={gridStyleGenerator(CELL_WIDTH_PX)}>
+    <div data-role='calendar-head' className='grid h-12 bg-background' style={gridStyleGenerator(CELL_WIDTH_PX)}>
       {/* Side header */}
       <div
         key='calendar-head-side'
