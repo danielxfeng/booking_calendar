@@ -38,11 +38,16 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn('border-border box-border border', past ? 'bg-gray-100/98' : 'transition-all duration-300 ease-out relative overflow-hidden bg-gradient-to-br hover:from-blue-100/80 hover:to-indigo-100/60 hover:border-blue-300/60 hover:scale-[1.02] hover:shadow-md cursor-pointer')}
+      className={cn(
+        'border-border box-border border',
+        past
+          ? 'bg-gray-100/98'
+          : 'relative cursor-pointer overflow-hidden bg-gradient-to-br transition-all duration-300 ease-out hover:scale-[1.02] hover:border-blue-300/60 hover:from-blue-100/80 hover:to-indigo-100/60 hover:shadow-md',
+      )}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
       onClick={() => {
         if (past) return;
-        setFormProp({ startTime: cellTime });
+        setFormProp({ startTime: cellTime, channel: 'sheet' });
       }}
     ></div>
   );

@@ -8,8 +8,8 @@
 import { atom } from 'jotai';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
-import type { FormProp } from '@/components/BookingForm';
 import { ROOM_MAP, type RoomProp } from '@/config';
+import type { FormProp } from '@/lib/hooks/useBookingForm';
 import type { WeekBookings } from '@/lib/weekBookings';
 
 const formPropAtom = atom<FormProp>(null);

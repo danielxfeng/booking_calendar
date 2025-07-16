@@ -82,7 +82,9 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
           disabled && 'pointer-events-auto h-18',
         )}
       />
-      <ScrollArea className='h-40 w-36 rounded-md'>
+      <ScrollArea
+        className={cn('h-40 w-36 overflow-hidden rounded-md', disabled && 'pointer-events-none')}
+      >
         <div
           className='flex flex-col gap-1.5 px-2 py-4'
           tabIndex={0}

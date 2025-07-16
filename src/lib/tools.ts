@@ -84,7 +84,20 @@ const isPast = (paramTime: Date, curr: Date): boolean => {
   return isBefore(paramTime, curr);
 };
 
+/**
+ * Returns a new dateTime in string
+ * for example: prevStr: 2010-02-23T15:20 newDate: 2020-02-11
+ * returns: 2020-02-11T15:20
+ */
+const changeDate = (prevStr: string, newDate: Readonly<Date>): string => {
+  const prevDate = new Date(prevStr);
+  const copiedNewDate = new Date(newDate);
+  copiedNewDate.setHours(prevDate.getHours(), prevDate.getMinutes(), 0, 0);
+  return formatToDateTime(copiedNewDate);
+};
+
 export {
+  changeDate,
   formatToDate,
   formatToDateTime,
   gridStyleGenerator,

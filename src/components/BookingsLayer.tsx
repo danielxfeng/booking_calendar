@@ -99,7 +99,12 @@ const BookedBlock = ({
       onClick={() => {
         // only staff or booked student can review/edit a booking.
         if (user?.role !== 'staff' && !isCurrUser) return;
-        setFormProp({ booking: slot, roomId: roomId, startTime: new Date(slot.start) });
+        setFormProp({
+          booking: slot,
+          roomId: roomId,
+          startTime: new Date(slot.start),
+          channel: 'sheet',
+        });
       }}
     >
       <span

@@ -17,7 +17,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { PaginationItem } from '@/components/ui/pagination';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { startAtom } from '@/lib/atoms';
-import { useStartController } from '@/lib/hooks';
+import { useStartController } from '@/lib/hooks/useStartController';
 import { formatToDate, newDate } from '@/lib/tools';
 
 const OperationRow = () => {
@@ -47,17 +47,23 @@ const OperationRow = () => {
   return (
     <div
       data-role='operation-panel'
-      className='flex items-center gap-1 rounded-lg bg-muted/50 px-2 py-1 backdrop-blur-sm'
+      className='bg-muted/50 flex items-center gap-1 rounded-lg px-2 py-1 backdrop-blur-sm'
     >
-      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
-        <MyPaginationPrev className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(prevMon, false)} />
+      <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
+        <MyPaginationPrev
+          className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
+          onClick={() => setNewStart(prevMon, false)}
+        />
       </PaginationItem>
 
-      <PaginationItem className='flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'>
-        <MyPaginationNext className='h-4 w-4 !text-muted-foreground transition-colors hover:text-foreground' onClick={() => setNewStart(nextMon, false)} />
+      <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
+        <MyPaginationNext
+          className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
+          onClick={() => setNewStart(nextMon, false)}
+        />
       </PaginationItem>
 
-      <div className='h-4 w-px bg-border' />
+      <div className='bg-border h-4 w-px' />
 
       <div>
         <Popover open={open} onOpenChange={setOpen}>
@@ -65,17 +71,17 @@ const OperationRow = () => {
             <Button
               variant='ghost'
               id='date'
-              className='flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95'
+              className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:shadow-sm active:scale-95'
               aria-label='Choose start date'
             >
-              <CalendarDays className='h-4 w-4 text-muted-foreground transition-colors hover:text-foreground' />
+              <CalendarDays className='text-muted-foreground hover:text-foreground h-4 w-4 transition-colors' />
             </Button>
           </PopoverTrigger>
           <PopoverContent
             className='flex w-auto flex-col items-center overflow-hidden p-4 shadow-lg'
             align='end'
           >
-            <span className='mb-3 text-sm font-medium text-muted-foreground'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
+            <span className='text-muted-foreground mb-3 text-sm font-medium'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
             <Calendar
               mode='single'
               selected={startDate}

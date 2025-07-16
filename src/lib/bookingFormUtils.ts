@@ -7,12 +7,13 @@
  * @contact intra: @xifeng
  */
 
+import { AxiosError } from 'axios';
 import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
 
-import type { FormProp, FormType } from '@/components/BookingForm';
-import type { Slot } from '@/components/ScrollSlotPicker';
+import type { Slot } from '@/components/bookingForm/ScrollSlotPicker';
 import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
+import type { FormProp, FormType } from '@/lib/hooks/useBookingForm';
 import type { DayBookings } from '@/lib/weekBookings';
 
 import type { BookingFromApi, UpsertBooking } from './schema';
@@ -133,6 +134,16 @@ const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean
   return true; // should not be here.
 };
 
+const parseErrorMsg = (error: unknown): string => {
+  if (error instanceof AxiosError) {
+    return error.response?.data?.message ?? error.message ?? 'Server responded with an error.';
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Unknown error occurred.';
+};
+
 const bookingLengthCheck = (
   start: string,
   end: string,
@@ -142,4 +153,4 @@ const bookingLengthCheck = (
   return differenceInMinutes(new Date(end), new Date(start)) <= LONGEST_STUDENT_MEETING * 60;
 };
 
-export { bookingLengthCheck, calculateSlots, initForm, overlappingCheck };
+export { bookingLengthCheck, calculateSlots, initForm, overlappingCheck, parseErrorMsg };
