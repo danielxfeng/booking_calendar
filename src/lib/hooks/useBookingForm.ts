@@ -14,14 +14,21 @@ import { addDays, differenceInCalendarDays } from 'date-fns';
 import { useAtomValue, useSetAtom, useStore } from 'jotai';
 import { toast } from 'sonner';
 
-import { API_URL, ENDPOINT_SLOTS } from '@/config';
+import { API_URL, ENDPOINT_SLOTS, LONGEST_STUDENT_MEETING } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import { calculateSlots, initForm, overlappingCheck, parseErrorMsg } from '@/lib/bookingFormUtils';
+import {
+  bookingLengthCheck,
+  calculateSlots,
+  initForm,
+  overlappingCheck,
+  parseErrorMsg,
+} from '@/lib/bookingFormUtils';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { BookingFromApi, UpsertBooking } from '@/lib/schema';
 import { UpsertBookingSchema } from '@/lib/schema';
 import { changeDate, newDate } from '@/lib/tools';
+import { getUser } from '@/lib/userStore';
 
 type FormType = 'view' | 'insert' | 'update';
 
@@ -33,13 +40,14 @@ type FormProp = {
   roomId?: number;
 } | null;
 
-const overlappingErrorMessage = 'The booked slots are not available.';
+const invalidMeetingErrorMessage = `The selected time conflicts with existing bookings or exceeds the ${LONGEST_STUDENT_MEETING}-hour limit.`;
 
 /**
  * @summary Booking form logic hook.
  * @return All return values are dynamic, except `FormType` and `startDate`
  */
 const useBookingForm = (formProp: Exclude<FormProp, null>) => {
+  const user = getUser();
   const bookings = useAtomValue(bookingsAtom);
   const setFormProp = useSetAtom(formPropAtom);
   const start = useStore().get(startAtom);
@@ -90,15 +98,18 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
     );
   }, [existingBookings, watchedRoomId, bookingDate, formProp.booking?.id]);
 
-  // To validate the overlapping booking
+  // To validate the invalid booking.
   useEffect(() => {
-    const valid = overlappingCheck(watchedStart, watchedEnd, endSlots);
+    const validSlots =
+      overlappingCheck(watchedStart, watchedEnd, endSlots) &&
+      bookingLengthCheck(watchedStart, watchedEnd, user?.role);
 
     const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
-    if (!valid && currentErrorMessage !== overlappingErrorMessage)
-      form.setError('end', { type: 'manual', message: overlappingErrorMessage });
-    else if (valid && currentErrorMessage === overlappingErrorMessage) form.clearErrors('end');
-  }, [watchedStart, watchedEnd, endSlots, form]);
+    if (!validSlots && currentErrorMessage !== invalidMeetingErrorMessage)
+      form.setError('end', { type: 'manual', message: invalidMeetingErrorMessage });
+    else if (validSlots && currentErrorMessage === invalidMeetingErrorMessage)
+      form.clearErrors('end');
+  }, [watchedStart, watchedEnd, endSlots, form, user?.role]);
 
   useEffect(() => {
     if (form.formState.isValid && form.formState.errors['root']) form.clearErrors('root');

@@ -179,6 +179,7 @@ const BookingForm = () => {
                         value={String(id)}
                         className={cn(
                           'data-[state=checked]:border-primary flex cursor-pointer items-center justify-center rounded-sm py-1.5 shadow-sm data-[state=checked]:border-2',
+                          'data-[state=checked]:border-primary flex cursor-pointer items-center justify-center rounded-sm py-1.5 shadow-sm data-[state=checked]:border-2',
                           color,
                         )}
                       >

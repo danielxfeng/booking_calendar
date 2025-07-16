@@ -11,7 +11,7 @@ import { AxiosError } from 'axios';
 import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
 
 import type { Slot } from '@/components/bookingForm/ScrollSlotPicker';
-import { OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
+import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { FormProp, FormType } from '@/lib/hooks/useBookingForm';
 import type { DayBookings } from '@/lib/weekBookings';
@@ -144,4 +144,13 @@ const parseErrorMsg = (error: unknown): string => {
   return 'Unknown error occurred.';
 };
 
-export { calculateSlots, initForm, overlappingCheck, parseErrorMsg };
+const bookingLengthCheck = (
+  start: string,
+  end: string,
+  role: 'student' | 'staff' | null | undefined,
+): boolean => {
+  if (role === 'staff') return true;
+  return differenceInMinutes(new Date(end), new Date(start)) <= LONGEST_STUDENT_MEETING * 60;
+};
+
+export { bookingLengthCheck, calculateSlots, initForm, overlappingCheck, parseErrorMsg };

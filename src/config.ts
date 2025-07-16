@@ -17,7 +17,7 @@ const ROOM_MAP: RoomProp[] = [
 /**
  * summary Background color for current user.
  */
-const CURR_USER_COLOR: string = 'bg-orange-600/20 border-orange-500/40';
+const CURR_USER_COLOR: string = 'bg-purple-300 border-purple-500';
 
 /**
  * The time slot interval
@@ -56,6 +56,8 @@ const FETCHER_TIMEOUT: number = 3000; // 30 seconds
 
 const CACHE_DURATION: number = 5; // 5 minutes
 
+const LONGEST_STUDENT_MEETING: number = 4; // 4 hours.
+
 /**
  * The size of a cell of the calendar view.
  */
@@ -71,6 +73,7 @@ export {
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
+  LONGEST_STUDENT_MEETING,
   OPEN_HOURS_IDX,
   ROOM_MAP,
   TIME_SLOT_INTERVAL,
