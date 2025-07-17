@@ -12,6 +12,7 @@ import {
 } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
 import { newDate } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 
 type HoverGridProps = CSSProperties & { startTime: Date; endTime: Date; roomId: number };
 
@@ -97,7 +98,7 @@ const FreeLayer = ({
 
   return (
     <div
-      className='absolute top-0 left-0 h-full w-full'
+      className={cn('absolute top-0 left-0 h-full w-full', hoverGridProps && 'cursor-pointer')}
       onPointerLeave={() => setHoverGridProps(null)} // cancel hover
       // trigger a `insertion` form
       // trigger a `insertion` form
