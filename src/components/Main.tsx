@@ -9,7 +9,7 @@
 import { useRef } from 'react';
 
 import BasicGrids from '@/components/calendarView/BasicGrids';
-import BookingsLayer from '@/components/calendarView/BookingsLayer';
+import BookingCanvas from '@/components/calendarView/BookingCanvas';
 import CalendarHeader from '@/components/calendarView/CalendarHeader';
 import RoomMap from '@/components/RoomMap';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
@@ -36,11 +36,11 @@ const Main = () => {
           <div
             ref={containerRef}
             data-role='calendar-data-container'
-            className='relative overflow-x-scroll bg-background'
+            className='bg-background relative overflow-x-scroll'
             style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
           >
             <BasicGrids />
-            <BookingsLayer containerRef={containerRef} />
+            <BookingCanvas containerRef={containerRef} />
           </div>
         </div>
       </div>
