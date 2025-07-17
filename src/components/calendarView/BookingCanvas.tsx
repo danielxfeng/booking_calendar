@@ -139,6 +139,9 @@ const HoverGrid = ({ hoverGridProps }: { hoverGridProps: HoverGridProps }) => {
   );
 };
 
+/**
+ * @summary locate a slot based on the hover/click position.
+ */
 const findSlotAndStyle = (
   e: React.PointerEvent<HTMLDivElement>,
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -166,6 +169,7 @@ const findSlotAndStyle = (
   const startTime = addMinutes(targetDay, slotOffsetMin);
 
   const endTime = addMinutes(startTime, TIME_SLOT_INTERVAL);
+
   if (isBefore(endTime, curr)) return null;
 
   const widthPerRoom = CELL_WIDTH_PX / rooms.length;
@@ -185,36 +189,27 @@ const findSlotAndStyle = (
 };
 
 /**
- * @description
- * A stacked canvas layer for bookings.
- *
- * - Transparent background
- * - `EmptyLayer` renders available (free) slots
- * - `BookedBlock` renders existing bookings
+ * @summary Handles interaction of available (free) slots.
  */
-const BookingCanvas = ({
+const FreeLayer = ({
   containerRef,
+  start,
+  rooms,
 }: {
   containerRef: React.RefObject<HTMLDivElement | null>;
+  start: string;
+  rooms: RoomProp[];
 }) => {
-  const start = useAtomValue(startAtom);
-  const rooms = useAtomValue(roomsAtom);
-  const setFormProp = useSetAtom(formPropAtom);
-  const bookings: WeekBookings = useAtomValue(bookingsAtom);
-  const isPending =
-    useIsFetching({
-      queryKey: ['slots', start],
-      predicate: (query) => query.state.status === 'pending',
-    }) > 0;
-
   // A temp cell to handle the hover/click event on empty space.
   const [hoverGridProps, setHoverGridProps] = useState<HoverGridProps | null>(null);
+  const setFormProp = useSetAtom(formPropAtom);
   const curr = new Date();
 
   return (
     <div
-      className='absolute top-0 left-0 z-10 h-full w-full'
+      className='absolute top-0 left-0 h-full w-full'
       onPointerLeave={() => setHoverGridProps(null)} // cancel hover
+      // trigger a `insertion` form
       // trigger a `insertion` form
       onClick={(e: React.PointerEvent<HTMLDivElement>) => {
         // Draw a hover grid since PointerMove does not work on mobile.
@@ -248,10 +243,41 @@ const BookingCanvas = ({
         });
       }}
     >
+      {hoverGridProps && <HoverGrid hoverGridProps={hoverGridProps} />}
+    </div>
+  );
+};
+
+/**
+ * @description
+ * A stacked canvas layer for bookings.
+ *
+ * - Transparent background
+ * - `FreeLayer` renders available (free) slots
+ * - `BookedBlock` renders existing bookings
+ */
+const BookingCanvas = ({
+  containerRef,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}) => {
+  const start = useAtomValue(startAtom);
+  const rooms = useAtomValue(roomsAtom);
+
+  const bookings: WeekBookings = useAtomValue(bookingsAtom);
+  const isPending =
+    useIsFetching({
+      queryKey: ['slots', start],
+      predicate: (query) => query.state.status === 'pending',
+    }) > 0;
+
+  return (
+    <div className='absolute top-0 left-0 z-10 h-full w-full'>
       {isPending ? (
         <Loading />
       ) : (
         <>
+          <FreeLayer containerRef={containerRef} start={start} rooms={rooms} />
           {bookings.map((day) =>
             Object.values(day)
               .filter((booking) => rooms.some((room) => room.id === booking.roomId))
@@ -267,7 +293,6 @@ const BookingCanvas = ({
                 )),
               ),
           )}
-          {hoverGridProps && <HoverGrid hoverGridProps={hoverGridProps} />}
         </>
       )}
     </div>
