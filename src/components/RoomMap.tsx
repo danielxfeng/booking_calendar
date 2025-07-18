@@ -16,7 +16,10 @@ const RoomMap = () => {
   };
 
   return (
-    <div data-role='room-map' className='mb-4 flex w-fit items-center justify-start gap-4 text-sm'>
+    <div
+      data-role='room-map'
+      className='mb-4 flex w-fit shrink-0 items-center justify-start gap-4 text-sm'
+    >
       <div data-role='room-map-label' className='flex items-center gap-1 font-semibold'>
         <MapPin className='h-4 w-4' />
         Meeting rooms:
@@ -28,7 +31,7 @@ const RoomMap = () => {
             data-role='room-map-room'
             key={room.id}
             className={cn(
-              `rounded-full border px-4 py-0.5 font-medium shadow-sm transition-colors opacity-20 ${room.color}`,
+              `rounded-full border px-4 py-0.5 font-medium opacity-20 shadow-sm transition-colors ${room.color}`,
               rooms.some((r) => r.id === room.id) && 'opacity-100',
             )}
             style={{ minWidth: 60 }}

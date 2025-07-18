@@ -24,27 +24,35 @@ const Main = () => {
   return (
     <div
       data-role='main-wrapper'
-      className='flex w-full items-start justify-start lg:items-center lg:justify-center'
+      className='flex h-full w-full items-start justify-start lg:justify-center'
     >
-      <div data-role='main' className='mx-4 mt-5 mb-12 h-fit'>
+      <div
+        data-role='main'
+        className='mx-2 mt-2 flex h-full w-full flex-col overflow-hidden lg:w-fit'
+      >
         <RoomMap />
 
         {/* Calendar */}
-        <div data-role='calendar' className='flex'>
+        <div data-role='calendar' className='flex h-full w-full flex-1'>
           <CalendarTimeCol />
 
-          <div data-role='calendar-right'>
+          <div data-role='calendar-right' className='flex w-full flex-1 flex-col'>
             <CalendarDayRow />
 
             {/* Calendar data */}
             <div
+              data-role='calendar-data-scroll-container'
+              className='h-full w-full flex-1 overflow-scroll'
               ref={containerRef}
-              data-role='calendar-data-container'
-              className='bg-background relative overflow-x-scroll'
-              style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
             >
-              <BasicGrids />
-              <BookingCanvas containerRef={containerRef} />
+              <div
+                data-role='calendar-data-container'
+                className='bg-background relative'
+                style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
+              >
+                <BasicGrids />
+                <BookingCanvas containerRef={containerRef} />
+              </div>
             </div>
           </div>
         </div>

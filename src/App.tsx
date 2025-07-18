@@ -61,10 +61,10 @@ const App = () => {
   if (err) ThrowBackendError(err);
 
   return (
-    <div className='flex min-h-screen w-screen flex-col'>
+    <div className='flex h-screen w-screen flex-col overflow-hidden'>
       <Header />
 
-      <main className='mt-8 flex-1'>
+      <main className='my-2 flex-1 overflow-hidden lg:my-4'>
         <Main />
       </main>
 
