@@ -8,6 +8,7 @@ import {
   CURR_USER_COLOR,
   OPEN_HOURS_IDX,
   ROOM_MAP,
+  type RoomProp,
   TIME_SLOT_INTERVAL,
 } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
@@ -21,7 +22,7 @@ const getPositionAndStyle = (
   start: string,
   end: string,
   roomId: number,
-  roomsCount: number,
+  rooms: RoomProp[],
 ): CSSProperties & { h: number } => {
   const startTime = new Date(start);
   const endTime = new Date(end);
@@ -38,10 +39,10 @@ const getPositionAndStyle = (
   const top = startSlotIdx * heightPerSlot;
   const height = (endSlotIdx - startSlotIdx) * heightPerSlot;
 
-  const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
+  const roomIdx = rooms.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
-  const width = CELL_WIDTH_PX / roomsCount;
+  const width = CELL_WIDTH_PX / rooms.length;
 
   const col = differenceInCalendarDays(startTime, new Date(startOfWeek)) + 1;
   const left = col * CELL_WIDTH_PX + roomIdx * width;
@@ -56,12 +57,12 @@ const BookedBlock = ({
   roomId,
   start,
   slot,
-  roomsCount,
+  rooms,
 }: {
   roomId: number;
   start: string;
   slot: BookingFromApi;
-  roomsCount: number;
+  rooms: RoomProp[];
 }) => {
   const setFormProp = useSetAtom(formPropAtom);
   const room = ROOM_MAP.find((r) => r.id === roomId);
@@ -79,7 +80,7 @@ const BookedBlock = ({
     slot.start,
     slot.end,
     roomId,
-    roomsCount,
+    rooms,
   );
 
   return (

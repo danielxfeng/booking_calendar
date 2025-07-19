@@ -82,6 +82,12 @@ const generateMockedData = (start: string): Rooms => {
           end: formatLocal(addDays(addMinutes(base, 900), 4)), // 15:00
           bookedBy: null,
         },
+        {
+          id: 10,
+          start: formatLocal(addDays(addMinutes(base, 1230), 6)), // 20:30
+          end: formatLocal(addDays(addMinutes(base, 1260), 6)), // 21:00
+          bookedBy: 'Daniel',
+        },
       ],
     },
   ];
