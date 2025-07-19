@@ -11,8 +11,8 @@ import { useSearchParams } from 'react-router';
 import { useStore } from 'jotai';
 
 import FormWrapper from '@/components/bookingForm/BookingForm';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import Main from '@/components/Main';
 import TanQuery from '@/components/TanQuery';
 import { Toaster } from '@/components/ui/sonner';
