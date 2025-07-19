@@ -61,13 +61,9 @@ const App = () => {
   if (err) ThrowBackendError(err);
 
   return (
-    <div className='flex min-h-screen w-screen flex-col'>
+    <div>
       <Header />
-
-      <main className='mt-8 flex-1'>
-        <Main />
-      </main>
-
+      <Main />
       <Footer />
 
       <FormWrapper />

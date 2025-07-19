@@ -21,30 +21,32 @@ const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 const Main = () => {
   const containerRef = useRef(null);
   return (
-    <div
-      data-role='main-wrapper'
-      className='flex w-full items-start justify-start lg:items-center lg:justify-center'
-    >
-      <div data-role='main' className='mx-4 mt-5 mb-12 h-fit'>
-        <RoomMap />
+    <main className='mt-10'>
+      <div
+        data-role='main-wrapper'
+        className='flex w-full items-start justify-start lg:items-center lg:justify-center'
+      >
+        <div data-role='main' className='mx-4 mt-5 mb-12'>
+          <RoomMap />
 
-        {/* Calendar */}
-        <div data-role='calendar'>
-          <CalendarHeader />
+          {/* Calendar */}
+          <div data-role='calendar'>
+            <CalendarHeader />
 
-          {/* Calendar data */}
-          <div
-            ref={containerRef}
-            data-role='calendar-data-container'
-            className='bg-background relative overflow-x-scroll'
-            style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
-          >
-            <BasicGrids />
-            <BookingCanvas containerRef={containerRef} />
+            {/* Calendar data */}
+            <div
+              ref={containerRef}
+              data-role='calendar-data-container'
+              className='relative'
+              style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
+            >
+              <BasicGrids />
+              <BookingCanvas containerRef={containerRef} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -45,6 +45,7 @@ const HeaderMenu = () => {
   };
 
   return (
+    <div className='flex items-center gap-2'>
     <div
       data-role='operation-panel'
       className='bg-muted/50 flex items-center gap-1 rounded-lg px-2 py-1 backdrop-blur-sm'
@@ -100,6 +101,7 @@ const HeaderMenu = () => {
           </PopoverContent>
         </Popover>
       </div>
+    </div>
     </div>
   );
 };

@@ -48,8 +48,8 @@ const CalendarHeader = () => {
             )}
             style={styleWidth}
           >
-            <div>{day}</div>
-            <div>{date}</div>
+            <p>{day}</p>
+            <p>{date}</p>
           </div>
         );
       })}
