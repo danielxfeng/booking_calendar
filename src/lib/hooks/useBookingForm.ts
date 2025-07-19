@@ -36,8 +36,8 @@ type FormType = 'view' | 'insert' | 'update';
 type FormProp = {
   channel: 'sheet' | 'dragging';
   startTime: Date;
+  roomId: number;
   booking?: BookingFromApi;
-  roomId?: number;
 } | null;
 
 const invalidMeetingErrorMessage = `The selected time conflicts with existing bookings or exceeds the ${LONGEST_STUDENT_MEETING}-hour limit.`;
@@ -66,7 +66,6 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
 
   const [formType, defaultValues]: [FormType, UpsertBooking] = initForm(
     formProp,
-    existingBookings,
     formProp.booking,
     formProp.roomId,
   );
