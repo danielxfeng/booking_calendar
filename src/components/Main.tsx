@@ -17,11 +17,12 @@ const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
 const Main = () => (
+  <main className='mt-10'>
   <div
     data-role='main-wrapper'
-    className='flex w-full items-start justify-start overflow-x-scroll lg:items-center lg:justify-center'
+    className='flex w-full items-start justify-start lg:items-center lg:justify-center'
   >
-    <div data-role='main' className='mx-4 mt-5 mb-12 h-fit w-fit'>
+    <div data-role='main' className='mx-4 mt-5 mb-12'>
       <RoomMap />
 
       {/* Calendar */}
@@ -40,6 +41,7 @@ const Main = () => (
       </div>
     </div>
   </div>
+  </main>
 );
 
 export default Main;

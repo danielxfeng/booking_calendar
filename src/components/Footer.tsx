@@ -2,7 +2,7 @@ import { Heart } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className='bg-accent flex h-14 items-center justify-center'>
+    <footer className='bg-accent flex h-14 items-center justify-center border-t'>
       <div className='text-muted-foreground text-center text-sm flex items-center gap-2'>
         <span>Developed with</span>
         <Heart className='h-4 w-4 fill-sky-400 stroke-0 animate-pulse' /> 
