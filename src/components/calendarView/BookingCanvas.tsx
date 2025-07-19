@@ -47,7 +47,7 @@ const BookingCanvas = ({
                     roomId={room.roomId}
                     start={start}
                     slot={slot}
-                    roomsCount={rooms.length}
+                    rooms={rooms}
                   />
                 )),
               ),

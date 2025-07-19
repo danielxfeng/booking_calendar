@@ -75,13 +75,7 @@ const BookedBlock = ({
   // order: 1 currUser 2 room's color, 3 fallback
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
-  const { h: height, ...style } = getPositionAndStyle(
-    start,
-    slot.start,
-    slot.end,
-    roomId,
-    rooms,
-  );
+  const { h: height, ...style } = getPositionAndStyle(start, slot.start, slot.end, roomId, rooms);
 
   return (
     <div
