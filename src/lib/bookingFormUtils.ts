@@ -11,7 +11,7 @@ import { AxiosError } from 'axios';
 import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
 
 import type { Slot } from '@/components/bookingForm/ScrollSlotPicker';
-import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, ROOM_MAP, TIME_SLOT_INTERVAL } from '@/config';
+import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { FormProp, FormType } from '@/lib/hooks/useBookingForm';
 import type { DayBookings } from '@/lib/weekBookings';
@@ -21,7 +21,6 @@ import { formatToDateTime } from './tools';
 
 const initForm = (
   formProp: Exclude<FormProp, null>,
-  existingBookings: DayBookings,
   currBooking?: BookingFromApi,
   currRoomId?: number,
 ): [FormType, UpsertBooking] => {
@@ -29,36 +28,10 @@ const initForm = (
     // `insert`
     const formType = 'insert';
 
-    // Find an available room
-    const endTime = addMinutes(formProp.startTime, TIME_SLOT_INTERVAL);
-
-    let roomId = ROOM_MAP.find((room) => {
-      const bookings = existingBookings[room.id]?.slots ?? [];
-
-      return bookings.every((slot) => {
-        const start = new Date(slot.start);
-        const end = new Date(slot.end);
-
-        // no overlapping
-        return (
-          isBefore(end, formProp.startTime) || // booked.end <  Start
-          isEqual(end, formProp.startTime) || // booked.end === currStart
-          isAfter(start, endTime) || // booked.start > endTime
-          isEqual(start, endTime) // booked.start === endTime
-        );
-      });
-    })?.id;
-
-    // fallbacks to any room, then user/zod handles it in UI. But should not be here.
-    if (!roomId) {
-      console.error('[initForm]: failed to find an available room.');
-      roomId = ROOM_MAP[0].id;
-    }
-
     return [
       formType,
       {
-        roomId,
+        roomId: formProp.roomId,
         start: formatToDateTime(formProp.startTime),
         end: formatToDateTime(addMinutes(formProp.startTime, TIME_SLOT_INTERVAL)),
       },

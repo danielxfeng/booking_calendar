@@ -1,16 +1,7 @@
-/**
- * @file BookingLayer.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
+import { type CSSProperties } from 'react';
+import { differenceInCalendarDays, format } from 'date-fns';
+import { useSetAtom } from 'jotai';
 
-import type { CSSProperties } from 'react';
-import { useIsFetching } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { useAtomValue, useSetAtom } from 'jotai';
-
-import Loading from '@/components/Loading';
 import {
   CELL_HEIGHT_PX,
   CELL_WIDTH_PX,
@@ -19,16 +10,14 @@ import {
   ROOM_MAP,
   TIME_SLOT_INTERVAL,
 } from '@/config';
-import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
+import { formPropAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
 import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
-import type { WeekBookings } from '@/lib/weekBookings';
-
 const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 const getPositionAndStyle = (
-  col: number,
+  startOfWeek: string,
   start: string,
   end: string,
   roomId: number,
@@ -52,21 +41,25 @@ const getPositionAndStyle = (
   const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
-  const totalWidth = CELL_WIDTH_PX * 8;
   const width = CELL_WIDTH_PX / roomsCount;
-  const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
+
+  const col = differenceInCalendarDays(startTime, new Date(startOfWeek)) + 1;
+  const left = col * CELL_WIDTH_PX + roomIdx * width;
 
   return { position: 'absolute', top, left, width, height, h: height };
 };
 
+/**
+ * @summary handles an exist booking, belongs to BookingCanvas.
+ */
 const BookedBlock = ({
   roomId,
-  col,
+  start,
   slot,
   roomsCount,
 }: {
   roomId: number;
-  col: number;
+  start: string;
   slot: BookingFromApi;
   roomsCount: number;
 }) => {
@@ -82,7 +75,7 @@ const BookedBlock = ({
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
   const { h: height, ...style } = getPositionAndStyle(
-    col,
+    start,
     slot.start,
     slot.end,
     roomId,
@@ -119,41 +112,4 @@ const BookedBlock = ({
   );
 };
 
-const BookingsLayer = () => {
-  const start = useAtomValue(startAtom);
-  const rooms = useAtomValue(roomsAtom);
-  const bookings: WeekBookings = useAtomValue(bookingsAtom);
-  const isPending =
-    useIsFetching({
-      queryKey: ['slots', start],
-      predicate: (query) => query.state.status === 'pending',
-    }) > 0;
-
-  return (
-    <div className='pointer-events-none absolute top-0 left-0 z-10 h-full w-full'>
-      {isPending ? (
-        <Loading />
-      ) : (
-        <>
-          {bookings.map((day, col) =>
-            Object.values(day)
-              .filter((booking) => rooms.some((room) => room.id === booking.roomId))
-              .map((room) =>
-                room.slots.map((slot) => (
-                  <BookedBlock
-                    key={slot.id}
-                    roomId={room.roomId}
-                    col={col}
-                    slot={slot}
-                    roomsCount={rooms.length}
-                  />
-                )),
-              ),
-          )}
-        </>
-      )}
-    </div>
-  );
-};
-
-export default BookingsLayer;
+export default BookedBlock;

@@ -54,7 +54,9 @@ import { formPropAtom } from '@/lib/atoms';
 import useBookingForm from '@/lib/hooks/useBookingForm';
 import { cn } from '@/lib/utils';
 
-// TODO:  Can not find an available slot when the start is not from like 8:00, 9:00...
+/**
+ * @summary The upsert form UI.
+ */
 const BookingForm = () => {
   const formProp = useAtomValue(formPropAtom);
   // For date picker
