@@ -1,5 +1,5 @@
-import HeaderBrand from '@/components/HeaderBrand';
-import HeaderMenu from '@/components/HeaderMenu';
+import HeaderBrand from '@/components/layout/HeaderBrand';
+import HeaderMenu from '@/components/layout/HeaderMenu';
 
 const Header = () => {
   return (
