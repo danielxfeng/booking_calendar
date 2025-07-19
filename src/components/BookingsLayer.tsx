@@ -17,6 +17,7 @@ import {
   CURR_USER_COLOR,
   OPEN_HOURS_IDX,
   ROOM_MAP,
+  type RoomProp,
   TIME_SLOT_INTERVAL,
 } from '@/config';
 import { bookingsAtom, formPropAtom, roomsAtom, startAtom } from '@/lib/atoms';
@@ -32,7 +33,7 @@ const getPositionAndStyle = (
   start: string,
   end: string,
   roomId: number,
-  roomsCount: number,
+  rooms: RoomProp[],
 ): CSSProperties & { h: number } => {
   const startTime = new Date(start);
   const endTime = new Date(end);
@@ -49,11 +50,11 @@ const getPositionAndStyle = (
   const top = startSlotIdx * heightPerSlot;
   const height = (endSlotIdx - startSlotIdx) * heightPerSlot;
 
-  const roomIdx = ROOM_MAP.findIndex((room) => room.id === roomId);
+  const roomIdx = rooms.findIndex((room) => room.id === roomId);
   if (roomIdx === -1) return { h: 0 };
 
   const totalWidth = CELL_WIDTH_PX * 8;
-  const width = CELL_WIDTH_PX / roomsCount;
+  const width = CELL_WIDTH_PX / rooms.length;
   const left = ((col + 1) * totalWidth) / 8 + roomIdx * width;
 
   return { position: 'absolute', top, left, width, height, h: height };
@@ -63,12 +64,12 @@ const BookedBlock = ({
   roomId,
   col,
   slot,
-  roomsCount,
+  rooms,
 }: {
   roomId: number;
   col: number;
   slot: BookingFromApi;
-  roomsCount: number;
+  rooms: RoomProp[];
 }) => {
   const setFormProp = useSetAtom(formPropAtom);
   const room = ROOM_MAP.find((r) => r.id === roomId);
@@ -81,13 +82,7 @@ const BookedBlock = ({
   // order: 1 currUser 2 room's color, 3 fallback
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
-  const { h: height, ...style } = getPositionAndStyle(
-    col,
-    slot.start,
-    slot.end,
-    roomId,
-    roomsCount,
-  );
+  const { h: height, ...style } = getPositionAndStyle(col, slot.start, slot.end, roomId, rooms);
 
   return (
     <div
@@ -145,7 +140,7 @@ const BookingsLayer = () => {
                     roomId={room.roomId}
                     col={col}
                     slot={slot}
-                    roomsCount={rooms.length}
+                    rooms={rooms}
                   />
                 )),
               ),
