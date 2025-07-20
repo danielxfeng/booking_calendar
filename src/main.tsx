@@ -43,17 +43,21 @@ root.render(
               path='*'
               element={
                 <div className='flex min-h-screen w-full flex-col items-center justify-center bg-background px-4'>
-                  <div className='text-center space-y-6 max-w-md'>
+                  <div className='text-center space-y-6 max-w-md animate-fade-in'>
                     <div className='space-y-2'>
-                      <h1 className='text-9xl font-bold text-muted-foreground/20'>404</h1>
-                      <h2 className='text-2xl font-semibold text-foreground'>Page not found</h2>
-                      <p className='text-muted-foreground'>
+                      <h1 className='text-9xl font-bold text-muted-foreground/20 select-none'>
+                        4
+                        <span className='inline-block animate-spin-slow hover:animate-ping'>0</span>
+                        4
+                      </h1>
+                      <h2 className='text-2xl font-semibold text-foreground animate-slide-up'>Page not found</h2>
+                      <p className='text-muted-foreground animate-slide-up-delayed'>
                         The page you're looking for doesn't exist or has been moved.
                       </p>
                     </div>
                     <button
                       onClick={() => window.location.href = '/'}
-                      className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2'
+                      className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:scale-105 hover:shadow-lg h-9 px-4 py-2 animate-bounce-in'
                     >
                       ← Back to Calendar
                     </button>
