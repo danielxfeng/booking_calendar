@@ -42,8 +42,22 @@ root.render(
             <Route
               path='*'
               element={
-                <div className='flex h-screen w-screen items-center justify-center text-3xl'>
-                  Page not found
+                <div className='flex min-h-screen w-full flex-col items-center justify-center bg-background px-4'>
+                  <div className='text-center space-y-6 max-w-md'>
+                    <div className='space-y-2'>
+                      <h1 className='text-9xl font-bold text-muted-foreground/20'>404</h1>
+                      <h2 className='text-2xl font-semibold text-foreground'>Page not found</h2>
+                      <p className='text-muted-foreground'>
+                        The page you're looking for doesn't exist or has been moved.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => window.location.href = '/'}
+                      className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2'
+                    >
+                      ← Back to Calendar
+                    </button>
+                  </div>
                 </div>
               }
             />
