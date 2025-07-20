@@ -18,12 +18,11 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import '@/index.css';
 import './instrument';
 
-
 const queryClient = new QueryClient();
 
 const container = document.getElementById('root')!;
 const root = createRoot(container, {
-    // Callback called when an error is thrown and not caught by an ErrorBoundary.
+  // Callback called when an error is thrown and not caught by an ErrorBoundary.
   onUncaughtError: Sentry.reactErrorHandler((error, errorInfo) => {
     console.warn('Uncaught error', error, errorInfo.componentStack);
   }),
@@ -43,7 +42,7 @@ root.render(
             <Route
               path='*'
               element={
-                <div className='flex items-center justify-center text-3xl'>
+                <div className='flex h-screen w-screen items-center justify-center text-3xl'>
                   Page not found
                 </div>
               }
