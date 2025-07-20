@@ -39,14 +39,11 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            {/* Only one page */}
             <Route path='/' element={<App />} />
-
-            {/* A simple fall back */}
             <Route
               path='*'
               element={
-                <div className='flex h-screen w-screen items-center justify-center text-3xl'>
+                <div className='flex items-center justify-center text-3xl'>
                   Page not found
                 </div>
               }
