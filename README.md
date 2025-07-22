@@ -13,7 +13,7 @@ At Hive Helsinki, students need to request room bookings from staff members, cre
 
 **Book Me** was born from this need - a streamlined room booking system that eliminates the manual overhead while providing a smooth, modern user experience.
 
-- **Live Demo:** [booking-calendar-chi.vercel.app](https://booking-calendar-chi.vercel.app)
+- **Live Demo:** [room.jgengo.dev](https://room.jgengo.dev)
 - **Frontend Repo:** [github.com/danielxfeng/booking_calendar](https://github.com/danielxfeng/booking_calendar)
 - **Backend Repo:** [github.com/IbnBaqqi/book-me](https://github.com/IbnBaqqi/book-me)
 
