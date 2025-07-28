@@ -28,7 +28,7 @@ const RoomMap = () => {
             data-role='room-map-room'
             key={room.id}
             className={cn(
-              `rounded-full border px-4 py-0.5 font-medium shadow-sm transition-colors opacity-20 ${room.color}`,
+              `rounded-full border px-4 py-0.5 font-medium text-neutral-900 opacity-20 shadow-sm transition-colors ${room.color}`,
               rooms.some((r) => r.id === room.id) && 'opacity-100',
             )}
             style={{ minWidth: 60 }}

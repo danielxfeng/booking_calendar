@@ -180,8 +180,7 @@ const BookingForm = () => {
                         id={`room-${id}`}
                         value={String(id)}
                         className={cn(
-                          'data-[state=checked]:border-primary flex cursor-pointer items-center justify-center rounded-sm py-1.5 shadow-sm data-[state=checked]:border-2',
-                          'data-[state=checked]:border-primary flex cursor-pointer items-center justify-center rounded-sm py-1.5 shadow-sm data-[state=checked]:border-2',
+                          'data-[state=checked]:border-foreground flex cursor-pointer items-center justify-center rounded-sm py-1.5 text-neutral-900 opacity-30 shadow-sm data-[state=checked]:border-2 data-[state=checked]:opacity-100',
                           color,
                         )}
                       >
@@ -251,6 +250,7 @@ const BookingForm = () => {
             {/* Upsert submit */}
             {formType === 'insert' && (
               <Button
+                variant='default'
                 className='flex w-full'
                 type='submit'
                 disabled={isUpsertBusy || !form.formState.isValid}
@@ -272,7 +272,7 @@ const BookingForm = () => {
                 <AlertDialogTrigger asChild>
                   {/* The deletion btn */}
                   <Button
-                    variant='outline'
+                    variant='destructive'
                     type='button'
                     disabled={isDeleteBusy || prop.booking?.bookedBy === null}
                     aria-label='Delete booking'
