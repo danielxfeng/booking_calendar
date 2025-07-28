@@ -53,6 +53,7 @@ import {
 import { ROOM_MAP } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
 import useBookingForm from '@/lib/hooks/useBookingForm';
+import { changeDate } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 /**
@@ -143,7 +144,18 @@ const BookingForm = () => {
                   captionLayout='dropdown'
                   onSelect={(date) => {
                     if (!date) return;
-                    setDayShift(differenceInCalendarDays(date, startDate));
+
+                    const newDayShift = differenceInCalendarDays(date, startDate);
+                    const [currStart, currEnd] = form.getValues(['start', 'end']);
+                    const nextStart = changeDate(currStart, date);
+
+                    if (currStart !== nextStart) {
+                      const nextEnd = changeDate(currEnd, date);
+                      form.setValue('start', nextStart);
+                      form.setValue('end', nextEnd);
+                      setDayShift(newDayShift);
+                    }
+
                     setOpen(false);
                   }}
                   startMonth={new Date()}

@@ -24,3 +24,5 @@ const setUser = (newUser: User | null): void => {
 };
 
 export { getUser, setUser };
+
+export type { User };

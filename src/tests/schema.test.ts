@@ -1,8 +1,23 @@
-import { addDays, addMinutes, format, set } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { addDays, addHours, addMinutes, format, nextMonday, set } from 'date-fns';
+import { describe, expect, it, vi } from 'vitest';
 
 import { TIME_SLOT_INTERVAL } from '@/config';
-import { BookingFromApiSchema, DateSchema, RoomSchema, UpsertBookingSchema } from '@/lib/schema';
+import {
+  BookingFromApiSchema,
+  DateSchema,
+  EnhancedUpsertBookingSchemaFactory,
+  RoomSchema,
+  type UpsertBooking,
+  UpsertBookingSchema,
+} from '@/lib/schema';
+import { formatToDateTime } from '@/lib/tools';
+import type { WeekBookings } from '@/lib/weekBookings';
+
+vi.mock('@/config', () => ({
+  LONGEST_STUDENT_MEETING: 4,
+  TIME_SLOT_INTERVAL: 30,
+  OPEN_HOURS_IDX: [12, 42],
+}));
 
 describe('BookingSchema', () => {
   it('should pass for a valid booking with user', () => {
@@ -130,7 +145,7 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid start(format)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:00:00Z',
+      start: '2025-06-24T10:00:00+09:00',
       end: '2025-06-24T10:30',
       bookedBy: null,
     };
@@ -339,4 +354,220 @@ describe('UpsertBookingSchema', () => {
   });
 
   // Does not test a lot since the start/end logic is tested in booking schema.
+});
+
+describe('EnhancedUpsertBookingSchemaFactory', () => {
+  const user = { role: 'student' as const };
+
+  it('passes with valid booking', () => {
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(addHours(start, 4)),
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('fails if the meeting is too long', () => {
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(addHours(start, 5)),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('max length');
+  });
+
+  it('passes with valid booking', () => {
+    const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const end = addHours(start, 2);
+    const booking: UpsertBooking = {
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    };
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [
+            {
+              start: formatToDateTime(addHours(start, -1)),
+              end: formatToDateTime(start),
+              id: 1,
+              bookedBy: null,
+            },
+            {
+              start: formatToDateTime(end),
+              end: formatToDateTime(addHours(end, 1)),
+              id: 2,
+              bookedBy: null,
+            },
+          ],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const result = schema.safeParse(booking);
+    expect(result.success).toBe(true);
+  });
+
+  it('fails when overlaps: cross start (09:30-10:30)', () => {
+    const start = nextMonday(set(new Date(), { hours: 9, minutes: 30 }));
+    const end = addHours(start, 1);
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [
+            {
+              start: formatToDateTime(nextMonday(set(new Date(), { hours: 10, minutes: 0 }))),
+              end: formatToDateTime(nextMonday(set(new Date(), { hours: 11, minutes: 30 }))),
+              id: 1,
+              bookedBy: null,
+            },
+          ],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('overlaps');
+  });
+
+  it('fails when overlaps: exact match (10:00-11:30)', () => {
+    const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const end = nextMonday(set(new Date(), { hours: 11, minutes: 30 }));
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [
+            {
+              start: formatToDateTime(start),
+              end: formatToDateTime(end),
+              id: 1,
+              bookedBy: null,
+            },
+          ],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('overlaps');
+  });
+
+  it('fails when overlaps: inside (10:30-11:00)', () => {
+    const baseStart = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const start = addHours(baseStart, 0.5);
+    const end = addHours(start, 0.5);
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [
+            {
+              start: formatToDateTime(baseStart),
+              end: formatToDateTime(addHours(baseStart, 1.5)),
+              id: 1,
+              bookedBy: null,
+            },
+          ],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('overlaps');
+  });
+
+  it('fails when overlaps: cross end (11:00-12:00)', () => {
+    const baseStart = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const start = addHours(baseStart, 1);
+    const end = addHours(baseStart, 2);
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [
+            {
+              start: formatToDateTime(baseStart),
+              end: formatToDateTime(addHours(baseStart, 1.5)),
+              id: 1,
+              bookedBy: null,
+            },
+          ],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('overlaps');
+  });
 });
