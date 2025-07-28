@@ -97,7 +97,7 @@ const BookedBlock = ({
     >
       <span
         className={cn(
-          'w-full truncate px-1 py-1 text-center text-xs whitespace-nowrap opacity-80',
+          'w-full truncate px-1 py-1 text-center text-xs whitespace-nowrap text-neutral-900 opacity-80',
           height < 16 && 'py-0 leading-none',
         )}
       >

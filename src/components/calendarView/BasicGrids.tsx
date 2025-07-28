@@ -37,7 +37,7 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn('border-border box-border border', past ? 'bg-gray-100/98' : 'bg-transparent')}
+      className={cn('border-border box-border border', past ? 'bg-muted' : 'bg-transparent')}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
     ></div>
   );
