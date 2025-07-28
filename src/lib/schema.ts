@@ -19,9 +19,8 @@ import {
 import * as z from 'zod/v4';
 
 import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
-
-import { ThrowInternalError } from './errorHandler';
-import type { WeekBookings } from './weekBookings';
+import { ThrowInternalError } from '@/lib/errorHandler';
+import type { WeekBookings } from '@/lib/weekBookings';
 
 const MIN_MEETING_MINUTES = 15;
 const MAX_USERNAME_LENGTH = 100;
@@ -69,7 +68,7 @@ const BookingFromApiSchema = z
   })
   .strict()
   .refine((data) => meetingLengthCheck(data.start, data.end), {
-    message: `End time must be at least ${MIN_MEETING_MINUTES} minutes after start time.`,
+    message: `End time must be at least ${TIME_SLOT_INTERVAL} minutes after start time.`,
     path: ['end'],
   })
   .refine((data) => isSameDayCheck(data.start, data.end), {
@@ -100,7 +99,7 @@ const UpsertBookingSchema = z
   })
   .strict()
   .refine((data) => meetingLengthCheck(data.start, data.end), {
-    message: `End time must be at least ${MIN_MEETING_MINUTES} minutes after start time.`,
+    message: `End time must be at least ${TIME_SLOT_INTERVAL} minutes after start time.`,
     path: ['end'],
   })
   .refine((data) => isSameDayCheck(data.start, data.end), {
