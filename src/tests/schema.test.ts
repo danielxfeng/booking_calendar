@@ -145,7 +145,7 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid start(format)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:00:00Z',
+      start: '2025-06-24T10:00:00+09:00',
       end: '2025-06-24T10:30',
       bookedBy: null,
     };
