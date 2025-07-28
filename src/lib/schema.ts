@@ -6,10 +6,22 @@
  * @contact intra: @xifeng
  */
 
-import { addMilliseconds, differenceInMinutes, isSameDay } from 'date-fns';
+import type { User } from '@sentry/react';
+import {
+  addMilliseconds,
+  differenceInDays,
+  differenceInMinutes,
+  isAfter,
+  isBefore,
+  isSameDay,
+  previousMonday,
+} from 'date-fns';
 import * as z from 'zod/v4';
 
-import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+
+import { ThrowInternalError } from './errorHandler';
+import type { WeekBookings } from './weekBookings';
 
 const MIN_MEETING_MINUTES = 15;
 const MAX_USERNAME_LENGTH = 100;
@@ -96,10 +108,68 @@ const UpsertBookingSchema = z
     path: ['start', 'end'],
   });
 
+const overlappingCheck = (
+  start: Date,
+  end: Date,
+  roomId: number,
+  bookings: WeekBookings,
+): boolean => {
+  const dayShiftDiff = differenceInDays(end, previousMonday(start));
+  const dayShift = dayShiftDiff === 7 ? 0 : dayShiftDiff;
+
+  // should not be here.
+  if (dayShift < 0 || dayShift > 6 || !bookings[dayShift])
+    return ThrowInternalError('[overlappingCheck]: the required date is out of range.');
+
+  const slots = bookings[dayShift][roomId]?.slots ?? [];
+  if (slots.length === 0) return true; // No bookings, so available.
+
+  // for example: booking: 10:00 - 11:30
+  // 4 overlapping cases: 9:30 - 10:30, 10:00 - 11:30, 10:30 - 11:00, 11:00 - 12:00
+  // 2 non-overlapping case: 9:00 - 10:00, 11:30 - 12:30
+  return !slots.some(
+    (slot) => isBefore(start, new Date(slot.end)) && isAfter(end, new Date(slot.start)),
+  );
+};
+
+const roleBasedLengthCheck = (start: Date, end: Date, role: 'student' | 'staff'): boolean => {
+  if (role === 'staff') return true;
+  return differenceInMinutes(end, start) <= LONGEST_STUDENT_MEETING * 60;
+};
+
+const EnhancedUpsertBookingSchemaFactory = (user: User | null, bookings: WeekBookings) => {
+  return UpsertBookingSchema.check((ctx) => {
+    if (!user) return ThrowInternalError('User is not provided.');
+
+    const { start, end, roomId } = ctx.value;
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (!overlappingCheck(startDate, endDate, roomId, bookings)) {
+      ctx.issues.push({
+        code: 'custom',
+        message: 'The booking overlaps with existing bookings.',
+        input: ctx.value,
+        path: ['end'],
+      });
+    }
+
+    if (user.role === 'student' && !roleBasedLengthCheck(startDate, endDate, user.role)) {
+      ctx.issues.push({
+        code: 'custom',
+        message: `The max length meeting for students is ${LONGEST_STUDENT_MEETING} hours.`,
+        input: ctx.value,
+        path: ['end'],
+      });
+    }
+  });
+};
+
 export {
   BookingFromApiSchema,
   BookingsFromApiSchema,
   DateSchema,
+  EnhancedUpsertBookingSchemaFactory,
   RoomSchema,
   RoomsSchema,
   UpsertBookingSchema,

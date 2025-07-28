@@ -1,9 +1,6 @@
 /**
  * @file useBookingForm.tsx
  * @summary a custom hook for the booking form.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -14,19 +11,13 @@ import { addDays, differenceInCalendarDays } from 'date-fns';
 import { useAtomValue, useSetAtom, useStore } from 'jotai';
 import { toast } from 'sonner';
 
-import { API_URL, ENDPOINT_SLOTS, LONGEST_STUDENT_MEETING } from '@/config';
+import { API_URL, ENDPOINT_SLOTS } from '@/config';
 import { bookingsAtom, formPropAtom, startAtom } from '@/lib/atoms';
 import { axiosFetcher } from '@/lib/axiosFetcher';
-import {
-  bookingLengthCheck,
-  calculateSlots,
-  initForm,
-  overlappingCheck,
-  parseErrorMsg,
-} from '@/lib/bookingFormUtils';
+import { calculateSlots, initForm, parseErrorMsg } from '@/lib/bookingFormUtils';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { BookingFromApi, UpsertBooking } from '@/lib/schema';
-import { UpsertBookingSchema } from '@/lib/schema';
+import { EnhancedUpsertBookingSchemaFactory } from '@/lib/schema';
 import { newDate } from '@/lib/tools';
 import { getUser } from '@/lib/userStore';
 
@@ -39,8 +30,6 @@ type FormProp = {
   roomId: number;
   booking?: BookingFromApi;
 } | null;
-
-const invalidMeetingErrorMessage = `The selected time conflicts with existing bookings or exceeds the ${LONGEST_STUDENT_MEETING}-hour limit.`;
 
 /**
  * @summary Booking form logic hook.
@@ -71,14 +60,14 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
   );
 
   const form = useForm<UpsertBooking>({
-    resolver: zodResolver(UpsertBookingSchema),
+    resolver: zodResolver(EnhancedUpsertBookingSchemaFactory(user, bookings)),
     defaultValues,
     mode: 'onChange',
   });
 
-  const [watchedRoomId, watchedStart, watchedEnd] = useWatch({
+  const [watchedRoomId] = useWatch({
     control: form.control,
-    name: ['roomId', 'start', 'end'],
+    name: ['roomId'],
   });
 
   // available slots for startTime
@@ -96,19 +85,6 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
       formProp.booking?.id,
     );
   }, [existingBookings, watchedRoomId, bookingDate, formProp.booking?.id]);
-
-  // To validate the invalid booking.
-  useEffect(() => {
-    const validSlots =
-      overlappingCheck(watchedStart, watchedEnd, endSlots) &&
-      bookingLengthCheck(watchedStart, watchedEnd, user?.role);
-
-    const currentErrorMessage = form.getFieldState('end')?.error?.message ?? '';
-    if (!validSlots && currentErrorMessage !== invalidMeetingErrorMessage)
-      form.setError('end', { type: 'manual', message: invalidMeetingErrorMessage });
-    else if (validSlots && currentErrorMessage === invalidMeetingErrorMessage)
-      form.clearErrors('end');
-  }, [watchedStart, watchedEnd, endSlots, form, user?.role]);
 
   useEffect(() => {
     if (form.formState.isValid && form.formState.errors['root']) form.clearErrors('root');

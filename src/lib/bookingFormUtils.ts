@@ -1,17 +1,13 @@
 /**
  * @file BookingFormUtils.tsx
- * @summary abstracted helper functions for Booking form for decoupling and unit testing.
- * @see BookingForm - @/components/BookingForm.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
+ * @summary helpers for booking form.
  */
 
 import { AxiosError } from 'axios';
-import { addMinutes, differenceInMinutes, isAfter, isBefore, isEqual } from 'date-fns';
+import { addMinutes, differenceInMinutes, isAfter, isBefore } from 'date-fns';
 
 import type { Slot } from '@/components/bookingForm/ScrollSlotPicker';
-import { LONGEST_STUDENT_MEETING, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { FormProp, FormType } from '@/lib/hooks/useBookingForm';
 import type { DayBookings } from '@/lib/weekBookings';
@@ -94,19 +90,6 @@ const calculateSlots = (
   return slots;
 };
 
-const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean => {
-  let inRange: boolean = false;
-  for (const slot of endSlots) {
-    if (isEqual(new Date(start), addMinutes(slot.slot, -TIME_SLOT_INTERVAL))) inRange = true;
-
-    if (inRange) {
-      if (!slot.avail) return false;
-      if (isEqual(new Date(end), slot.slot)) return true;
-    }
-  }
-  return true; // should not be here.
-};
-
 const parseErrorMsg = (error: unknown): string => {
   if (error instanceof AxiosError) {
     return (
@@ -122,13 +105,4 @@ const parseErrorMsg = (error: unknown): string => {
   return 'Unknown error occurred.';
 };
 
-const bookingLengthCheck = (
-  start: string,
-  end: string,
-  role: 'student' | 'staff' | null | undefined,
-): boolean => {
-  if (role === 'staff') return true;
-  return differenceInMinutes(new Date(end), new Date(start)) <= LONGEST_STUDENT_MEETING * 60;
-};
-
-export { bookingLengthCheck, calculateSlots, initForm, overlappingCheck, parseErrorMsg };
+export { calculateSlots, initForm, parseErrorMsg };
