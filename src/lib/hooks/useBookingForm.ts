@@ -27,7 +27,7 @@ import {
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { BookingFromApi, UpsertBooking } from '@/lib/schema';
 import { UpsertBookingSchema } from '@/lib/schema';
-import { changeDate, newDate } from '@/lib/tools';
+import { newDate } from '@/lib/tools';
 import { getUser } from '@/lib/userStore';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -113,21 +113,6 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
   useEffect(() => {
     if (form.formState.isValid && form.formState.errors['root']) form.clearErrors('root');
   }, [form, form.formState.isValid]);
-
-  // When the date picker value changes, update the date of `start` and `end`.
-  useEffect(() => {
-    const [startV, endV] = form.getValues(['start', 'end']);
-    const newDate = addDays(startDate, dayShift);
-
-    const nextStart = changeDate(startV, newDate);
-    const nextEnd = changeDate(endV, newDate);
-
-    // start and end should be at the same day!
-    if (nextStart !== startV) {
-      form.setValue('start', nextStart);
-      form.setValue('end', nextEnd);
-    }
-  }, [dayShift, form, startDate]);
 
   const handleSuccess = (start: string, msg: string) => {
     toast.success(msg);
