@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import {
   addDays,
+  addYears,
   differenceInCalendarDays,
   format,
   isAfter,
@@ -145,6 +146,8 @@ const BookingForm = () => {
                     setDayShift(differenceInCalendarDays(date, startDate));
                     setOpen(false);
                   }}
+                  startMonth={new Date()}
+                  endMonth={addYears(new Date(), 1)}
                   disabled={(date) =>
                     isBefore(date, startOfToday()) || // Before today
                     // out of the week view

@@ -6,12 +6,20 @@
  */
 
 import { useState } from 'react';
-import { format, isMonday, isSameDay, nextMonday, nextSunday, previousMonday } from 'date-fns';
+import {
+  addYears,
+  format,
+  isMonday,
+  isSameDay,
+  nextMonday,
+  nextSunday,
+  previousMonday,
+} from 'date-fns';
 import { useAtomValue } from 'jotai';
 import { CalendarDays } from 'lucide-react';
 
-import Loading from '@/components/Loading';
 import { MyPaginationNext, MyPaginationPrev } from '@/components/layout/MyPagination';
+import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { PaginationItem } from '@/components/ui/pagination';
@@ -46,62 +54,64 @@ const HeaderMenu = () => {
 
   return (
     <div className='flex items-center gap-2'>
-    <div
-      data-role='operation-panel'
-      className='bg-muted/50 flex items-center gap-1 rounded-lg px-2 py-1 backdrop-blur-sm'
-    >
-      <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
-        <MyPaginationPrev
-          className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
-          onClick={() => setNewStart(prevMon, false)}
-        />
-      </PaginationItem>
+      <div
+        data-role='operation-panel'
+        className='bg-muted/50 flex items-center gap-1 rounded-lg px-2 py-1 backdrop-blur-sm'
+      >
+        <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
+          <MyPaginationPrev
+            className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
+            onClick={() => setNewStart(prevMon, false)}
+          />
+        </PaginationItem>
 
-      <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
-        <MyPaginationNext
-          className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
-          onClick={() => setNewStart(nextMon, false)}
-        />
-      </PaginationItem>
+        <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
+          <MyPaginationNext
+            className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
+            onClick={() => setNewStart(nextMon, false)}
+          />
+        </PaginationItem>
 
-      <div className='bg-border h-4 w-px' />
+        <div className='bg-border h-4 w-px' />
 
-      <div>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant='ghost'
-              id='date'
-              className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:shadow-sm active:scale-95'
-              aria-label='Choose start date'
+        <div>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant='ghost'
+                id='date'
+                className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:shadow-sm active:scale-95'
+                aria-label='Choose start date'
+              >
+                <CalendarDays className='text-muted-foreground hover:text-foreground h-4 w-4 transition-colors' />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className='flex w-auto flex-col items-center overflow-hidden p-4 shadow-lg'
+              align='end'
             >
-              <CalendarDays className='text-muted-foreground hover:text-foreground h-4 w-4 transition-colors' />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className='flex w-auto flex-col items-center overflow-hidden p-4 shadow-lg'
-            align='end'
-          >
-            <span className='text-muted-foreground mb-3 text-sm font-medium'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
-            <Calendar
-              mode='single'
-              selected={startDate}
-              captionLayout='dropdown'
-              onSelect={(date) => dateSelectHandler(date)}
-            />
-            <Button
-              variant='default'
-              className='mt-3 w-full text-sm'
-              onClick={() => {
-                dateSelectHandler(new Date());
-              }}
-            >
-              Today
-            </Button>
-          </PopoverContent>
-        </Popover>
+              <span className='text-muted-foreground mb-3 text-sm font-medium'>{`${format(startDate, 'EEE dd MMM')} - ${format(nextSun, 'EEE dd MMM')}`}</span>
+              <Calendar
+                mode='single'
+                selected={startDate}
+                captionLayout='dropdown'
+                onSelect={(date) => dateSelectHandler(date)}
+                startMonth={addYears(new Date(), -1)}
+                endMonth={addYears(new Date(), 1)}
+              />
+              <Button
+                variant='default'
+                className='mt-3 w-full text-sm'
+                onClick={() => {
+                  dateSelectHandler(new Date());
+                }}
+              >
+                Today
+              </Button>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
