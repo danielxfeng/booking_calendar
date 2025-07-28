@@ -109,7 +109,12 @@ const overlappingCheck = (start: string, end: string, endSlots: Slot[]): boolean
 
 const parseErrorMsg = (error: unknown): string => {
   if (error instanceof AxiosError) {
-    return error.response?.data?.message ?? error.message ?? 'Server responded with an error.';
+    return (
+      error.response?.data?.error ??
+      error.response?.data?.message ??
+      error.message ??
+      'Server responded with an error.'
+    );
   }
   if (error instanceof Error) {
     return error.message;
