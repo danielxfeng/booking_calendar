@@ -4,7 +4,6 @@ import { rowsArr, styleGenerator } from '@/lib/tools';
 const CalendarTimeColumn = () => {
   return (
     <div className='flex flex-col'>
-      <div className='border-border h-12 shrink-0 border' />
       {rowsArr.map((row) => (
         <div
           key={`cal-time-cell-${row}`}

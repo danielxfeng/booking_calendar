@@ -40,12 +40,15 @@ const CalendarView = () => {
   return (
     <div data-role='calendar' className='flex flex-1 overflow-hidden'>
       {/* TimeColumn */}
-      <div
-        data-role='calendar-time-column-scroll-container'
-        className='scrollbar-hide shrink-0 overflow-hidden'
-        ref={timeColumnRef}
-      >
-        <CalendarTimeColumn />
+      <div className='flex flex-col'>
+        <div className='border-border h-12 shrink-0 border' />
+        <div
+          data-role='calendar-time-column-scroll-container'
+          className='scrollbar-hide flex-1 overflow-hidden'
+          ref={timeColumnRef}
+        >
+          <CalendarTimeColumn />
+        </div>
       </div>
 
       {/* Right */}
