@@ -154,6 +154,7 @@ const BookingForm = () => {
                       form.setValue('start', nextStart);
                       form.setValue('end', nextEnd);
                       setDayShift(newDayShift);
+                      form.trigger('end');
                     }
 
                     setOpen(false);
@@ -184,7 +185,10 @@ const BookingForm = () => {
                 </FormLabel>
                 <FormControl>
                   <RadioGroup
-                    onValueChange={(val) => field.onChange(Number(val))}
+                    onValueChange={(val) => {
+                      field.onChange(Number(val));
+                      form.trigger('end');
+                    }}
                     value={String(field.value)}
                     className='grid grid-cols-2 gap-10 px-4'
                     disabled={formType !== 'insert' || form.formState.isSubmitting}
@@ -225,7 +229,10 @@ const BookingForm = () => {
                       slots={startSlots}
                       selected={field.value}
                       disabled={formType !== 'insert' || form.formState.isSubmitting}
-                      onSelect={(val) => field.onChange(val)}
+                      onSelect={(val) => {
+                        field.onChange(val);
+                        form.trigger('end');
+                      }}
                     />
                   </FormControl>
                   <FormMessage className='min-h-12' />
