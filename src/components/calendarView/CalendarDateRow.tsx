@@ -1,11 +1,3 @@
-/**
- * @file CalendarHeader.tsx
- * @summary It's the header of the calendar view.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { addDays, format, isMonday, isSameDay, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
@@ -14,7 +6,7 @@ import { startAtom } from '@/lib/atoms';
 import { gridStyleGenerator, styleGenerator } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
-const CalendarHeader = () => {
+const CalendarDateRow = () => {
   const start = useAtomValue(startAtom);
 
   // Set start date, fallback to today.
@@ -27,7 +19,11 @@ const CalendarHeader = () => {
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
 
   return (
-    <div data-role='calendar-head' className='grid h-12 bg-background' style={gridStyleGenerator(CELL_WIDTH_PX)}>
+    <div
+      data-role='calendar-date-row'
+      className='bg-background grid h-12'
+      style={gridStyleGenerator(CELL_WIDTH_PX)}
+    >
       {/* Side header */}
       <div
         key='calendar-head-side'
@@ -57,4 +53,4 @@ const CalendarHeader = () => {
   );
 };
 
-export default CalendarHeader;
+export default CalendarDateRow;
