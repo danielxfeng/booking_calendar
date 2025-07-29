@@ -50,10 +50,10 @@ const Main = () => {
                 className='scrollbar-hide flex-1 overflow-auto'
               >
                 <div
-                  ref={containerRef}
                   data-role='calendar-data-container'
                   className='relative'
-                  style={styleGenerator(CELL_WIDTH_PX * 8, CELL_HEIGHT_PX * rows)}
+                  style={styleGenerator(CELL_WIDTH_PX * 7, CELL_HEIGHT_PX * rows)}
+                  ref={containerRef}
                 >
                   <BasicGrids />
                   <BookingCanvas containerRef={containerRef} />

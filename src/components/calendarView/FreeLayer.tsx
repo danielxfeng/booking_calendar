@@ -11,7 +11,7 @@ import {
   TIME_SLOT_INTERVAL,
 } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
-import { newDate } from '@/lib/tools';
+import { newDate, slotsInAHour } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 type HoverGridProps = CSSProperties & { startTime: Date; endTime: Date; roomId: number };
@@ -47,12 +47,9 @@ const findSlotAndStyle = (
   const x = e.clientX - rect.left + containerRef.current.scrollLeft;
   const y = e.clientY - rect.top + containerRef.current.scrollTop;
 
-  const days = Math.floor(x / CELL_WIDTH_PX) - 1;
+  const days = Math.floor(x / CELL_WIDTH_PX);
 
-  // time Label.
-  if (days === -1) return null;
-
-  const heightPerSlot = CELL_HEIGHT_PX / (60 / TIME_SLOT_INTERVAL);
+  const heightPerSlot = CELL_HEIGHT_PX / slotsInAHour;
   const timeIdx = Math.floor(y / heightPerSlot);
 
   const slotOffsetMin = (timeIdx + OPEN_HOURS_IDX[0]) * TIME_SLOT_INTERVAL;
@@ -61,16 +58,16 @@ const findSlotAndStyle = (
 
   const endTime = addMinutes(startTime, TIME_SLOT_INTERVAL);
 
-  if (isBefore(endTime, curr)) return null;
+  if (isBefore(startTime, curr)) return null;
 
   const widthPerRoom = CELL_WIDTH_PX / rooms.length;
-  const roomIdx = Math.floor((x - (days + 1) * CELL_WIDTH_PX) / widthPerRoom);
+  const roomIdx = Math.floor((x - days * CELL_WIDTH_PX) / widthPerRoom);
   const roomId = rooms[roomIdx].id;
 
   return {
     position: 'absolute',
     top: timeIdx * heightPerSlot,
-    left: (days + 1) * CELL_WIDTH_PX + roomIdx * widthPerRoom,
+    left: days * CELL_WIDTH_PX + roomIdx * widthPerRoom,
     width: widthPerRoom,
     height: heightPerSlot,
     startTime,
@@ -100,7 +97,6 @@ const FreeLayer = ({
     <div
       className={cn('absolute top-0 left-0 h-full w-full', hoverGridProps && 'cursor-pointer')}
       onPointerLeave={() => setHoverGridProps(null)} // cancel hover
-      // trigger a `insertion` form
       // trigger a `insertion` form
       onClick={(e: React.PointerEvent<HTMLDivElement>) => {
         // Draw a hover grid since PointerMove does not work on mobile.

@@ -9,12 +9,17 @@ import { memo } from 'react';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
 import { startAtom } from '@/lib/atoms';
-import { gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx } from '@/lib/tools';
+import {
+  gridStyleGenerator,
+  isPast,
+  newDate,
+  slotsInAHour,
+  styleGenerator,
+  timeFromCellIdx,
+} from '@/lib/tools';
 import { cn } from '@/lib/utils';
-
-const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 // One row per hour
 const rowsArr = Array.from(
@@ -52,7 +57,7 @@ const BasicGrids = memo(() => {
   const baseTime = newDate(start);
 
   return (
-    <div data-role='calendar-basic-grids' className='h-full w-full'>
+    <div data-role='calendar-basic-grids' className='container h-full w-full'>
       {/* Rows */}
       {rowsArr.map((row) => (
         <div
@@ -60,16 +65,6 @@ const BasicGrids = memo(() => {
           className='box-border grid'
           style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
         >
-          {/* Label */}
-          <div
-            key={`cal-side-row-${row}`}
-            className='border-border box-border flex items-center justify-center border text-xs'
-            style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-          >
-            {`${row.toString().padStart(2, '0')}:00`}
-          </div>
-
-          {/* Cells */}
           {colsArr.map((col) => (
             <BasicCell
               key={`cal-basic-cell-${row}-${col}`}

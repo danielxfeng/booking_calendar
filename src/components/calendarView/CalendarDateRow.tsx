@@ -24,14 +24,6 @@ const CalendarDateRow = () => {
       className='bg-background grid h-12'
       style={gridStyleGenerator(CELL_WIDTH_PX)}
     >
-      {/* Side header */}
-      <div
-        key='calendar-head-side'
-        className='border-border box-border h-12 border'
-        style={styleWidth}
-      ></div>
-
-      {/* Week day headers */}
       {weekArr.map((d) => {
         const day = format(d, 'eee');
         const date = format(d, 'dd MMM');
