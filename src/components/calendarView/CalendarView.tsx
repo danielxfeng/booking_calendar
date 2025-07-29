@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import BasicGrids from '@/components/calendarView/BasicGrids';
 import BookingCanvas from '@/components/calendarView/BookingCanvas';
@@ -11,12 +11,39 @@ const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
 const CalendarView = () => {
   const containerRef = useRef(null);
+  const dateRowRef = useRef<HTMLDivElement>(null);
+  const timeColumnRef = useRef<HTMLDivElement>(null);
+  const dataContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const syncScroll = () => {
+      const dataContainer = dataContainerRef.current;
+      const dateRow = dateRowRef.current;
+      const timeColumn = timeColumnRef.current;
+
+      if (!dataContainer || !dateRow || !timeColumn) return;
+
+      if (dataContainer.scrollLeft !== dateRow.scrollLeft)
+        dateRow.scrollLeft = dataContainer.scrollLeft;
+      if (dataContainer.scrollTop !== timeColumn.scrollTop)
+        timeColumn.scrollTop = dataContainer.scrollTop;
+    };
+
+    const dataContainer = dataContainerRef.current;
+    dataContainer?.addEventListener('scroll', syncScroll);
+
+    return () => {
+      dataContainer?.removeEventListener('scroll', syncScroll);
+    };
+  }, []);
+
   return (
     <div data-role='calendar' className='flex flex-1 overflow-hidden'>
       {/* TimeColumn */}
       <div
         data-role='calendar-time-column-scroll-container'
-        className='scrollbar-hide shrink-0 overflow-y-auto'
+        className='scrollbar-hide shrink-0 overflow-hidden'
+        ref={timeColumnRef}
       >
         <CalendarTimeColumn />
       </div>
@@ -26,7 +53,8 @@ const CalendarView = () => {
         {/* DateRow */}
         <div
           data-role='calendar-date-row-scroll-container'
-          className='scrollbar-hide flex w-full shrink-0 overflow-x-auto'
+          className='scrollbar-hide flex w-full shrink-0 overflow-hidden'
+          ref={dateRowRef}
         >
           <CalendarDateRow />
         </div>
@@ -35,6 +63,7 @@ const CalendarView = () => {
         <div
           data-role='calendar-data-scroll-container'
           className='scrollbar-hide flex-1 overflow-auto'
+          ref={dataContainerRef}
         >
           <div
             data-role='calendar-data-container'
