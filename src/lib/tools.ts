@@ -8,7 +8,7 @@
 import type { CSSProperties } from 'react';
 import { addHours, format, isBefore, startOfDay } from 'date-fns';
 
-import { TIME_SLOT_INTERVAL } from '@/config';
+import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 
 /**
  * @summary Returns a local time format of date
@@ -100,6 +100,12 @@ const changeDate = (prevStr: string, newDate: Readonly<Date>): string => {
 
 const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
+// One row per hour
+const rowsArr = Array.from(
+  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
+  (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
+);
+
 export {
   changeDate,
   formatToDate,
@@ -107,6 +113,7 @@ export {
   gridStyleGenerator,
   isPast,
   newDate,
+  rowsArr,
   slotsInAHour,
   styleGenerator,
   timeFromCellIdx,

@@ -5,10 +5,10 @@
 
 import { useRef } from 'react';
 
-import CalendarTimeColumn from '@/components/CalendarTimeColumn';
 import BasicGrids from '@/components/calendarView/BasicGrids';
 import BookingCanvas from '@/components/calendarView/BookingCanvas';
 import CalendarDateRow from '@/components/calendarView/CalendarDateRow';
+import CalendarTimeColumn from '@/components/calendarView/CalendarTimeColumn';
 import RoomMap from '@/components/RoomMap';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 import { styleGenerator } from '@/lib/tools';
@@ -29,7 +29,7 @@ const Main = () => {
             {/* TimeColumn */}
             <div
               data-role='calendar-time-column-scroll-container'
-              className='scrollbar-hide flex shrink-0 overflow-y-auto'
+              className='scrollbar-hide shrink-0 overflow-y-auto'
             >
               <CalendarTimeColumn />
             </div>

@@ -9,23 +9,17 @@ import { memo } from 'react';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
 import { startAtom } from '@/lib/atoms';
 import {
   gridStyleGenerator,
   isPast,
   newDate,
-  slotsInAHour,
+  rowsArr,
   styleGenerator,
   timeFromCellIdx,
 } from '@/lib/tools';
 import { cn } from '@/lib/utils';
-
-// One row per hour
-const rowsArr = Array.from(
-  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
-  (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
-);
 
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
 
