@@ -13,9 +13,9 @@ import {
 } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
 import type { BookingFromApi } from '@/lib/schema';
+import { slotsInAHour } from '@/lib/tools';
 import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
-const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
 
 const getPositionAndStyle = (
   startOfWeek: string,
@@ -44,7 +44,7 @@ const getPositionAndStyle = (
 
   const width = CELL_WIDTH_PX / rooms.length;
 
-  const col = differenceInCalendarDays(startTime, new Date(startOfWeek)) + 1;
+  const col = differenceInCalendarDays(startTime, new Date(startOfWeek));
   const left = col * CELL_WIDTH_PX + roomIdx * width;
 
   return { position: 'absolute', top, left, width, height, h: height };

@@ -146,6 +146,12 @@ a:hover {
   }
 }
 
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

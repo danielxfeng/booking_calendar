@@ -61,7 +61,7 @@ const App = () => {
   if (err) ThrowBackendError(err);
 
   return (
-    <div>
+    <div className='flex h-[100dvh] w-full flex-col overflow-hidden'>
       <Header />
       <Main />
       <Footer />

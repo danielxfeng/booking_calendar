@@ -1,11 +1,3 @@
-/**
- * @file CalendarHeader.tsx
- * @summary It's the header of the calendar view.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { addDays, format, isMonday, isSameDay, previousMonday } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
@@ -14,7 +6,7 @@ import { startAtom } from '@/lib/atoms';
 import { gridStyleGenerator, styleGenerator } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
-const CalendarHeader = () => {
+const CalendarDateRow = () => {
   const start = useAtomValue(startAtom);
 
   // Set start date, fallback to today.
@@ -27,15 +19,11 @@ const CalendarHeader = () => {
   const styleWidth = styleGenerator(CELL_WIDTH_PX);
 
   return (
-    <div data-role='calendar-head' className='grid h-12 bg-background' style={gridStyleGenerator(CELL_WIDTH_PX)}>
-      {/* Side header */}
-      <div
-        key='calendar-head-side'
-        className='border-border box-border h-12 border'
-        style={styleWidth}
-      ></div>
-
-      {/* Week day headers */}
+    <div
+      data-role='calendar-date-row'
+      className='bg-background grid h-12'
+      style={gridStyleGenerator(CELL_WIDTH_PX)}
+    >
       {weekArr.map((d) => {
         const day = format(d, 'eee');
         const date = format(d, 'dd MMM');
@@ -43,13 +31,13 @@ const CalendarHeader = () => {
           <div
             key={`calendar-head-${day}`}
             className={cn(
-              'box-border flex h-12 flex-col items-center justify-center border text-xs',
+              'box-border flex h-12 flex-col items-center justify-center border-b-2 border-b-sky-400 text-xs shadow-[inset_-2px_0_0_0_#e4e4e7] last:shadow-none dark:shadow-[inset_-2px_0_0_0_#222223]',
               isSameDay(d, today) && 'font-bold',
             )}
             style={styleWidth}
           >
             <p>{day}</p>
-            <p>{date}</p>
+            <p className='text-muted-foreground italic'>{date}</p>
           </div>
         );
       })}
@@ -57,4 +45,4 @@ const CalendarHeader = () => {
   );
 };
 
-export default CalendarHeader;
+export default CalendarDateRow;

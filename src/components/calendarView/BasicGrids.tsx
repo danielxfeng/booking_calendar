@@ -9,18 +9,17 @@ import { memo } from 'react';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
 import { startAtom } from '@/lib/atoms';
-import { gridStyleGenerator, isPast, newDate, styleGenerator, timeFromCellIdx } from '@/lib/tools';
+import {
+  gridStyleGenerator,
+  isPast,
+  newDate,
+  rowsArr,
+  styleGenerator,
+  timeFromCellIdx,
+} from '@/lib/tools';
 import { cn } from '@/lib/utils';
-
-const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
-
-// One row per hour
-const rowsArr = Array.from(
-  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
-  (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
-);
 
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
 
@@ -37,7 +36,10 @@ const BasicCell = ({ col, row, baseTime, curr }: BasicCellProps) => {
   const past = isPast(cellTime, curr);
   return (
     <div
-      className={cn('border-border box-border border', past ? 'bg-muted' : 'bg-transparent')}
+      className={cn(
+        'box-border border-r-2 border-b-2 last:border-r-0',
+        past ? 'bg-muted' : 'bg-transparent',
+      )}
       style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
     ></div>
   );
@@ -52,24 +54,14 @@ const BasicGrids = memo(() => {
   const baseTime = newDate(start);
 
   return (
-    <div data-role='calendar-basic-grids' className='h-full w-full'>
+    <div data-role='calendar-basic-grids' className='container h-full w-full'>
       {/* Rows */}
       {rowsArr.map((row) => (
         <div
           key={`cal-basic-row-${row}`}
-          className='box-border grid'
+          className='grid'
           style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
         >
-          {/* Label */}
-          <div
-            key={`cal-side-row-${row}`}
-            className='border-border box-border flex items-center justify-center border text-xs'
-            style={styleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-          >
-            {`${row.toString().padStart(2, '0')}:00`}
-          </div>
-
-          {/* Cells */}
           {colsArr.map((col) => (
             <BasicCell
               key={`cal-basic-cell-${row}-${col}`}

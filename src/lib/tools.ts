@@ -8,6 +8,8 @@
 import type { CSSProperties } from 'react';
 import { addHours, format, isBefore, startOfDay } from 'date-fns';
 
+import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+
 /**
  * @summary Returns a local time format of date
  */
@@ -59,10 +61,10 @@ const styleGenerator = (
 
 const gridStyleGenerator = (sizeW: number, sizeH?: number): CSSProperties => {
   const basic = {
-    gridTemplateColumns: `repeat(8, ${sizeW}px)`,
+    gridTemplateColumns: `repeat(7, ${sizeW}px)`,
   };
 
-  return { ...basic, ...styleGenerator(sizeW * 8, sizeH) };
+  return { ...basic, ...styleGenerator(sizeW * 7, sizeH) };
 };
 
 const formatToDate = (date: Date) => {
@@ -96,6 +98,14 @@ const changeDate = (prevStr: string, newDate: Readonly<Date>): string => {
   return formatToDateTime(copiedNewDate);
 };
 
+const slotsInAHour = 60 / TIME_SLOT_INTERVAL;
+
+// One row per hour
+const rowsArr = Array.from(
+  { length: (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour },
+  (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
+);
+
 export {
   changeDate,
   formatToDate,
@@ -103,6 +113,8 @@ export {
   gridStyleGenerator,
   isPast,
   newDate,
+  rowsArr,
+  slotsInAHour,
   styleGenerator,
   timeFromCellIdx,
 };
