@@ -3,7 +3,7 @@
 A modern, intuitive room booking system built by [Daniel](https://github.com/danielxfeng) and [Abdul](https://github.com/IbnBaqqi) for **Hive Helsinki**.
 Big thanks to [Jordane](https://github.com/jgengo), former CTO of Hive Helsinki, for his in-depth code reviews and many valuable suggestions via PRs and Discord.
 
-![Booking Calendar Interface](./public/screenshot.png)
+![Booking Calendar Interface](./public/Screenshot.jpg)
 
 <br>
 
@@ -141,7 +141,7 @@ src/
 
 ## Known Issues & Roadmap
 
-- [ ] Enhanced mobile experience
+- [x] Enhanced mobile experience
 - [ ] Drag-and-drop booking interface
 - [ ] Advanced filtering and search
 - [ ] Email notifications
