@@ -10,7 +10,7 @@ import { slotsInAHour, styleGenerator } from '@/lib/tools';
 const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
 const CalendarView = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const dateRowRef = useRef<HTMLDivElement>(null);
   const timeColumnRef = useRef<HTMLDivElement>(null);
   const dataContainerRef = useRef<HTMLDivElement>(null);
