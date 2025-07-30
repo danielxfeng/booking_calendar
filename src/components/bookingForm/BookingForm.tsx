@@ -55,6 +55,7 @@ import { formPropAtom } from '@/lib/atoms';
 import useBookingForm from '@/lib/hooks/useBookingForm';
 import { changeDate } from '@/lib/tools';
 import { cn } from '@/lib/utils';
+import { enGB } from 'date-fns/locale';
 
 /**
  * @summary The upsert form UI.
@@ -161,6 +162,7 @@ const BookingForm = () => {
                   }}
                   startMonth={new Date()}
                   endMonth={addYears(new Date(), 1)}
+                  locale={enGB}
                   disabled={(date) =>
                     isBefore(date, startOfToday()) || // Before today
                     // out of the week view

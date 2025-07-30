@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks/useStartController';
 import { formatToDate, newDate } from '@/lib/tools';
+import { enGB } from 'date-fns/locale';
 
 const HeaderMenu = () => {
   const { setNewStart } = useStartController();
@@ -98,6 +99,7 @@ const HeaderMenu = () => {
                 onSelect={(date) => dateSelectHandler(date)}
                 startMonth={addYears(new Date(), -1)}
                 endMonth={addYears(new Date(), 1)}
+                locale={enGB}
               />
               <Button
                 variant='default'
