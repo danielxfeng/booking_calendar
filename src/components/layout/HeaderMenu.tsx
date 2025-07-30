@@ -15,10 +15,12 @@ import {
   nextSunday,
   previousMonday,
 } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 import { useAtomValue } from 'jotai';
 import { CalendarDays } from 'lucide-react';
 
 import { MyPaginationNext, MyPaginationPrev } from '@/components/layout/MyPagination';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -27,7 +29,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { startAtom } from '@/lib/atoms';
 import { useStartController } from '@/lib/hooks/useStartController';
 import { formatToDate, newDate } from '@/lib/tools';
-import { enGB } from 'date-fns/locale';
 
 const HeaderMenu = () => {
   const { setNewStart } = useStartController();
@@ -113,6 +114,10 @@ const HeaderMenu = () => {
             </PopoverContent>
           </Popover>
         </div>
+
+        <div className='bg-border h-4 w-px' />
+
+        <ThemeToggle />
       </div>
     </div>
   );
