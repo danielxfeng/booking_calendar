@@ -1,13 +1,7 @@
-/**
- * @file atoms.ts
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { atom } from 'jotai';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
+import type { TypeTheme } from '@/components/layout/ThemeToggle';
 import { ROOM_MAP, type RoomProp } from '@/config';
 import type { FormProp } from '@/lib/hooks/useBookingForm';
 import type { WeekBookings } from '@/lib/weekBookings';
@@ -28,4 +22,6 @@ const storage = createJSONStorage<string>(() => sessionStorage, {
  */
 const startAtom = atomWithStorage<string>('start', '', storage);
 
-export { bookingsAtom, formPropAtom, roomsAtom, startAtom };
+const themeAtom = atomWithStorage<TypeTheme>('theme', 'system');
+
+export { bookingsAtom, formPropAtom, roomsAtom, startAtom, themeAtom };

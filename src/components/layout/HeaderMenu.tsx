@@ -20,6 +20,7 @@ import { useAtomValue } from 'jotai';
 import { CalendarDays } from 'lucide-react';
 
 import { MyPaginationNext, MyPaginationPrev } from '@/components/layout/MyPagination';
+import ThemeToggle from '@/components/layout/ThemeToggle';
 import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -116,7 +117,7 @@ const HeaderMenu = () => {
 
         <div className='bg-border h-4 w-px' />
 
-        
+        <ThemeToggle />
       </div>
     </div>
   );

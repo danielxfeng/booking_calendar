@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { useStore } from 'jotai';
+import { useAtomValue, useStore } from 'jotai';
 
 import FormWrapper from '@/components/bookingForm/BookingForm';
 import Footer from '@/components/layout/Footer';
@@ -16,13 +16,14 @@ import Header from '@/components/layout/Header';
 import Main from '@/components/Main';
 import TanQuery from '@/components/TanQuery';
 import { Toaster } from '@/components/ui/sonner';
-import { startAtom } from '@/lib/atoms';
+import { startAtom, themeAtom } from '@/lib/atoms';
 import { ThrowBackendError } from '@/lib/errorHandler';
 import { useStartController } from '@/lib/hooks/useStartController';
 import { setUser } from '@/lib/userStore';
 
 const App = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const theme = useAtomValue(themeAtom);
   const [err, setErr] = useState<string | null>(null);
   const { setNewStart } = useStartController();
 
@@ -57,6 +58,24 @@ const App = () => {
     setNewStart(newStart, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const sysSetting = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applyTheme = () => {
+      if (theme === 'system')
+        root.setAttribute('data-theme', sysSetting.matches ? 'dark' : 'light');
+      else root.setAttribute('data-theme', theme);
+    };
+
+    applyTheme();
+
+    if (theme === 'system') {
+      sysSetting.addEventListener('change', applyTheme);
+      return () => sysSetting.removeEventListener('change', applyTheme);
+    }
+  }, [theme]);
 
   if (err) ThrowBackendError(err);
 
