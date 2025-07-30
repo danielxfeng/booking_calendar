@@ -7,10 +7,10 @@ const CalendarTimeColumn = () => {
       {rowsArr.map((row) => (
         <div
           key={`cal-time-cell-${row}`}
-          className='border-border flex items-center justify-center border px-5 text-xs'
+          className='flex items-center justify-center border-r-3 border-b-2 border-r-blue-600 px-5 text-xs'
           style={styleGenerator(undefined, CELL_HEIGHT_PX)}
         >
-          {row}
+          {row}.00
         </div>
       ))}
     </div>
