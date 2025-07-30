@@ -41,7 +41,7 @@ const CalendarView = () => {
     <div data-role='calendar' className='flex flex-1 overflow-hidden'>
       {/* TimeColumn */}
       <div className='flex flex-col'>
-        <div className='h-12 shrink-0 border-r-3 border-b-3 border-blue-600' />
+        <div className='h-12 shrink-0 border-r-2 border-b-2 border-sky-400' />
         <div
           data-role='calendar-time-column-scroll-container'
           className='scrollbar-hide flex-1 overflow-hidden'

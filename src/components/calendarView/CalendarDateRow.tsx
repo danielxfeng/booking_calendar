@@ -31,7 +31,7 @@ const CalendarDateRow = () => {
           <div
             key={`calendar-head-${day}`}
             className={cn(
-              'box-border flex h-12 flex-col items-center justify-center border-r-2 border-b-3 border-b-blue-600 text-xs last:border-r-0',
+              'box-border flex h-12 flex-col items-center justify-center border-b-2 border-b-sky-400 text-xs shadow-[inset_-2px_0_0_0_#e4e4e7] last:shadow-none dark:shadow-[inset_-2px_0_0_0_#222223]',
               isSameDay(d, today) && 'font-bold',
             )}
             style={styleWidth}
