@@ -1,11 +1,3 @@
-/**
- * @file TanQuery.tsx
- * @summary A headless component that syncs slot query result to calendarGridAtom.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { memo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -28,7 +20,11 @@ const TanQuery = memo(() => {
   const start = useAtomValue(startAtom);
   const setBookingsAtom = useSetAtom(bookingsAtom);
 
-  const { data: bookings, isError } = useQuery<WeekBookings>({
+  const {
+    data: bookings,
+    isError,
+    error,
+  } = useQuery<WeekBookings>({
     enabled: start !== null,
     queryKey: ['slots', start],
     queryFn: async () => {
@@ -45,9 +41,10 @@ const TanQuery = memo(() => {
 
   useEffect(() => {
     if (isError) {
+      console.error('Query error:', error);
       ThrowInvalidIncomingDataErr('Data fetching error.');
     }
-  }, [isError]);
+  }, [isError, error]);
 
   return <></>;
 });
