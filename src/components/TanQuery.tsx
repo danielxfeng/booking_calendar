@@ -1,11 +1,13 @@
 import { memo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash/isEqual';
 
 import { CACHE_DURATION } from '@/config';
 import { getSlots } from '@/lib/apiFetcher';
 import { bookingsAtom, startAtom } from '@/lib/atoms';
+import { RedirectingMsg } from '@/lib/axiosFetcher';
 import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
 import { type WeekBookings, weekBookingsGenerator } from '@/lib/weekBookings';
 
@@ -40,10 +42,10 @@ const TanQuery = memo(() => {
   }, [bookings, setBookingsAtom]);
 
   useEffect(() => {
-    if (isError) {
-      console.error('Query error:', error);
-      ThrowInvalidIncomingDataErr('Data fetching error.');
-    }
+    if (!isError) return;
+    // If error is a redirecting to auth page, ignore it.
+    if (axios.isCancel(error) && error.message === RedirectingMsg) return;
+    ThrowInvalidIncomingDataErr('Data fetching error.');
   }, [isError, error]);
 
   return <></>;
