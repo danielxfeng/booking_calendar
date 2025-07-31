@@ -52,7 +52,7 @@ const ENDPOINT_AUTH: string = 'oauth/login';
 
 const ENDPOINT_SLOTS: string = 'reservation';
 
-const FETCHER_TIMEOUT: number = 3000; // 30 seconds
+const FETCHER_TIMEOUT: number = 30000; // 30 seconds
 
 const CACHE_DURATION: number = 5; // 5 minutes
 
