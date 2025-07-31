@@ -10,6 +10,8 @@ import axios from 'axios';
 import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
 
+const RedirectingMsg = 'No token, redirecting.';
+
 const axiosFetcher = axios.create({
   baseURL: API_URL,
   timeout: FETCHER_TIMEOUT,
@@ -21,7 +23,7 @@ axiosFetcher.interceptors.request.use((config) => {
   const token = getUser()?.token;
   if (!token) {
     window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
-    return Promise.reject(new axios.Cancel('No token, redirecting.'));
+    return Promise.reject(new axios.Cancel(RedirectingMsg));
   }
   config.headers.Authorization = `Bearer ${token}`;
   return config;
@@ -43,4 +45,4 @@ axiosFetcher.interceptors.response.use(
   },
 );
 
-export { axiosFetcher };
+export { axiosFetcher, RedirectingMsg };
