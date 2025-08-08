@@ -9,19 +9,21 @@ import { memo } from 'react';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
-import { CELL_HEIGHT_PX, CELL_WIDTH_PX } from '@/config';
+import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
 import { startAtom } from '@/lib/atoms';
 import {
   gridStyleGenerator,
   isPast,
   newDate,
   rowsArr,
+  slotsInAHour,
   styleGenerator,
   timeFromCellIdx,
 } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
+const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
 type BasicCellProps = {
   col: number;
@@ -54,7 +56,11 @@ const BasicGrids = memo(() => {
   const baseTime = newDate(start);
 
   return (
-    <div data-role='calendar-basic-grids' className='container h-full w-full'>
+    <div
+      data-role='calendar-basic-grids'
+      className='container box-border'
+      style={styleGenerator(CELL_WIDTH_PX * 7, CELL_HEIGHT_PX * rows)}
+    >
       {/* Rows */}
       {rowsArr.map((row) => (
         <div
