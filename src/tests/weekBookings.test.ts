@@ -1,9 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { Rooms } from '@/lib/schema';
 import { weekBookingsGenerator } from '@/lib/weekBookings';
 
 const startDate = '2025-06-23';
+
+vi.mock('@/config', () => ({
+  ROOM_MAP: [
+    { id: 1, name: 'Big', color: 'bg-blue-300 border-blue-400' },
+    { id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' },
+  ],
+  TIME_SLOT_INTERVAL: 30,
+  OPEN_HOURS_IDX: [12, 42],
+}));
 
 describe('weekBookingsGenerator', () => {
   it('places a booking in the correct weekday column', () => {
