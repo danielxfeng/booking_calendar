@@ -60,18 +60,18 @@ const HeaderMenu = () => {
         data-role='operation-panel'
         className='bg-muted/50 flex items-center gap-1 rounded-lg px-2 py-1 backdrop-blur-sm'
       >
-        <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
-          <MyPaginationPrev
-            className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
-            onClick={() => setNewStart(prevMon, false)}
-          />
+        <PaginationItem
+          className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'
+          onClick={() => setNewStart(prevMon, false)}
+        >
+          <MyPaginationPrev className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors' />
         </PaginationItem>
 
-        <PaginationItem className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'>
-          <MyPaginationNext
-            className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors'
-            onClick={() => setNewStart(nextMon, false)}
-          />
+        <PaginationItem
+          className='hover:bg-muted flex h-8 w-8 items-center justify-center rounded-md transition-all duration-200 hover:shadow-sm active:scale-95'
+          onClick={() => setNewStart(nextMon, false)}
+        >
+          <MyPaginationNext className='!text-muted-foreground hover:text-foreground h-4 w-4 transition-colors' />
         </PaginationItem>
 
         <div className='bg-border h-4 w-px' />

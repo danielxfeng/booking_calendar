@@ -28,7 +28,7 @@ const ThemeToggle = () => {
             variant='ghost'
             className='hover:bg-muted text-muted-foreground hover:text-muted-foreground flex h-8 w-8 items-center justify-center rounded-md p-0 transition-all duration-200 hover:shadow-sm focus-visible:ring-0 active:scale-95'
           >
-            {isDark ? <Sun /> : <Moon />}
+            {isDark ? <Moon /> : <Sun />}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
