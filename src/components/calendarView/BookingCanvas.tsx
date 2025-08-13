@@ -22,9 +22,7 @@ const BookingCanvas = ({
 }) => {
   const start = useAtomValue(startAtom);
   const rooms = useAtomValue(roomsAtom);
-  const [loaderSize, setLoaderSize] = useState<{ width: number; height: number } | undefined>(
-    undefined,
-  );
+  const [loaderSize, setLoaderSize] = useState<CSSProperties | undefined>(undefined);
 
   const bookings: WeekBookings = useAtomValue(bookingsAtom);
   const isPending =
@@ -53,7 +51,7 @@ const BookingCanvas = ({
   return (
     <div className='absolute top-0 left-0 z-10 h-full w-full'>
       {isPending ? (
-        <Loading style={loaderSize ? (loaderSize as CSSProperties) : undefined} />
+        <Loading style={loaderSize} />
       ) : (
         <>
           <FreeLayer containerRef={containerRef} start={start} rooms={rooms} />
