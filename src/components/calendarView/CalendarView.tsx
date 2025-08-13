@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react';
+import { useIsFetching } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 
 import BasicGrids from '@/components/calendarView/BasicGrids';
 import BookingCanvas from '@/components/calendarView/BookingCanvas';
 import CalendarDateRow from '@/components/calendarView/CalendarDateRow';
 import CalendarTimeColumn from '@/components/calendarView/CalendarTimeColumn';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
+import { startAtom } from '@/lib/atoms';
 import { slotsInAHour, styleGenerator } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 
 const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
 
@@ -14,6 +18,7 @@ const CalendarView = () => {
   const dateRowRef = useRef<HTMLDivElement>(null);
   const timeColumnRef = useRef<HTMLDivElement>(null);
   const dataContainerRef = useRef<HTMLDivElement>(null);
+  const start = useAtomValue(startAtom);
 
   useEffect(() => {
     const syncScroll = () => {
@@ -36,6 +41,12 @@ const CalendarView = () => {
       dataContainer?.removeEventListener('scroll', syncScroll);
     };
   }, []);
+
+  const isPending =
+    useIsFetching({
+      queryKey: ['slots', start],
+      predicate: (query) => query.state.status === 'pending',
+    }) > 0;
 
   return (
     <div data-role='calendar' className='flex flex-1 overflow-hidden'>
@@ -65,7 +76,7 @@ const CalendarView = () => {
         {/* Data */}
         <div
           data-role='calendar-data-scroll-container'
-          className='scrollbar-hide flex-1 overflow-auto'
+          className={cn('scrollbar-hide flex-1', !isPending && 'overflow-auto')}
           ref={dataContainerRef}
         >
           <div
