@@ -1,14 +1,9 @@
-/**
- * @file BasicGrids.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { memo } from 'react';
+import { useIsFetching } from '@tanstack/react-query';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
 import { startAtom } from '@/lib/atoms';
 import {
@@ -21,8 +16,6 @@ import {
   timeFromCellIdx,
 } from '@/lib/tools';
 import { cn } from '@/lib/utils';
-import { useIsFetching } from '@tanstack/react-query';
-import { Skeleton } from '../ui/skeleton';
 
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
 const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
