@@ -97,7 +97,7 @@ const mocks: MockMethod[] = [
   {
     url: '/reservation',
     method: 'get',
-    timeout: 400,
+    timeout: 3000,
     response: ({ query }) => {
       const { start } = query;
       return generateMockedData(start);

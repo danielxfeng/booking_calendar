@@ -21,6 +21,8 @@ import {
   timeFromCellIdx,
 } from '@/lib/tools';
 import { cn } from '@/lib/utils';
+import { useIsFetching } from '@tanstack/react-query';
+import { Skeleton } from '../ui/skeleton';
 
 const colsArr = Array.from({ length: 7 }, (_, i) => i);
 const rows = (OPEN_HOURS_IDX[1] - OPEN_HOURS_IDX[0]) / slotsInAHour;
@@ -54,6 +56,7 @@ const BasicGrids = memo(() => {
   const curr = new Date();
   const start = useAtomValue(startAtom);
   const baseTime = newDate(start);
+  const isFetching = useIsFetching();
 
   return (
     <div
@@ -62,23 +65,31 @@ const BasicGrids = memo(() => {
       style={styleGenerator(CELL_WIDTH_PX * 7, CELL_HEIGHT_PX * rows)}
     >
       {/* Rows */}
-      {rowsArr.map((row) => (
-        <div
-          key={`cal-basic-row-${row}`}
-          className='grid'
-          style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-        >
-          {colsArr.map((col) => (
-            <BasicCell
-              key={`cal-basic-cell-${row}-${col}`}
-              col={col}
-              row={row}
-              baseTime={baseTime}
-              curr={curr}
-            />
-          ))}
-        </div>
-      ))}
+      {rowsArr.map((row) =>
+        isFetching ? (
+          <Skeleton
+            key={row}
+            className={cn('rounded-none', row % 2 === 0 ? 'bg-muted/50' : 'bg-muted')}
+            style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
+          />
+        ) : (
+          <div
+            key={`cal-basic-row-${row}`}
+            className='grid'
+            style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
+          >
+            {colsArr.map((col) => (
+              <BasicCell
+                key={`cal-basic-cell-${row}-${col}`}
+                col={col}
+                row={row}
+                baseTime={baseTime}
+                curr={curr}
+              />
+            ))}
+          </div>
+        ),
+      )}
     </div>
   );
 });
