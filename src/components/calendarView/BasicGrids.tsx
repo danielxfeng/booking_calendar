@@ -1,14 +1,9 @@
-/**
- * @file BasicGrids.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { memo } from 'react';
+import { useIsFetching } from '@tanstack/react-query';
 import { addDays } from 'date-fns';
 import { useAtomValue } from 'jotai';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { CELL_HEIGHT_PX, CELL_WIDTH_PX, OPEN_HOURS_IDX } from '@/config';
 import { startAtom } from '@/lib/atoms';
 import {
@@ -54,6 +49,7 @@ const BasicGrids = memo(() => {
   const curr = new Date();
   const start = useAtomValue(startAtom);
   const baseTime = newDate(start);
+  const isFetching = useIsFetching();
 
   return (
     <div
@@ -62,23 +58,31 @@ const BasicGrids = memo(() => {
       style={styleGenerator(CELL_WIDTH_PX * 7, CELL_HEIGHT_PX * rows)}
     >
       {/* Rows */}
-      {rowsArr.map((row) => (
-        <div
-          key={`cal-basic-row-${row}`}
-          className='grid'
-          style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
-        >
-          {colsArr.map((col) => (
-            <BasicCell
-              key={`cal-basic-cell-${row}-${col}`}
-              col={col}
-              row={row}
-              baseTime={baseTime}
-              curr={curr}
-            />
-          ))}
-        </div>
-      ))}
+      {rowsArr.map((row) =>
+        isFetching ? (
+          <Skeleton
+            key={row}
+            className={cn('rounded-none', row % 2 === 0 ? 'bg-muted/50' : 'bg-muted')}
+            style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
+          />
+        ) : (
+          <div
+            key={`cal-basic-row-${row}`}
+            className='grid'
+            style={gridStyleGenerator(CELL_WIDTH_PX, CELL_HEIGHT_PX)}
+          >
+            {colsArr.map((col) => (
+              <BasicCell
+                key={`cal-basic-cell-${row}-${col}`}
+                col={col}
+                row={row}
+                baseTime={baseTime}
+                curr={curr}
+              />
+            ))}
+          </div>
+        ),
+      )}
     </div>
   );
 });

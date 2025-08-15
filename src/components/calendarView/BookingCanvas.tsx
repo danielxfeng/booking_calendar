@@ -3,7 +3,6 @@ import { useAtomValue } from 'jotai';
 
 import BookedBlock from '@/components/calendarView/BookedBlock';
 import FreeLayer from '@/components/calendarView/FreeLayer';
-import Loading from '@/components/Loading';
 import { bookingsAtom, roomsAtom, startAtom } from '@/lib/atoms';
 import type { WeekBookings } from '@/lib/weekBookings';
 
@@ -24,35 +23,27 @@ const BookingCanvas = ({
   const rooms = useAtomValue(roomsAtom);
 
   const bookings: WeekBookings = useAtomValue(bookingsAtom);
-  const isPending =
-    useIsFetching({
-      queryKey: ['slots', start],
-      predicate: (query) => query.state.status === 'pending',
-    }) > 0;
+  const isPending = useIsFetching();
+
+  if (isPending) return null;
 
   return (
     <div className='absolute top-0 left-0 z-10 h-full w-full'>
-      {isPending ? (
-        <Loading />
-      ) : (
-        <>
-          <FreeLayer containerRef={containerRef} start={start} rooms={rooms} />
-          {bookings.map((day) =>
-            Object.values(day)
-              .filter((booking) => rooms.some((room) => room.id === booking.roomId))
-              .map((room) =>
-                room.slots.map((slot) => (
-                  <BookedBlock
-                    key={slot.id}
-                    roomId={room.roomId}
-                    start={start}
-                    slot={slot}
-                    rooms={rooms}
-                  />
-                )),
-              ),
-          )}
-        </>
+      <FreeLayer containerRef={containerRef} start={start} rooms={rooms} />
+      {bookings.map((day) =>
+        Object.values(day)
+          .filter((booking) => rooms.some((room) => room.id === booking.roomId))
+          .map((room) =>
+            room.slots.map((slot) => (
+              <BookedBlock
+                key={slot.id}
+                roomId={room.roomId}
+                start={start}
+                slot={slot}
+                rooms={rooms}
+              />
+            )),
+          ),
       )}
     </div>
   );
