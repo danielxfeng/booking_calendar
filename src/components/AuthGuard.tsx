@@ -61,7 +61,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   if (isCheckingAuth) {
     return (
-      <div className='flex h-[100dvh] w-full flex-col items-center justify-center bg-background'>
+      <div className='flex h-screen w-full flex-col items-center justify-center bg-background'>
         <div className='flex flex-col items-center space-y-4'>
           <Loading />
           <p className='text-muted-foreground animate-pulse'>Checking authentication...</p>
