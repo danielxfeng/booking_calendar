@@ -37,7 +37,7 @@ const HeaderMenu = () => {
   const [open, setOpen] = useState(false);
 
   // To prevent there is not a start.
-  if (!start) return <Loading />;
+  if (!start) return <Loading className='h-4 w-4' />;
 
   const startDate = newDate(start);
 

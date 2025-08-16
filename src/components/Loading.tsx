@@ -1,14 +1,8 @@
-/**
- * @file Loading.tsx
- * @summary A spinning.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
+import { cn } from "@/lib/utils";
 
-const Loading = () => (
-  <div className='flex h-screen w-screen items-center justify-center'>
-    <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent' />
+const Loading = ({ className }: { className?: string }) => (
+  <div className='flex items-center justify-center'>
+    <div className={cn('h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent', className)} />
   </div>
 );
 
