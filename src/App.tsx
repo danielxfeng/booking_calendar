@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue, useStore } from 'jotai';
 
+import AuthGuard from '@/components/AuthGuard';
 import FormWrapper from '@/components/bookingForm/BookingForm';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
@@ -19,10 +20,9 @@ import { Toaster } from '@/components/ui/sonner';
 import { startAtom, themeAtom } from '@/lib/atoms';
 import { ThrowBackendError } from '@/lib/errorHandler';
 import { useStartController } from '@/lib/hooks/useStartController';
-import { setUser } from '@/lib/userStore';
 
 const App = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const theme = useAtomValue(themeAtom);
   const [err, setErr] = useState<string | null>(null);
   const { setNewStart } = useStartController();
@@ -30,28 +30,13 @@ const App = () => {
   const startFromParams = searchParams.get('start');
   const unSubscribedStart = useStore().get(startAtom);
 
-  // To handle the params from backend.
   useEffect(() => {
     const errFromBackend = searchParams.get('err');
     if (errFromBackend) {
       setErr(errFromBackend);
       return;
     }
-
-    const token = searchParams.get('token');
-    if (token) {
-      const intra = searchParams.get('intra');
-      const rawRole = searchParams.get('role');
-      const role = rawRole === 'student' || rawRole === 'staff' ? rawRole : null;
-      setUser({ token, intra, role });
-      const nextParams = new URLSearchParams(searchParams);
-      nextParams.delete('token');
-      nextParams.delete('intra');
-      nextParams.delete('role');
-      if (unSubscribedStart !== '') nextParams.set('start', unSubscribedStart);
-      setSearchParams(nextParams, { replace: true }); // remove the url from history.
-    }
-  }, [searchParams, setSearchParams, unSubscribedStart]);
+  }, [searchParams]);
 
   useEffect(() => {
     const newStart = startFromParams ?? unSubscribedStart;
@@ -80,15 +65,17 @@ const App = () => {
   if (err) ThrowBackendError(err);
 
   return (
-    <div className='flex h-[100dvh] w-full flex-col overflow-hidden'>
-      <Header />
-      <Main />
-      <Footer />
+    <AuthGuard>
+      <div className='flex h-[100dvh] w-full flex-col overflow-hidden'>
+        <Header />
+        <Main />
+        <Footer />
 
-      <FormWrapper />
-      <TanQuery />
-      <Toaster position='top-center' duration={2000} richColors />
-    </div>
+        <FormWrapper />
+        <TanQuery />
+        <Toaster position='top-center' duration={2000} richColors />
+      </div>
+    </AuthGuard>
   );
 };
 
