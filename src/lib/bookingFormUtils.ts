@@ -1,8 +1,3 @@
-/**
- * @file BookingFormUtils.tsx
- * @summary helpers for booking form.
- */
-
 import { AxiosError } from 'axios';
 import { addMinutes, differenceInMinutes, isAfter, isBefore } from 'date-fns';
 

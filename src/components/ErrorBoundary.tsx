@@ -1,10 +1,3 @@
-/**
- * @file ErrorBoundary.tsx
- * @summary A simple page to handle the error.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
 import type { ReactNode } from 'react';
 import { Component } from 'react';
 

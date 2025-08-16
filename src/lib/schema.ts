@@ -1,11 +1,3 @@
-/**
- * @file schema.ts
- * @summary Defines the Zod schemas and Types used for API request and response.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import type { User } from '@sentry/react';
 import {
   addMilliseconds,

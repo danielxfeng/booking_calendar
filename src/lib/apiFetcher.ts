@@ -1,11 +1,3 @@
-/**
- * @file apiFetcher.ts
- * @summary Service for fetching data from api.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { format, nextSunday } from 'date-fns';
 
 import { ENDPOINT_SLOTS } from '@/config';

@@ -1,12 +1,5 @@
-/**
- * @file tools.ts
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
-import type { CSSProperties } from 'react';
 import { addHours, format, isBefore, startOfDay } from 'date-fns';
+import type { CSSProperties } from 'react';
 
 import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 

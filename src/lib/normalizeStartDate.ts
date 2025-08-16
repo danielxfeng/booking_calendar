@@ -1,11 +1,3 @@
-/**
- * @file normalizeStartDate.ts
- * @summary Handles auth, and data loading.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { format, isMonday, previousMonday } from 'date-fns';
 
 import { DateSchema } from '@/lib/schema';

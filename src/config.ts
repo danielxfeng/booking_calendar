@@ -1,10 +1,3 @@
-/**
- * @file This file defines the configuration of the web application
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { ThrowInternalError } from './lib/errorHandler';
 
 type RoomProp = { id: number; name: string; color: string };

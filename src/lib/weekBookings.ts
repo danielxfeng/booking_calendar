@@ -1,10 +1,3 @@
-/**
- * @file weekBookings.ts
- * @summary Main data structure of the application.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
 import { type Day, differenceInCalendarDays } from 'date-fns';
 
 import { ROOM_MAP } from '@/config';

@@ -118,34 +118,13 @@ We welcome contributions! Here's how you can help:
 - 🐛 Bug fixes
 
 
-
-## Project Architecture
-
-```
-src/
-├── components/          # UI components
-│   ├── ui/             # ShadCN/UI components
-│   ├── BookingForm/    # Booking creation/editing
-│   ├── CalendarHeader/ # Week navigation
-│   ├── Main/           # Main calendar layout
-│   └── ScrollSlotPicker/ # Custom time picker
-├── lib/                # Core logic & utilities
-│   ├── atoms.ts        # Jotai state management
-│   ├── apiFetcher.ts   # API communication
-│   ├── schema.ts       # Zod validation schemas
-│   └── weekBookings.ts # Calendar data structures
-└── tests/              # Unit tests
-```
-
-
-
 ## Known Issues & Roadmap
 
 - [x] Enhanced mobile experience
 - [ ] Drag-and-drop booking interface
 - [ ] Advanced filtering and search
-- [ ] Email notifications
-- [ ] Calendar export functionality
+- [x] Email notifications
+- [x] Calendar export functionality
 - [ ] Integration with external calendar systems
 
 

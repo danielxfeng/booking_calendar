@@ -1,10 +1,3 @@
-/**
- * @file HeaderMenu.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { useState } from 'react';
 import {
   addYears,

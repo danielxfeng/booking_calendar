@@ -1,11 +1,3 @@
-/**
- * @file main.tsx
- * @summary Entry of the application, the router is here also.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -42,22 +34,24 @@ root.render(
             <Route
               path='*'
               element={
-                <div className='flex min-h-screen w-full flex-col items-center justify-center bg-background px-4'>
-                  <div className='text-center space-y-6 max-w-md animate-fade-in'>
+                <div className='bg-background flex min-h-screen w-full flex-col items-center justify-center px-4'>
+                  <div className='animate-fade-in max-w-md space-y-6 text-center'>
                     <div className='space-y-2'>
-                      <h1 className='text-9xl font-bold text-muted-foreground/20 select-none'>
+                      <h1 className='text-muted-foreground/20 text-9xl font-bold select-none'>
                         4
-                        <span className='inline-block animate-spin-slow hover:animate-ping'>0</span>
+                        <span className='animate-spin-slow inline-block hover:animate-ping'>0</span>
                         4
                       </h1>
-                      <h2 className='text-2xl font-semibold text-foreground animate-slide-up'>Page not found</h2>
+                      <h2 className='text-foreground animate-slide-up text-2xl font-semibold'>
+                        Page not found
+                      </h2>
                       <p className='text-muted-foreground animate-slide-up-delayed'>
                         The page you're looking for doesn't exist or has been moved.
                       </p>
                     </div>
                     <button
-                      onClick={() => window.location.href = '/'}
-                      className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:scale-105 hover:shadow-lg h-9 px-4 py-2 animate-bounce-in'
+                      onClick={() => (window.location.href = '/')}
+                      className='bg-primary text-primary-foreground hover:bg-primary/90 animate-bounce-in inline-flex h-9 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap shadow-xs transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:pointer-events-none disabled:opacity-50'
                     >
                       ← Back to Calendar
                     </button>

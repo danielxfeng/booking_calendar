@@ -1,11 +1,3 @@
-/**
- * @file errorHandler.ts
- * @summary Defines the error handler tools.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import axios from 'axios';
 
 const ThrowInvalidIncomingDataErr = (message: string): never => {

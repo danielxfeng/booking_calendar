@@ -1,14 +1,9 @@
-/**
- * @file useBookingForm.tsx
- * @summary a custom hook for the booking form.
- */
-
-import { useEffect, useMemo, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addDays, differenceInCalendarDays } from 'date-fns';
 import { useAtomValue, useSetAtom, useStore } from 'jotai';
+import { useEffect, useMemo, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { API_URL, ENDPOINT_SLOTS } from '@/config';

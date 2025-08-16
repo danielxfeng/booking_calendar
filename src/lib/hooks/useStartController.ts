@@ -1,13 +1,5 @@
-/**
- * @file useStartController.tsx
- * @summary a custom hook for `start`.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
-import { useSearchParams } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
+import { useSearchParams } from 'react-router-dom';
 
 import { startAtom } from '@/lib/atoms';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';

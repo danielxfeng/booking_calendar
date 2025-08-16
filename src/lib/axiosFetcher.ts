@@ -1,10 +1,3 @@
-/**
- * @file axiosFetcher.ts
- * @summary Singleton Axios instance with auth and timeout support
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import axios from 'axios';
 
 import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';

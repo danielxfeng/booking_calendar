@@ -1,10 +1,3 @@
-/**
- * @file ScrollSlotPicker.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 
@@ -71,14 +64,14 @@ const ScrollSlotPicker = ({ slots, selected, disabled, onSelect }: ScrollTimePic
       <div
         data-role='mask-t'
         className={cn(
-          'pointer-events-none absolute top-0 right-0 left-0 z-10 h-8 bg-gradient-to-b from-background/80 to-transparent',
+          'from-background/80 pointer-events-none absolute top-0 right-0 left-0 z-10 h-8 bg-gradient-to-b to-transparent',
           disabled && 'pointer-events-auto h-18',
         )}
       />
       <div
         data-role='mask-b'
         className={cn(
-          'pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-8 bg-gradient-to-t from-background/80 to-transparent',
+          'from-background/80 pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-8 bg-gradient-to-t to-transparent',
           disabled && 'pointer-events-auto h-18',
         )}
       />

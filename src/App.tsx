@@ -1,11 +1,3 @@
-/**
- * @file App.tsx
- * @summary Main, and only page of this application
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue, useStore } from 'jotai';

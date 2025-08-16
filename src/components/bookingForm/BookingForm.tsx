@@ -1,10 +1,3 @@
-/**
- * @file BookingForm.tsx
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { useState } from 'react';
 import { RadioGroupItem } from '@radix-ui/react-radio-group';
 import {
@@ -16,6 +9,7 @@ import {
   isBefore,
   startOfToday,
 } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, Loader, User } from 'lucide-react';
 
@@ -55,7 +49,6 @@ import { formPropAtom } from '@/lib/atoms';
 import useBookingForm from '@/lib/hooks/useBookingForm';
 import { changeDate } from '@/lib/tools';
 import { cn } from '@/lib/utils';
-import { enGB } from 'date-fns/locale';
 
 /**
  * @summary The upsert form UI.

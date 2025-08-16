@@ -1,11 +1,3 @@
-/**
- * @file MyPagination.tsx
- * @summary Slightly modified the Pagination buttons in Shadcn UI to remove the text.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 import { PaginationLink } from '@/components/ui/pagination';

@@ -1,11 +1,3 @@
-/**
- * @file userStore.ts
- * @summary Persisted auth token store. Getter/setter are provided.
- *
- * @author Xin (Daniel) Feng
- * @contact intra: @xifeng
- */
-
 type User = {
   token: string;
   intra: string | null;
