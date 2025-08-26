@@ -16,12 +16,6 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      if (import.meta.env.VITE_IS_AUTH === 'false') {
-        setIsAuthenticated(true);
-        setIsCheckingAuth(false);
-        return;
-      }
-
       const errFromBackend = searchParams.get('err');
       if (errFromBackend) {
         setIsCheckingAuth(false);
@@ -33,11 +27,11 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
         const intra = searchParams.get('intra');
         const rawRole = searchParams.get('role');
         const role = rawRole === 'student' || rawRole === 'staff' ? rawRole : null;
-        
+
         setUser({ token, intra, role });
         setIsAuthenticated(true);
         setIsCheckingAuth(false);
-        
+
         const nextParams = new URLSearchParams(searchParams);
         nextParams.delete('token');
         nextParams.delete('intra');
@@ -61,7 +55,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   if (isCheckingAuth) {
     return (
-      <div className='flex h-screen w-full flex-col items-center justify-center bg-background'>
+      <div className='bg-background flex h-screen w-full flex-col items-center justify-center'>
         <div className='flex flex-col items-center space-y-4'>
           <Loading />
           <p className='text-muted-foreground animate-pulse'>Checking authentication...</p>
@@ -72,17 +66,17 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   if (!isAuthenticated) {
     return (
-      <div className='flex h-[100dvh] w-full flex-col items-center justify-center bg-background px-4'>
-        <div className='text-center space-y-6 max-w-md'>
+      <div className='bg-background flex h-[100dvh] w-full flex-col items-center justify-center px-4'>
+        <div className='max-w-md space-y-6 text-center'>
           <div className='space-y-2'>
-            <h1 className='text-4xl font-bold text-foreground'>Authentication Required</h1>
+            <h1 className='text-foreground text-4xl font-bold'>Authentication Required</h1>
             <p className='text-muted-foreground'>
               You need to be authenticated to access the booking calendar.
             </p>
           </div>
           <button
             onClick={() => window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`)}
-            className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:scale-105 hover:shadow-lg h-9 px-4 py-2'
+            className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium whitespace-nowrap shadow-xs transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:pointer-events-none disabled:opacity-50'
           >
             Sign In
           </button>
