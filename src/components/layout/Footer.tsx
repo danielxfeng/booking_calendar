@@ -8,7 +8,7 @@ const Footer = () => {
         <Heart className='h-4 w-4 fill-sky-400 stroke-0 animate-pulse' /> 
         <span>by{' '}
         <a
-          href='https://www.linkedin.com/in/xin-daniel-feng'
+          href='https://danielslab.dev'
           target='_blank'
           rel='noreferrer'
           className='hover:underline'
