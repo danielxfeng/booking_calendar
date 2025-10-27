@@ -68,6 +68,6 @@
     "typescript-eslint": "^8.30.1",
     "vite": "^7.0.0",
     "vite-plugin-mock": "^3.0.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.0"
   }
 }
