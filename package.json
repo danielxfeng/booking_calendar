@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "mock:generate": "tsx scripts/generate-mock-data.ts",
+    "mock:server": "tsx scripts/mock-server.ts",
+    "mock:dev": "npm run mock:generate && npm run mock:server"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -61,8 +64,10 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^16.0.0",
     "jsdom": "^27.0.0",
+    "json-server": "^1.0.0-beta.3",
     "prettier": "^3.6.0",
     "prettier-plugin-tailwindcss": "^0.7.0",
+    "tsx": "^4.21.0",
     "tw-animate-css": "^1.3.4",
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.30.1",
