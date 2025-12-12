@@ -1,25 +1,15 @@
 /**
- * Custom JSON Server with middleware for booking slot operations.
+ * In-memory mock server for booking calendar.
+ * Generates mock data dynamically based on the requested week's start date.
  *
- * Handles:
- * - GET /reservation - Returns all rooms with slots (default json-server behavior)
- * - POST /reservation - Creates a new slot in the appropriate room
- * - DELETE /reservation/:id - Deletes a slot by its ID
- *
- * Run with: npx tsx scripts/mock-server.ts
+ * Run with: npm run mock:server
  */
 
-import { readFileSync, writeFileSync } from 'fs';
 import { createServer } from 'http';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const DB_PATH = join(__dirname, '..', 'db.json');
 const PORT = 3001;
 
+// Types
 interface Slot {
   id: number;
   start: string;
@@ -33,36 +23,116 @@ interface Room {
   slots: Slot[];
 }
 
-interface Database {
-  reservation: Room[];
-}
-
-const readDb = (): Database => {
-  const data = readFileSync(DB_PATH, 'utf-8');
-  return JSON.parse(data);
+// Date utilities
+const addDays = (date: Date, days: number): Date => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
 };
 
-const writeDb = (db: Database): void => {
-  writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
+const addMinutes = (date: Date, minutes: number): Date => {
+  const result = new Date(date);
+  result.setMinutes(result.getMinutes() + minutes);
+  return result;
 };
 
-const getNextSlotId = (db: Database): number => {
-  let maxId = 0;
-  for (const room of db.reservation) {
-    for (const slot of room.slots) {
-      if (slot.id > maxId) maxId = slot.id;
-    }
-  }
-  return maxId + 1;
+const formatLocal = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const mins = String(date.getMinutes()).padStart(2, '0');
+  const secs = String(date.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${mins}:${secs}`;
 };
 
+// Generate mock data for a week starting from `start`
+const generateMockData = (start: string): Room[] => {
+  // Parse as local date (not UTC) by appending time
+  const base = new Date(`${start}T00:00:00`);
+
+  return [
+    {
+      roomId: 1,
+      roomName: 'Big',
+      slots: [
+        {
+          id: 1,
+          start: formatLocal(addMinutes(base, 360)), // Mon 06:00
+          end: formatLocal(addMinutes(base, 390)),   // Mon 06:30
+          bookedBy: 'Alice',
+        },
+        {
+          id: 3,
+          start: formatLocal(addMinutes(base, 390)), // Mon 06:30
+          end: formatLocal(addMinutes(base, 420)),   // Mon 07:00
+          bookedBy: 'Bob',
+        },
+        {
+          id: 5,
+          start: formatLocal(addMinutes(addDays(base, 2), 780)), // Wed 13:00
+          end: formatLocal(addMinutes(addDays(base, 2), 900)),   // Wed 15:00
+          bookedBy: null,
+        },
+        {
+          id: 8,
+          start: formatLocal(addMinutes(addDays(base, 5), 780)), // Sat 13:00
+          end: formatLocal(addMinutes(addDays(base, 5), 900)),   // Sat 15:00
+          bookedBy: 'Daniel',
+        },
+        {
+          id: 9,
+          start: formatLocal(addMinutes(addDays(base, 6), 1230)), // Sun 20:30
+          end: formatLocal(addMinutes(addDays(base, 6), 1260)),   // Sun 21:00
+          bookedBy: 'Daniel',
+        },
+      ],
+    },
+    {
+      roomId: 2,
+      roomName: 'Small',
+      slots: [
+        {
+          id: 2,
+          start: formatLocal(addMinutes(base, 720)), // Mon 12:00
+          end: formatLocal(addMinutes(base, 750)),   // Mon 12:30
+          bookedBy: null,
+        },
+        {
+          id: 4,
+          start: formatLocal(addMinutes(base, 780)), // Mon 13:00
+          end: formatLocal(addMinutes(base, 900)),   // Mon 15:00
+          bookedBy: null,
+        },
+        {
+          id: 6,
+          start: formatLocal(addMinutes(addDays(base, 3), 780)), // Thu 13:00
+          end: formatLocal(addMinutes(addDays(base, 3), 900)),   // Thu 15:00
+          bookedBy: null,
+        },
+        {
+          id: 7,
+          start: formatLocal(addMinutes(addDays(base, 4), 780)), // Fri 13:00
+          end: formatLocal(addMinutes(addDays(base, 4), 900)),   // Fri 15:00
+          bookedBy: null,
+        },
+        {
+          id: 10,
+          start: formatLocal(addMinutes(addDays(base, 6), 1230)), // Sun 20:30
+          end: formatLocal(addMinutes(addDays(base, 6), 1260)),   // Sun 21:00
+          bookedBy: 'Daniel',
+        },
+      ],
+    },
+  ];
+};
+
+// HTTP Server
 const server = createServer((req, res) => {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Handle preflight
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -72,89 +142,45 @@ const server = createServer((req, res) => {
   const url = new URL(req.url || '/', `http://localhost:${PORT}`);
   const pathname = url.pathname;
 
-  // GET /reservation - Return all rooms with slots
+  // GET /reservation?start=YYYY-MM-DD
   if (req.method === 'GET' && pathname === '/reservation') {
-    const db = readDb();
+    const start = url.searchParams.get('start');
+    if (!start) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Missing start parameter' }));
+      return;
+    }
+
+    const data = generateMockData(start);
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(db.reservation));
+    res.end(JSON.stringify(data));
     return;
   }
 
-  // POST /reservation - Create a new slot
+  // POST /reservation - just return success
   if (req.method === 'POST' && pathname === '/reservation') {
     let body = '';
-    req.on('data', (chunk) => {
-      body += chunk.toString();
-    });
+    req.on('data', (chunk) => (body += chunk.toString()));
     req.on('end', () => {
-      try {
-        const { roomId, startTime, endTime } = JSON.parse(body);
-        const db = readDb();
-
-        const room = db.reservation.find((r) => r.roomId === roomId);
-        if (!room) {
-          res.writeHead(404, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Room not found' }));
-          return;
-        }
-
-        const newSlot: Slot = {
-          id: getNextSlotId(db),
-          start: startTime,
-          end: endTime,
-          bookedBy: 'MockUser',
-        };
-
-        room.slots.push(newSlot);
-        room.slots.sort((a, b) => (a.start > b.start ? 1 : -1));
-        writeDb(db);
-
-        res.writeHead(201, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(newSlot));
-      } catch {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Invalid request body' }));
-      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({}));
     });
     return;
   }
 
-  // DELETE /reservation/:id - Delete a slot by ID
+  // DELETE /reservation/:id - just return success
   const deleteMatch = pathname.match(/^\/reservation\/(\d+)$/);
   if (req.method === 'DELETE' && deleteMatch) {
-    const slotId = parseInt(deleteMatch[1], 10);
-    const db = readDb();
-
-    let deleted = false;
-    for (const room of db.reservation) {
-      const slotIndex = room.slots.findIndex((s) => s.id === slotId);
-      if (slotIndex !== -1) {
-        room.slots.splice(slotIndex, 1);
-        deleted = true;
-        break;
-      }
-    }
-
-    if (deleted) {
-      writeDb(db);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true }));
-    } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Slot not found' }));
-    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({}));
     return;
   }
 
-  // 404 for other routes
   res.writeHead(404, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: 'Not found' }));
 });
 
 server.listen(PORT, () => {
   console.log(`Mock server running at http://localhost:${PORT}`);
-  console.log('Endpoints:');
-  console.log('  GET    /reservation      - Get all rooms with slots');
-  console.log('  POST   /reservation      - Create a new slot (body: { roomId, startTime, endTime })');
-  console.log('  DELETE /reservation/:id  - Delete a slot by ID');
+  console.log('GET /reservation?start=YYYY-MM-DD returns mock data for that week');
 });

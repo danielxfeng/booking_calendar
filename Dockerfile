@@ -16,12 +16,10 @@ COPY . .
 # Accept build arguments for environment variables
 ARG SENTRY_DSN
 ARG VITE_API_URL
-ARG VITE_IS_AUTH
 
 # Set environment variables for build
 ENV SENTRY_DSN=${SENTRY_DSN}
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_IS_AUTH=${VITE_IS_AUTH}
 
 # Build the application
 RUN npm run build

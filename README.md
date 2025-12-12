@@ -64,22 +64,12 @@ At Hive Helsinki, students need to request room bookings from staff members, cre
    npm install
    ```
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.sample .env
-   ```
-   
-   Update the `.env` file with your backend API URL:
-   ```env
-   VITE_API_URL=http://localhost:8080
-   ```
-
-4. **Start the development server**
+3. **Start the development server**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
+4. **Open your browser**
    Navigate to `http://localhost:5173` to see the application
 
 <br>

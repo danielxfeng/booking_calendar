@@ -4,14 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run mock:server\" \"vite\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "mock:generate": "tsx scripts/generate-mock-data.ts",
-    "mock:server": "tsx scripts/mock-server.ts",
-    "mock:dev": "npm run mock:generate && npm run mock:server"
+    "mock:server": "tsx scripts/mock-server.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -56,6 +54,7 @@
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react": "^7.37.5",
@@ -64,7 +63,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^16.0.0",
     "jsdom": "^27.0.0",
-    "json-server": "^1.0.0-beta.3",
     "prettier": "^3.6.0",
     "prettier-plugin-tailwindcss": "^0.7.0",
     "tsx": "^4.21.0",
@@ -72,7 +70,6 @@
     "typescript": "~5.9.0",
     "typescript-eslint": "^8.30.1",
     "vite": "^7.0.0",
-    "vite-plugin-mock": "^3.0.2",
     "vitest": "^4.0.0"
   }
 }

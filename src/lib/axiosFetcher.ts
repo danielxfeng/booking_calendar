@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
+import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT, IS_DEV } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
 
 const RedirectingMsg = 'No token, redirecting.';
@@ -11,7 +11,7 @@ const axiosFetcher = axios.create({
 });
 
 axiosFetcher.interceptors.request.use((config) => {
-  if (import.meta.env.VITE_IS_AUTH === 'false') return config;
+  if (IS_DEV) return config;
 
   const token = getUser()?.token;
   if (!token) {

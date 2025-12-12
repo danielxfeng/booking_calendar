@@ -1,11 +1,15 @@
 import { ThrowInternalError } from './lib/errorHandler';
 
+const IS_DEV: boolean = import.meta.env.DEV;
+
 type RoomProp = { id: number; name: string; color: string };
 
-const ROOM_MAP: RoomProp[] = [
-  //{ id: 1, name: 'Big', color: 'bg-blue-300 border-blue-400' },
-  { id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' },
-];
+const ROOM_MAP: RoomProp[] = IS_DEV
+  ? [
+      { id: 1, name: 'Big', color: 'bg-blue-300 border-blue-400' },
+      { id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' },
+    ]
+  : [{ id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' }];
 
 /**
  * summary Background color for current user.
@@ -39,7 +43,7 @@ const getOpenHoursIdx = (time: string): number => {
  */
 const OPEN_HOURS_IDX = [getOpenHoursIdx(OPEN_HOURS[0]), getOpenHoursIdx(OPEN_HOURS[1])];
 
-const API_URL: string = import.meta.env.VITE_API_URL || '';
+const API_URL: string = IS_DEV ? 'http://localhost:3001' : import.meta.env.VITE_API_URL || '';
 
 const ENDPOINT_AUTH: string = 'oauth/login';
 
@@ -66,6 +70,7 @@ export {
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
+  IS_DEV,
   LONGEST_STUDENT_MEETING,
   OPEN_HOURS_IDX,
   ROOM_MAP,
