@@ -11,7 +11,7 @@ const axiosFetcher = axios.create({
 });
 
 axiosFetcher.interceptors.request.use((config) => {
-  if (import.meta.env.VITE_IS_AUTH === 'false') return config;
+  if (!import.meta.env.PROD) return config;
 
   const token = getUser()?.token;
   if (!token) {
