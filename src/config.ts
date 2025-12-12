@@ -43,7 +43,7 @@ const getOpenHoursIdx = (time: string): number => {
  */
 const OPEN_HOURS_IDX = [getOpenHoursIdx(OPEN_HOURS[0]), getOpenHoursIdx(OPEN_HOURS[1])];
 
-const API_URL: string = IS_PROD ? 'http://localhost:3001' : import.meta.env.VITE_API_URL || '';
+const API_URL: string = !IS_PROD ? 'http://localhost:3001' : import.meta.env.VITE_API_URL || '';
 
 const ENDPOINT_AUTH: string = 'oauth/login';
 

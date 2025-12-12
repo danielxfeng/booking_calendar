@@ -32,6 +32,9 @@ dist-ssr
 # Testing
 coverage
 .nyc_output
+e2e
+playwright-report
+test-results
 
 # Misc
 *.md

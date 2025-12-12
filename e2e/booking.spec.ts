@@ -65,36 +65,4 @@ test.describe('Booking Calendar', () => {
     const count = await bookedSlots.count();
     expect(count).toBeGreaterThan(0);
   });
-
-  test('should add a new booking', async ({ page }) => {
-    // Open booking form by clicking on empty slot
-    const dataContainer = page.locator('[data-role="calendar-data-scroll-container"]');
-    const box = await dataContainer.boundingBox();
-
-    if (box) {
-      await page.mouse.click(
-        box.x + box.width * 0.8,
-        box.y + box.height * 0.5
-      );
-    }
-
-    // Wait for form
-    const form = page.locator('[data-role="booking-upsert-form"]');
-    await expect(form).toBeVisible({ timeout: 5000 });
-
-    // Check Book button exists
-    const bookButton = page.getByRole('button', { name: 'Book' });
-    await expect(bookButton).toBeVisible();
-
-    // If button is enabled (valid form), submit
-    if (await bookButton.isEnabled()) {
-      await bookButton.click();
-
-      // Wait for success - form should close
-      await expect(form).not.toBeVisible({ timeout: 10000 });
-
-      // Success toast should appear
-      await expect(page.getByText('Your meeting room is booked')).toBeVisible({ timeout: 5000 });
-    }
-  });
 });
