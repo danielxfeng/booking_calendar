@@ -1,5 +1,5 @@
 # Test Stage
-FROM node:24-alpine AS test
+FROM node:24-slim AS test
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm run test
 RUN npm run test:e2e
 
 # Build stage
-FROM node:24-alpine AS builder
+FROM node:24-slim AS builder
 
 # Set working directory
 WORKDIR /app
