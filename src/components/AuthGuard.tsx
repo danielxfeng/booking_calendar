@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 
 import Loading from '@/components/Loading';
-import { API_URL, ENDPOINT_AUTH, IS_DEV } from '@/config';
+import { API_URL, ENDPOINT_AUTH, IS_PROD } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
 
 interface AuthGuardProps {
@@ -16,7 +16,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      if (IS_DEV) {
+      if (!IS_PROD) {
         setIsAuthenticated(true);
         setIsCheckingAuth(false);
         return;

@@ -1,10 +1,10 @@
 import { ThrowInternalError } from './lib/errorHandler';
 
-const IS_DEV: boolean = import.meta.env.DEV;
+const IS_PROD: boolean = import.meta.env.PROD;
 
 type RoomProp = { id: number; name: string; color: string };
 
-const ROOM_MAP: RoomProp[] = IS_DEV
+const ROOM_MAP: RoomProp[] = !IS_PROD
   ? [
       { id: 1, name: 'Big', color: 'bg-blue-300 border-blue-400' },
       { id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' },
@@ -43,7 +43,7 @@ const getOpenHoursIdx = (time: string): number => {
  */
 const OPEN_HOURS_IDX = [getOpenHoursIdx(OPEN_HOURS[0]), getOpenHoursIdx(OPEN_HOURS[1])];
 
-const API_URL: string = IS_DEV ? 'http://localhost:3001' : import.meta.env.VITE_API_URL || '';
+const API_URL: string = IS_PROD ? 'http://localhost:3001' : import.meta.env.VITE_API_URL || '';
 
 const ENDPOINT_AUTH: string = 'oauth/login';
 
@@ -70,7 +70,7 @@ export {
   ENDPOINT_AUTH,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
-  IS_DEV,
+  IS_PROD,
   LONGEST_STUDENT_MEETING,
   OPEN_HOURS_IDX,
   ROOM_MAP,
