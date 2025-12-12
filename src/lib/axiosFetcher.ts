@@ -11,7 +11,7 @@ const axiosFetcher = axios.create({
 });
 
 axiosFetcher.interceptors.request.use((config) => {
-  if (!import.meta.env.PROD) return config;
+  if (import.meta.env.MODE !== 'production') return config;
 
   const token = getUser()?.token;
   if (!token) {

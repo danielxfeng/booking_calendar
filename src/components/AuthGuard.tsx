@@ -16,7 +16,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      if (!import.meta.env.PROD) {
+      if (import.meta.env.MODE !== 'production') {
         setIsAuthenticated(true);
         setIsCheckingAuth(false);
         return;

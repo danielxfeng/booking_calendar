@@ -10,7 +10,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
     viteMockServe({
-      // default
       mockPath: 'mock',
       enable: true,
       watchFiles: true,
