@@ -39,7 +39,10 @@ const getOpenHoursIdx = (time: string): number => {
  */
 const OPEN_HOURS_IDX = [getOpenHoursIdx(OPEN_HOURS[0]), getOpenHoursIdx(OPEN_HOURS[1])];
 
-const API_URL: string = import.meta.env.VITE_API_URL || '';
+const API_URL: string =
+  import.meta.env.MODE === 'production'
+    ? import.meta.env.VITE_API_URL || ''
+    : import.meta.env.VITE_API_URL_NO_PROD || '';
 
 const ENDPOINT_AUTH: string = 'oauth/login';
 

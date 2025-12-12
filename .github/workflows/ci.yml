@@ -9,17 +9,7 @@ jobs:
   ci-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: latest
-
-      - name: Install
-        run: npm ci
-
-      - name: Run tests
-        run: npm run test
-
+      - name: Build Docker test stage
+        run: docker build --target test .

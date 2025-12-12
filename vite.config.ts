@@ -1,8 +1,8 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vite';
 import { viteMockServe } from 'vite-plugin-mock';
+import { defineConfig } from 'vitest/config';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,7 +10,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
     viteMockServe({
-      // default
       mockPath: 'mock',
       enable: true,
       watchFiles: true,
@@ -20,5 +19,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  test: {
+    exclude: ['e2e/**', 'node_modules/**'],
   },
 });
