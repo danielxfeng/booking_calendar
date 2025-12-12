@@ -1,3 +1,19 @@
+# Test Stage
+FROM node:24-alpine AS test
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npx playwright install --with-deps chromium
+
+ENV CI=true
+RUN npm run test
+RUN npm run test:e2e
+
 # Build stage
 FROM node:24-alpine AS builder
 
