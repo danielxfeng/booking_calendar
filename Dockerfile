@@ -1,5 +1,21 @@
+# Test Stage
+FROM node:24-slim AS test
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npx playwright install --with-deps chromium
+
+ENV CI=true
+RUN npm run test
+RUN npm run test:e2e
+
 # Build stage
-FROM node:24-alpine AS builder
+FROM node:24-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -16,12 +32,10 @@ COPY . .
 # Accept build arguments for environment variables
 ARG SENTRY_DSN
 ARG VITE_API_URL
-ARG VITE_IS_AUTH
 
 # Set environment variables for build
 ENV SENTRY_DSN=${SENTRY_DSN}
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_IS_AUTH=${VITE_IS_AUTH}
 
 # Build the application
 RUN npm run build
