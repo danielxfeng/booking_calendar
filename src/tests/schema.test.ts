@@ -325,7 +325,7 @@ describe('UpsertBookingSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('fails if start is in the past', () => {
+  it('allows past dates in UpsertBookingSchema (role-based check is in EnhancedFactory)', () => {
     const start = addDays(safeStart, -2); // past
     const end = addMinutes(start, 30);
 
@@ -333,10 +333,9 @@ describe('UpsertBookingSchema', () => {
       roomId: 2,
       start: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
       end: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
-      bookedBy: 'bob',
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it('fails if start and end are not on the same day', () => {
@@ -569,5 +568,81 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
 
     expect(result.success).toBe(false);
     expect(result.error?.issues[0].message).toContain('overlaps');
+  });
+
+  it('fails for student booking in the past', () => {
+    const student = { role: 'student' as const };
+    const start = addDays(set(new Date(), { hours: 10, minutes: 0 }), -1); // yesterday
+    const end = addHours(start, 1);
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(student, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].message).toContain('Start time must be in future');
+  });
+
+  it('passes for staff booking in the past', () => {
+    const staff = { role: 'staff' as const };
+    const start = addDays(set(new Date(), { hours: 10, minutes: 0 }), -1); // yesterday
+    const end = addHours(start, 1);
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(staff, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('passes for staff booking with very long duration', () => {
+    const staff = { role: 'staff' as const };
+    const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
+    const end = addHours(start, 8); // 8 hours, exceeds student limit
+
+    const bookings: WeekBookings = [
+      {
+        1: {
+          roomId: 1,
+          roomName: 'small',
+          slots: [],
+        },
+      },
+    ];
+
+    const schema = EnhancedUpsertBookingSchemaFactory(staff, bookings);
+    const result = schema.safeParse({
+      roomId: 1,
+      start: formatToDateTime(start),
+      end: formatToDateTime(end),
+    });
+
+    expect(result.success).toBe(true);
   });
 });
