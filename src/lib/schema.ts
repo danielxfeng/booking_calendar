@@ -83,10 +83,7 @@ const DateSchema = z.iso.date();
 const UpsertBookingSchema = z
   .object({
     roomId: z.int(),
-    start: dateTimeSchema.refine((value) => laterThanNowCheck(value), {
-      message: 'Start time must be in future',
-      path: ['start'],
-    }),
+    start: dateTimeSchema,
     end: dateTimeSchema,
   })
   .strict()
@@ -135,6 +132,16 @@ const EnhancedUpsertBookingSchemaFactory = (user: User | null, bookings: WeekBoo
     const { start, end, roomId } = ctx.value;
     const startDate = new Date(start);
     const endDate = new Date(end);
+
+    // Students must book at least 15 minutes in the future, staff can book anytime
+    if (user.role === 'student' && !laterThanNowCheck(start)) {
+      ctx.issues.push({
+        code: 'custom',
+        message: 'Start time must be in future',
+        input: ctx.value,
+        path: ['start'],
+      });
+    }
 
     if (!overlappingCheck(startDate, endDate, roomId, bookings)) {
       ctx.issues.push({
