@@ -572,7 +572,7 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
 
   it('fails for student booking in the past', () => {
     const student = { role: 'student' as const };
-    const start = addDays(set(new Date(), { hours: 10, minutes: 0 }), -1); // yesterday
+    const start = set(new Date('2026-03-02T00:00:00'), { hours: 10, minutes: 0 }); // fixed Monday in the past
     const end = addHours(start, 1);
 
     const bookings: WeekBookings = [
@@ -598,7 +598,7 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
 
   it('passes for staff booking in the past', () => {
     const staff = { role: 'staff' as const };
-    const start = addDays(set(new Date(), { hours: 10, minutes: 0 }), -1); // yesterday
+    const start = set(new Date('2026-03-02T00:00:00'), { hours: 10, minutes: 0 }); // fixed Monday in the past
     const end = addHours(start, 1);
 
     const bookings: WeekBookings = [
