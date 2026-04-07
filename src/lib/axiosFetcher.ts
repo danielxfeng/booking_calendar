@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { API_URL, ENDPOINT_AUTH, FETCHER_TIMEOUT } from '@/config';
+import { API_URL, FETCHER_TIMEOUT } from '@/config';
 import { getUser, setUser } from '@/lib/userStore';
 
 const RedirectingMsg = 'No token, redirecting.';
@@ -15,7 +15,7 @@ axiosFetcher.interceptors.request.use((config) => {
 
   const token = getUser()?.token;
   if (!token) {
-    window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
+    window.location.replace('/');
     return Promise.reject(new axios.Cancel(RedirectingMsg));
   }
   config.headers.Authorization = `Bearer ${token}`;
@@ -31,8 +31,8 @@ axiosFetcher.interceptors.response.use(
       error.response?.status === 498
     ) {
       setUser(null);
-      window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
-      return Promise.reject(new axios.Cancel('No token, redirecting.'));
+      window.location.replace('/');
+      return Promise.reject(new axios.Cancel(RedirectingMsg));
     }
     return Promise.reject(error);
   },

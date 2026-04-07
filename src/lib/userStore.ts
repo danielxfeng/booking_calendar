@@ -1,20 +1,21 @@
+import { createStore } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
+
 type User = {
   token: string;
   intra: string | null;
   role: 'student' | 'staff' | null;
 };
 
-let user: User | null = null;
+const userAtom = atomWithStorage<User | null>('user', null);
+const store = createStore();
 
-const getUser = (): User | null => {
-  return user;
+const getUser = (): User | null => store.get(userAtom);
+
+const setUser = (user: User | null): void => {
+  store.set(userAtom, user);
 };
 
-const setUser = (newUser: User | null): void => {
-  if (newUser) user = newUser;
-  else user = null;
-};
-
-export { getUser, setUser };
+export { getUser, setUser, userAtom };
 
 export type { User };

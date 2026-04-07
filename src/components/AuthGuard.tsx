@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
+import { useAtomValue, useSetAtom } from 'jotai';
 
-import Loading from '@/components/Loading';
 import { API_URL, ENDPOINT_AUTH } from '@/config';
-import { getUser, setUser } from '@/lib/userStore';
+import { userAtom } from '@/lib/userStore';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -11,68 +11,32 @@ interface AuthGuardProps {
 
 const AuthGuard = ({ children }: AuthGuardProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const user = useAtomValue(userAtom);
+  const setUser = useSetAtom(userAtom);
+  const token = searchParams.get('token');
 
   useEffect(() => {
-    const checkAuthentication = async () => {
-      if (import.meta.env.MODE !== 'production') {
-        setIsAuthenticated(true);
-        setIsCheckingAuth(false);
-        return;
-      }
+    const errFromBackend = searchParams.get('err');
+    if (errFromBackend || !token) return;
 
-      const errFromBackend = searchParams.get('err');
-      if (errFromBackend) {
-        setIsCheckingAuth(false);
-        return;
-      }
+    const intra = searchParams.get('intra');
+    const rawRole = searchParams.get('role');
+    const role = rawRole === 'student' || rawRole === 'staff' ? rawRole : null;
 
-      const token = searchParams.get('token');
-      if (token) {
-        const intra = searchParams.get('intra');
-        const rawRole = searchParams.get('role');
-        const role = rawRole === 'student' || rawRole === 'staff' ? rawRole : null;
-        
-        setUser({ token, intra, role });
-        setIsAuthenticated(true);
-        setIsCheckingAuth(false);
-        
-        const nextParams = new URLSearchParams(searchParams);
-        nextParams.delete('token');
-        nextParams.delete('intra');
-        nextParams.delete('role');
-        setSearchParams(nextParams, { replace: true });
-        return;
-      }
+    setUser({ token, intra, role });
 
-      const existingUser = getUser();
-      if (existingUser?.token) {
-        setIsAuthenticated(true);
-        setIsCheckingAuth(false);
-        return;
-      }
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('token');
+    nextParams.delete('intra');
+    nextParams.delete('role');
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams, setUser, token]);
 
-      window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`);
-    };
-
-    checkAuthentication();
-  }, [searchParams, setSearchParams]);
-
-  if (isCheckingAuth) {
-    return (
-      <div className='flex h-screen w-full flex-col items-center justify-center bg-background'>
-        <div className='flex flex-col items-center space-y-4'>
-          <Loading />
-          <p className='text-muted-foreground animate-pulse'>Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
+  const isAuthenticated = !!token || !!user?.token;
 
   if (!isAuthenticated) {
     return (
-      <div className='flex h-[100dvh] w-full flex-col items-center justify-center bg-background px-4'>
+      <div className='flex h-dvh w-full flex-col items-center justify-center bg-background px-4'>
         <div className='text-center space-y-6 max-w-md'>
           <div className='space-y-2'>
             <h1 className='text-4xl font-bold text-foreground'>Authentication Required</h1>
