@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { useAtomValue, useSetAtom } from 'jotai';
 
-import { API_URL, ENDPOINT_AUTH } from '@/config';
+import { API_URL, endpoint_auth } from '@/config';
 import { userAtom } from '@/lib/userStore';
+
+import { Button } from './ui/button';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -36,20 +38,24 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   if (!isAuthenticated) {
     return (
-      <div className='flex h-dvh w-full flex-col items-center justify-center bg-background px-4'>
-        <div className='text-center space-y-6 max-w-md'>
-          <div className='space-y-2'>
-            <h1 className='text-4xl font-bold text-foreground'>Authentication Required</h1>
-            <p className='text-muted-foreground'>
-              You need to be authenticated to access the booking calendar.
-            </p>
-          </div>
-          <button
-            onClick={() => window.location.replace(`${API_URL}/${ENDPOINT_AUTH}`)}
-            className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 hover:scale-105 hover:shadow-lg h-9 px-4 py-2'
+      <div className='bg-background flex h-dvh w-full flex-col items-center justify-center gap-12 px-4'>
+        <div className='flex flex-col items-center gap-4 text-center'>
+          <h1 className='text-foreground text-4xl font-bold'>Bookme</h1>
+          <p className='text-muted-foreground'>Please sign in to access the booking calendar.</p>
+        </div>
+        <div className='flex flex-col items-center gap-4 lg:flex-row'>
+          <Button
+            className='w-full lg:w-1/2'
+            onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('42')}`)}
           >
-            Sign In
-          </button>
+            Sign In with 42 Intra
+          </Button>
+          <Button
+            className='w-full lg:w-1/2'
+            onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('keycloak')}`)}
+          >
+            Sign In with Keycloak
+          </Button>
         </div>
       </div>
     );
