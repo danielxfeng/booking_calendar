@@ -57,31 +57,33 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
             <img
               src='/hive-logo-dark.svg'
               alt='Hive Helsinki'
-              className='h-5 w-auto dark:hidden sm:h-6'
+              className='h-5 w-auto sm:h-6 dark:hidden'
             />
             <img
               src='/hive-logo-light.svg'
               alt='Hive Helsinki'
-              className='hidden h-5 w-auto dark:block sm:h-6'
+              className='hidden h-5 w-auto sm:h-6 dark:block'
             />
           </div>
         </div>
         <div
           className={`flex flex-col items-center gap-4 transition-all duration-300 lg:flex-row ${
-            showButtons ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
+            showButtons
+              ? 'translate-y-0 opacity-100'
+              : 'pointer-events-none translate-y-3 opacity-0'
           }`}
         >
           <Button
             className='w-full lg:w-1/2'
             onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('42')}`)}
           >
-            Sign In with 42 Intra
+            Sign In with 42
           </Button>
           <Button
             className='w-full lg:w-1/2'
             onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('keycloak')}`)}
           >
-            Sign In with Keycloak
+            Sign In with Hive ID
           </Button>
         </div>
       </div>
