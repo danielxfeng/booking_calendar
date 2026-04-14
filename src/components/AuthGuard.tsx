@@ -50,7 +50,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
           </h1>
           <div
             className={`transition-opacity duration-300 ${
-              showHiveLogo ? 'opacity-70' : 'opacity-0'
+              showHiveLogo ? 'opacity-100' : 'opacity-0'
             }`}
             onTransitionEnd={() => setShowButtons(true)}
           >
@@ -67,7 +67,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
           </div>
         </div>
         <div
-          className={`flex flex-col items-center gap-4 transition-all duration-300 lg:flex-row ${
+          className={`flex flex-col items-center gap-6 transition-all duration-300 lg:flex-row ${
             showButtons
               ? 'translate-y-0 opacity-100'
               : 'pointer-events-none translate-y-3 opacity-0'
@@ -77,13 +77,13 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
             className='w-full lg:w-1/2'
             onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('42')}`)}
           >
-            Sign In with 42
+            Login with 42
           </Button>
           <Button
             className='w-full lg:w-1/2'
             onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('keycloak')}`)}
           >
-            Sign In with Hive ID
+            Login with Hive ID
           </Button>
         </div>
       </div>
