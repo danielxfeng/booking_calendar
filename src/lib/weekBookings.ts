@@ -2,8 +2,8 @@ import { type Day, differenceInCalendarDays } from 'date-fns';
 
 import { ROOM_MAP } from '@/config';
 import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
-import { type Room, type Rooms, RoomsSchema } from '@/lib/schema';
-import { newDate } from '@/lib/tools';
+import { type Room, type Rooms, RoomsIsoTimeSchema, RoomsSchema } from '@/lib/schema';
+import { isoTimeRoomsToLocalTimeRooms, newDate } from '@/lib/tools';
 
 /**
  * @summary main data structure of this application.
@@ -22,7 +22,12 @@ const newWeekBookings = (): WeekBookings => {
 };
 
 const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
-  const validatedRooms = RoomsSchema.safeParse(rooms);
+  const validatedIsoTimeRooms = RoomsIsoTimeSchema.safeParse(rooms);
+  if (!validatedIsoTimeRooms.success)
+    ThrowInvalidIncomingDataErr(JSON.stringify(validatedIsoTimeRooms.error));
+  const isoTimeRooms = validatedIsoTimeRooms.data!;
+  const localTimeRooms: Rooms = isoTimeRoomsToLocalTimeRooms(isoTimeRooms);
+  const validatedRooms = RoomsSchema.safeParse(localTimeRooms);
   if (!validatedRooms.success) ThrowInvalidIncomingDataErr(JSON.stringify(validatedRooms.error));
   const data = validatedRooms.data!;
 

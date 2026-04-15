@@ -51,6 +51,14 @@ const dateTimeSchema = z.iso
     message: `Time must align to ${TIME_SLOT_INTERVAL}-minute slots, and within open hours.`,
   });
 
+// The backend switched to ISO format suddenly, so we add a transform layer to avoid breaking the frontend.
+const BookingFromApiIsoTimeSchema = z.object({
+  id: z.int(),
+  start: z.iso.datetime(),
+  end: z.iso.datetime(),
+  bookedBy: z.string().nullable(),
+});
+
 const BookingFromApiSchema = z
   .object({
     id: z.int().positive(),
@@ -70,15 +78,29 @@ const BookingFromApiSchema = z
 
 const BookingsFromApiSchema = z.array(BookingFromApiSchema);
 
+const RoomIsoTimeSchema = z.object({
+  roomId: z.int(),
+  roomName: z.string().trim().min(1),
+  slots: z.array(BookingFromApiIsoTimeSchema),
+});
+
 const RoomSchema = z.object({
   roomId: z.int(),
   roomName: z.string().trim().min(1),
-  slots: BookingsFromApiSchema,
+  slots: z.array(BookingFromApiSchema),
 });
 
 const RoomsSchema = z.array(RoomSchema);
 
+const RoomsIsoTimeSchema = z.array(RoomIsoTimeSchema);
+
 const DateSchema = z.iso.date();
+
+const UpsertBookingIsoTimeSchema = z.object({
+  roomId: z.int(),
+  start: z.iso.datetime(),
+  end: z.iso.datetime(),
+});
 
 const UpsertBookingSchema = z
   .object({
@@ -164,19 +186,25 @@ const EnhancedUpsertBookingSchemaFactory = (user: User | null, bookings: WeekBoo
 };
 
 export {
+  BookingFromApiIsoTimeSchema,
   BookingFromApiSchema,
   BookingsFromApiSchema,
   DateSchema,
   EnhancedUpsertBookingSchemaFactory,
-  RoomSchema,
+  RoomIsoTimeSchema,
+  RoomsIsoTimeSchema,
   RoomsSchema,
+  UpsertBookingIsoTimeSchema,
   UpsertBookingSchema,
 };
 
+type BookingFromApiIsoTime = z.infer<typeof BookingFromApiIsoTimeSchema>;
+type UpsertBookingIsoTime = z.infer<typeof UpsertBookingIsoTimeSchema>;
 type BookingFromApi = z.infer<typeof BookingFromApiSchema>;
 type BookingsFromApi = z.infer<typeof BookingsFromApiSchema>;
-type Room = z.infer<typeof RoomSchema>;
+type Room = z.infer<typeof RoomIsoTimeSchema>;
 type Rooms = z.infer<typeof RoomsSchema>;
+type RoomsIsoTime = z.infer<typeof RoomsIsoTimeSchema>;
 type UpsertBooking = z.infer<typeof UpsertBookingSchema>;
 
-export type { BookingFromApi, BookingsFromApi, Room, Rooms, UpsertBooking };
+export type { BookingFromApi, BookingFromApiIsoTime, BookingsFromApi, Room, Rooms, RoomsIsoTime, UpsertBooking, UpsertBookingIsoTime };

@@ -1,7 +1,16 @@
-import { addHours, format, isBefore, startOfDay } from 'date-fns';
 import type { CSSProperties } from 'react';
+import { addHours, format, isBefore, startOfDay } from 'date-fns';
 
 import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+
+import type {
+  BookingFromApi,
+  BookingFromApiIsoTime,
+  Rooms,
+  RoomsIsoTime,
+  UpsertBooking,
+  UpsertBookingIsoTime,
+} from './schema';
 
 /**
  * @summary Returns a local time format of date
@@ -99,12 +108,40 @@ const rowsArr = Array.from(
   (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
 );
 
+const isoTimeRoomsToLocalTimeRooms = (rooms: RoomsIsoTime): Rooms => {
+  return rooms.map((room) => ({
+    roomId: room.roomId,
+    roomName: room.roomName,
+    slots: room.slots.map((slot) => isoTimeApiToLocalTimeApi(slot)),
+  }));
+};
+
+const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromApi => {
+  return {
+    id: booking.id,
+    start: formatToDateTime(new Date(booking.start)),
+    end: formatToDateTime(new Date(booking.end)),
+    bookedBy: booking.bookedBy,
+  };
+};
+
+const localTimeUpsertToIsoTimeUpsert = (booking: UpsertBooking): UpsertBookingIsoTime => {
+  return {
+    roomId: booking.roomId,
+    start: new Date(booking.start).toISOString(),
+    end: new Date(booking.end).toISOString(),
+  };
+};
+
 export {
   changeDate,
   formatToDate,
   formatToDateTime,
   gridStyleGenerator,
+  isoTimeApiToLocalTimeApi,
+  isoTimeRoomsToLocalTimeRooms,
   isPast,
+  localTimeUpsertToIsoTimeUpsert,
   newDate,
   rowsArr,
   slotsInAHour,

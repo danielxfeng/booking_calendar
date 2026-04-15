@@ -1,9 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addDays, differenceInCalendarDays } from 'date-fns';
 import { useAtomValue, useSetAtom, useStore } from 'jotai';
-import { useEffect, useMemo, useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { API_URL, ENDPOINT_SLOTS } from '@/config';
@@ -13,7 +13,7 @@ import { calculateSlots, initForm, parseErrorMsg } from '@/lib/bookingFormUtils'
 import { ThrowInternalError } from '@/lib/errorHandler';
 import type { BookingFromApi, UpsertBooking } from '@/lib/schema';
 import { EnhancedUpsertBookingSchemaFactory } from '@/lib/schema';
-import { newDate } from '@/lib/tools';
+import { localTimeUpsertToIsoTimeUpsert, newDate } from '@/lib/tools';
 import { getUser } from '@/lib/userStore';
 
 type FormType = 'view' | 'insert' | 'update';
@@ -103,11 +103,7 @@ const useBookingForm = (formProp: Exclude<FormProp, null>) => {
 
   const upsertMutation = useMutation({
     mutationFn: (data: UpsertBooking) =>
-      axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, {
-        roomId: data.roomId,
-        startTime: data.start,
-        endTime: data.end,
-      }),
+      axiosFetcher.post(`${API_URL}/${ENDPOINT_SLOTS}`, localTimeUpsertToIsoTimeUpsert(data)),
     onSuccess: () => {
       handleSuccess(start, 'Cool! Your meeting room is booked.');
     },
