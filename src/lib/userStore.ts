@@ -1,4 +1,4 @@
-import { createStore } from 'jotai';
+import { getDefaultStore } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
 type User = {
@@ -8,7 +8,7 @@ type User = {
 };
 
 const userAtom = atomWithStorage<User | null>('user', null);
-const store = createStore();
+const store = getDefaultStore()
 
 const getUser = (): User | null => store.get(userAtom);
 

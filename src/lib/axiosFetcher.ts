@@ -11,13 +11,12 @@ const axiosFetcher = axios.create({
 });
 
 axiosFetcher.interceptors.request.use((config) => {
-  if (import.meta.env.MODE !== 'production') return config;
-
   const token = getUser()?.token;
   if (!token) {
     window.location.replace('/');
     return Promise.reject(new axios.Cancel(RedirectingMsg));
   }
+
   config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
