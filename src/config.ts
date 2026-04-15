@@ -26,6 +26,11 @@ if (60 % TIME_SLOT_INTERVAL !== 0)
  */
 const OPEN_HOURS: [string, string] = ['06:00', '21:00'];
 
+/**
+ * Booking times are anchored to the venue's local clock, not the viewer's browser timezone.
+ */
+const BOOKING_TIME_ZONE = 'Europe/Helsinki';
+
 const getOpenHoursIdx = (time: string): number => {
   const [hour, minute] = time.split(':').map(Number);
   const minutes = hour * 60 + minute;
@@ -59,6 +64,7 @@ const CELL_HEIGHT_PX: number = 88; // 24px
 
 export {
   API_URL,
+  BOOKING_TIME_ZONE,
   CACHE_DURATION,
   CELL_HEIGHT_PX,
   CELL_WIDTH_PX,

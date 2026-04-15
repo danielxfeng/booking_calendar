@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
 import { addHours, format, isBefore, startOfDay } from 'date-fns';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 
-import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { BOOKING_TIME_ZONE, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
 
 import type {
   BookingFromApi,
@@ -119,8 +120,8 @@ const isoTimeRoomsToLocalTimeRooms = (rooms: RoomsIsoTime): Rooms => {
 const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromApi => {
   return {
     id: booking.id,
-    start: formatToDateTime(new Date(booking.start)),
-    end: formatToDateTime(new Date(booking.end)),
+    start: formatInTimeZone(new Date(booking.start), BOOKING_TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
+    end: formatInTimeZone(new Date(booking.end), BOOKING_TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
     bookedBy: booking.bookedBy,
   };
 };
@@ -128,8 +129,8 @@ const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromAp
 const localTimeUpsertToIsoTimeUpsert = (booking: UpsertBooking): UpsertBookingIsoTime => {
   return {
     roomId: booking.roomId,
-    start: new Date(booking.start).toISOString(),
-    end: new Date(booking.end).toISOString(),
+    start: fromZonedTime(booking.start, BOOKING_TIME_ZONE).toISOString(),
+    end: fromZonedTime(booking.end, BOOKING_TIME_ZONE).toISOString(),
   };
 };
 
