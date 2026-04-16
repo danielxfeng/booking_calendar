@@ -1,11 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { addMinutes, format, parseISO } from 'date-fns';
-
-const formatLocal = (date: Date): string => format(date, "yyyy-MM-dd'T'HH:mm:ss");
+import { addMinutes } from 'date-fns';
 
 // Generate mock data similar to mock/test.ts
 const generateMockData = (start: string) => {
-  const base = parseISO(start);
+  const base = new Date(`${start}T00:00:00.000Z`);
   return [
     {
       roomId: 2,
@@ -13,8 +11,8 @@ const generateMockData = (start: string) => {
       slots: [
         {
           id: 1,
-          start: formatLocal(addMinutes(base, 720)), // 12:00
-          end: formatLocal(addMinutes(base, 750)), // 12:30
+          startTime: addMinutes(base, 720).toISOString(), // 12:00 UTC
+          endTime: addMinutes(base, 750).toISOString(), // 12:30 UTC
           bookedBy: null,
         },
       ],
