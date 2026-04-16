@@ -129,8 +129,16 @@ const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromAp
 const localTimeUpsertToIsoTimeUpsert = (booking: UpsertBooking): UpsertBookingIsoTime => {
   return {
     roomId: booking.roomId,
-    start: fromZonedTime(booking.start, BOOKING_TIME_ZONE).toISOString(),
-    end: fromZonedTime(booking.end, BOOKING_TIME_ZONE).toISOString(),
+    start: formatInTimeZone(
+      fromZonedTime(booking.start, BOOKING_TIME_ZONE),
+      'UTC',
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    ),
+    end: formatInTimeZone(
+      fromZonedTime(booking.end, BOOKING_TIME_ZONE),
+      'UTC',
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    ),
   };
 };
 

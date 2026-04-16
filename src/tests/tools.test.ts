@@ -57,8 +57,8 @@ describe('booking timezone conversion', () => {
       }),
     ).toEqual({
       roomId: 2,
-      start: '2025-01-15T08:00:00.000Z',
-      end: '2025-01-15T09:00:00.000Z',
+      start: '2025-01-15T08:00:00Z',
+      end: '2025-01-15T09:00:00Z',
     });
   });
 
@@ -71,8 +71,8 @@ describe('booking timezone conversion', () => {
       }),
     ).toEqual({
       roomId: 2,
-      start: '2025-07-15T07:00:00.000Z',
-      end: '2025-07-15T08:00:00.000Z',
+      start: '2025-07-15T07:00:00Z',
+      end: '2025-07-15T08:00:00Z',
     });
   });
 
@@ -86,8 +86,8 @@ describe('booking timezone conversion', () => {
 
     expect(localTimeUpsertToIsoTimeUpsert({ ...localBooking, roomId: 2 })).toEqual({
       roomId: 2,
-      start: '2025-01-15T08:00:00.000Z',
-      end: '2025-01-15T09:00:00.000Z',
+      start: '2025-01-15T08:00:00Z',
+      end: '2025-01-15T09:00:00Z',
     });
   });
 });
