@@ -34,7 +34,7 @@ test.describe('App', () => {
       });
     });
 
-    await page.goto('/');
+    await page.goto('/?token=e2e-token&intra=e2e-user&role=staff');
 
     // Should see the calendar view with header
     await expect(page.getByRole('heading', { name: 'Bookme' })).toBeVisible();
