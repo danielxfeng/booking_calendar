@@ -20,14 +20,14 @@ describe('booking timezone conversion', () => {
     expect(
       isoTimeApiToLocalTimeApi({
         id: 1,
-        start: '2025-01-15T08:00:00.000Z',
-        end: '2025-01-15T09:00:00.000Z',
+        startTime: '2025-01-15T08:00:00.000Z',
+        endTime: '2025-01-15T09:00:00.000Z',
         bookedBy: 'user',
       }),
     ).toEqual({
       id: 1,
-      start: '2025-01-15T10:00:00',
-      end: '2025-01-15T11:00:00',
+      startTime: '2025-01-15T10:00:00',
+      endTime: '2025-01-15T11:00:00',
       bookedBy: 'user',
     });
   });
@@ -36,14 +36,14 @@ describe('booking timezone conversion', () => {
     expect(
       isoTimeApiToLocalTimeApi({
         id: 1,
-        start: '2025-07-15T07:00:00.000Z',
-        end: '2025-07-15T08:00:00.000Z',
+        startTime: '2025-07-15T07:00:00.000Z',
+        endTime: '2025-07-15T08:00:00.000Z',
         bookedBy: 'user',
       }),
     ).toEqual({
       id: 1,
-      start: '2025-07-15T10:00:00',
-      end: '2025-07-15T11:00:00',
+      startTime: '2025-07-15T10:00:00',
+      endTime: '2025-07-15T11:00:00',
       bookedBy: 'user',
     });
   });
@@ -52,13 +52,13 @@ describe('booking timezone conversion', () => {
     expect(
       localTimeUpsertToIsoTimeUpsert({
         roomId: 2,
-        start: '2025-01-15T10:00:00',
-        end: '2025-01-15T11:00:00',
+        startTime: '2025-01-15T10:00:00',
+        endTime: '2025-01-15T11:00:00',
       }),
     ).toEqual({
       roomId: 2,
-      start: '2025-01-15T08:00:00Z',
-      end: '2025-01-15T09:00:00Z',
+      startTime: '2025-01-15T08:00:00Z',
+      endTime: '2025-01-15T09:00:00Z',
     });
   });
 
@@ -66,28 +66,34 @@ describe('booking timezone conversion', () => {
     expect(
       localTimeUpsertToIsoTimeUpsert({
         roomId: 2,
-        start: '2025-07-15T10:00:00',
-        end: '2025-07-15T11:00:00',
+        startTime: '2025-07-15T10:00:00',
+        endTime: '2025-07-15T11:00:00',
       }),
     ).toEqual({
       roomId: 2,
-      start: '2025-07-15T07:00:00Z',
-      end: '2025-07-15T08:00:00Z',
+      startTime: '2025-07-15T07:00:00Z',
+      endTime: '2025-07-15T08:00:00Z',
     });
   });
 
   it('keeps winter bookings stable in a non-Helsinki runtime timezone', () => {
     const localBooking = isoTimeApiToLocalTimeApi({
       id: 1,
-      start: '2025-01-15T08:00:00.000Z',
-      end: '2025-01-15T09:00:00.000Z',
+      startTime: '2025-01-15T08:00:00.000Z',
+      endTime: '2025-01-15T09:00:00.000Z',
       bookedBy: 'user',
     });
 
-    expect(localTimeUpsertToIsoTimeUpsert({ ...localBooking, roomId: 2 })).toEqual({
+    expect(
+      localTimeUpsertToIsoTimeUpsert({
+        roomId: 2,
+        startTime: localBooking.startTime,
+        endTime: localBooking.endTime,
+      }),
+    ).toEqual({
       roomId: 2,
-      start: '2025-01-15T08:00:00Z',
-      end: '2025-01-15T09:00:00Z',
+      startTime: '2025-01-15T08:00:00Z',
+      endTime: '2025-01-15T09:00:00Z',
     });
   });
 });

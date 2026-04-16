@@ -24,8 +24,8 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T07:30:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T07:30:00.000Z',
             bookedBy: 'Daniel',
           },
         ],
@@ -44,20 +44,20 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 101,
-            start: '2025-06-24T07:00:00.000Z',
-            end: '2025-06-24T07:30:00.000Z',
+            startTime: '2025-06-24T07:00:00.000Z',
+            endTime: '2025-06-24T07:30:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 102,
-            start: '2025-06-24T07:30:00.000Z',
-            end: '2025-06-24T08:00:00.000Z',
+            startTime: '2025-06-24T07:30:00.000Z',
+            endTime: '2025-06-24T08:00:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 103,
-            start: '2025-06-25T06:00:00.000Z',
-            end: '2025-06-25T06:30:00.000Z',
+            startTime: '2025-06-25T06:00:00.000Z',
+            endTime: '2025-06-25T06:30:00.000Z',
             bookedBy: 'Alice',
           },
         ],
@@ -68,20 +68,20 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 200,
-            start: '2025-06-25T06:00:00.000Z',
-            end: '2025-06-25T06:30:00.000Z',
+            startTime: '2025-06-25T06:00:00.000Z',
+            endTime: '2025-06-25T06:30:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 201,
-            start: '2025-06-26T11:00:00.000Z',
-            end: '2025-06-26T11:30:00.000Z',
+            startTime: '2025-06-26T11:00:00.000Z',
+            endTime: '2025-06-26T11:30:00.000Z',
             bookedBy: 'Bob',
           },
           {
             id: 202,
-            start: '2025-06-26T11:30:00.000Z',
-            end: '2025-06-26T12:00:00.000Z',
+            startTime: '2025-06-26T11:30:00.000Z',
+            endTime: '2025-06-26T12:00:00.000Z',
             bookedBy: 'Bob',
           },
         ],
@@ -95,7 +95,7 @@ describe('weekBookingsGenerator', () => {
       Object.values(day).forEach((room) => {
         room.slots.forEach((slot) => {
           allIds.add(slot.id);
-          expect(slot.start.endsWith(':00')).toBe(true);
+          expect(slot.startTime.endsWith(':00')).toBe(true);
         });
       });
     });
@@ -116,8 +116,8 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T07:30:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T07:30:00.000Z',
             bookedBy: 'Ghost',
           },
         ],
@@ -136,14 +136,14 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-20T07:00:00.000Z',
-            end: '2025-06-20T07:30:00.000Z',
+            startTime: '2025-06-20T07:00:00.000Z',
+            endTime: '2025-06-20T07:30:00.000Z',
             bookedBy: 'X',
           },
           {
             id: 2,
-            start: '2025-06-30T07:00:00.000Z',
-            end: '2025-06-30T07:30:00.000Z',
+            startTime: '2025-06-30T07:00:00.000Z',
+            endTime: '2025-06-30T07:30:00.000Z',
             bookedBy: 'Y',
           },
         ],
@@ -162,14 +162,14 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T07:30:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T07:30:00.000Z',
             bookedBy: 'D1',
           },
           {
             id: 1,
-            start: '2025-06-25T08:00:00.000Z',
-            end: '2025-06-25T08:30:00.000Z',
+            startTime: '2025-06-25T08:00:00.000Z',
+            endTime: '2025-06-25T08:30:00.000Z',
             bookedBy: 'D2',
           },
         ],
@@ -189,14 +189,14 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T07:30:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T07:30:00.000Z',
             bookedBy: 'D1',
           },
           {
             id: 2,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T08:00:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T08:00:00.000Z',
             bookedBy: 'D2',
           },
         ],
@@ -216,14 +216,14 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 1,
-            start: '2025-06-25T07:00:00.000Z',
-            end: '2025-06-25T07:30:00.000Z',
+            startTime: '2025-06-25T07:00:00.000Z',
+            endTime: '2025-06-25T07:30:00.000Z',
             bookedBy: 'X',
           },
           {
             id: 2,
-            start: '2025-06-25T07:30:00.000Z',
-            end: '2025-06-25T08:00:00.000Z',
+            startTime: '2025-06-25T07:30:00.000Z',
+            endTime: '2025-06-25T08:00:00.000Z',
             bookedBy: 'Y',
           },
         ],

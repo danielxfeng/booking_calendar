@@ -120,8 +120,16 @@ const isoTimeRoomsToLocalTimeRooms = (rooms: RoomsIsoTime): Rooms => {
 const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromApi => {
   return {
     id: booking.id,
-    start: formatInTimeZone(new Date(booking.start), BOOKING_TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
-    end: formatInTimeZone(new Date(booking.end), BOOKING_TIME_ZONE, "yyyy-MM-dd'T'HH:mm:ss"),
+    startTime: formatInTimeZone(
+      new Date(booking.startTime),
+      BOOKING_TIME_ZONE,
+      "yyyy-MM-dd'T'HH:mm:ss",
+    ),
+    endTime: formatInTimeZone(
+      new Date(booking.endTime),
+      BOOKING_TIME_ZONE,
+      "yyyy-MM-dd'T'HH:mm:ss",
+    ),
     bookedBy: booking.bookedBy,
   };
 };
@@ -129,13 +137,13 @@ const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromAp
 const localTimeUpsertToIsoTimeUpsert = (booking: UpsertBooking): UpsertBookingIsoTime => {
   return {
     roomId: booking.roomId,
-    start: formatInTimeZone(
-      fromZonedTime(booking.start, BOOKING_TIME_ZONE),
+    startTime: formatInTimeZone(
+      fromZonedTime(booking.startTime, BOOKING_TIME_ZONE),
       'UTC',
       "yyyy-MM-dd'T'HH:mm:ss'Z'",
     ),
-    end: formatInTimeZone(
-      fromZonedTime(booking.end, BOOKING_TIME_ZONE),
+    endTime: formatInTimeZone(
+      fromZonedTime(booking.endTime, BOOKING_TIME_ZONE),
       'UTC',
       "yyyy-MM-dd'T'HH:mm:ss'Z'",
     ),

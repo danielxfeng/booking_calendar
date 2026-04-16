@@ -140,15 +140,15 @@ const BookingForm = () => {
                     if (!date) return;
 
                     const newDayShift = differenceInCalendarDays(date, startDate);
-                    const [currStart, currEnd] = form.getValues(['start', 'end']);
+                    const [currStart, currEnd] = form.getValues(['startTime', 'endTime']);
                     const nextStart = changeDate(currStart, date);
 
                     if (currStart !== nextStart) {
                       const nextEnd = changeDate(currEnd, date);
-                      form.setValue('start', nextStart);
-                      form.setValue('end', nextEnd);
+                      form.setValue('startTime', nextStart);
+                      form.setValue('endTime', nextEnd);
                       setDayShift(newDayShift);
-                      form.trigger('end');
+                      form.trigger('endTime');
                     }
 
                     setOpen(false);
@@ -182,7 +182,7 @@ const BookingForm = () => {
                   <RadioGroup
                     onValueChange={(val) => {
                       field.onChange(Number(val));
-                      form.trigger('end');
+                      form.trigger('endTime');
                     }}
                     value={String(field.value)}
                     className='grid grid-cols-2 gap-10 px-4'
@@ -215,7 +215,7 @@ const BookingForm = () => {
             {/* Start time selector */}
             <FormField
               control={form.control}
-              name='start'
+              name='startTime'
               render={({ field }) => (
                 <FormItem className='flex flex-col items-center space-y-3'>
                   <FormLabel>Start:</FormLabel>
@@ -226,7 +226,7 @@ const BookingForm = () => {
                       disabled={formType !== 'insert' || form.formState.isSubmitting}
                       onSelect={(val) => {
                         field.onChange(val);
-                        form.trigger('end');
+                        form.trigger('endTime');
                       }}
                     />
                   </FormControl>
@@ -238,7 +238,7 @@ const BookingForm = () => {
             {/* End time selector */}
             <FormField
               control={form.control}
-              name='end'
+              name='endTime'
               render={({ field }) => (
                 <FormItem className='flex flex-col items-center space-y-3'>
                   <FormLabel>End:</FormLabel>

@@ -75,13 +75,19 @@ const BookedBlock = ({
   // order: 1 currUser 2 room's color, 3 fallback
   const roomColor = isCurrUser ? CURR_USER_COLOR : room?.color || 'bg-gray-600/20';
 
-  const { h: height, ...style } = getPositionAndStyle(start, slot.start, slot.end, roomId, rooms);
+  const { h: height, ...style } = getPositionAndStyle(
+    start,
+    slot.startTime,
+    slot.endTime,
+    roomId,
+    rooms,
+  );
 
   return (
     <div
       className={`pointer-events-auto absolute flex items-start justify-center rounded-sm border ${roomColor}`}
       style={style}
-      title={`Meeting room: ${roomName}\n${format(new Date(slot.start), 'HH:mm')} - ${format(new Date(slot.end), 'HH:mm')}\n${
+      title={`Meeting room: ${roomName}\n${format(new Date(slot.startTime), 'HH:mm')} - ${format(new Date(slot.endTime), 'HH:mm')}\n${
         slot.bookedBy ? 'Booked by: ' + slot.bookedBy : ''
       }`}
       onClick={() => {
@@ -90,7 +96,7 @@ const BookedBlock = ({
         setFormProp({
           booking: slot,
           roomId: roomId,
-          startTime: new Date(slot.start),
+          startTime: new Date(slot.startTime),
           channel: 'sheet',
         });
       }}

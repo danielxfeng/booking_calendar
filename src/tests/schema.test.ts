@@ -23,8 +23,8 @@ describe('BookingSchema', () => {
   it('should pass for a valid booking with user', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:00:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:00:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: 'Daniel',
     };
 
@@ -35,8 +35,8 @@ describe('BookingSchema', () => {
   it('should pass for a valid booking without a user', () => {
     const case1 = {
       id: 2,
-      start: '2025-06-24T10:00:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:00:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -47,8 +47,8 @@ describe('BookingSchema', () => {
   it('should fail a too early booking', () => {
     const case1 = {
       id: 2,
-      start: '2025-06-24T05:30:00',
-      end: '2025-06-24T06:00:00',
+      startTime: '2025-06-24T05:30:00',
+      endTime: '2025-06-24T06:00:00',
       bookedBy: null,
     };
 
@@ -59,8 +59,8 @@ describe('BookingSchema', () => {
   it('should fail a too late booking', () => {
     const case1 = {
       id: 2,
-      start: '2025-06-24T21:00:00',
-      end: '2025-06-24T21:30:00',
+      startTime: '2025-06-24T21:00:00',
+      endTime: '2025-06-24T21:30:00',
       bookedBy: null,
     };
 
@@ -110,8 +110,8 @@ describe('BookingSchema', () => {
 
   it('should fail for a booking without a id', () => {
     const case1 = {
-      start: '2025-06-24T10:00:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:00:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -122,8 +122,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid id', () => {
     const case1 = {
       id: 'a',
-      start: '2025-06-24T10:00:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:00:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -134,7 +134,7 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a start', () => {
     const case1 = {
       id: 1,
-      end: '2025-06-24T10:30:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -145,8 +145,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid start(format)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:00:00+09:00',
-      end: '2025-06-24T10:30',
+      startTime: '2025-06-24T10:00:00+09:00',
+      endTime: '2025-06-24T10:30',
       bookedBy: null,
     };
 
@@ -157,8 +157,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid start(invalid minute)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:20:00',
-      end: '2025-06-24T10:50:00',
+      startTime: '2025-06-24T10:20:00',
+      endTime: '2025-06-24T10:50:00',
       bookedBy: null,
     };
 
@@ -169,7 +169,7 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a end', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -180,8 +180,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid end(same as start)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:30:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:30:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: null,
     };
 
@@ -192,8 +192,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a user', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:30:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:30:00',
+      endTime: '2025-06-24T10:30:00',
     };
 
     const result = BookingFromApiSchema.safeParse(case1);
@@ -203,8 +203,8 @@ describe('BookingSchema', () => {
   it('should fail for a booking without a valid user(empty)', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:30:00',
-      end: '2025-06-24T10:30:00',
+      startTime: '2025-06-24T10:30:00',
+      endTime: '2025-06-24T10:30:00',
       bookedBy: '   ',
     };
 
@@ -215,8 +215,8 @@ describe('BookingSchema', () => {
   it('should fail for a inter day booking', () => {
     const case1 = {
       id: 1,
-      start: '2025-06-24T10:30:00',
-      end: '2025-06-25T10:30:00',
+      startTime: '2025-06-24T10:30:00',
+      endTime: '2025-06-25T10:30:00',
       bookedBy: '   ',
     };
 
@@ -318,8 +318,8 @@ describe('UpsertBookingSchema', () => {
 
     const result = UpsertBookingSchema.safeParse({
       roomId: 1,
-      start: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
-      end: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
+      startTime: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
+      endTime: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
     });
 
     expect(result.success).toBe(true);
@@ -331,8 +331,8 @@ describe('UpsertBookingSchema', () => {
 
     const result = UpsertBookingSchema.safeParse({
       roomId: 2,
-      start: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
-      end: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
+      startTime: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
+      endTime: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
     });
 
     expect(result.success).toBe(true);
@@ -344,8 +344,8 @@ describe('UpsertBookingSchema', () => {
 
     const result = UpsertBookingSchema.safeParse({
       roomId: 4,
-      start: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
-      end: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
+      startTime: format(start, "yyyy-MM-dd'T'HH:mm:ss"),
+      endTime: format(end, "yyyy-MM-dd'T'HH:mm:ss"),
       bookedBy: 'david',
     });
 
@@ -373,8 +373,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(addHours(start, 4)),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(addHours(start, 4)),
     });
 
     expect(result.success).toBe(true);
@@ -395,8 +395,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const start = nextMonday(set(new Date(), { hours: 10, minutes: 0 }));
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(addHours(start, 5)),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(addHours(start, 5)),
     });
 
     expect(result.success).toBe(false);
@@ -408,8 +408,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const end = addHours(start, 2);
     const booking: UpsertBooking = {
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     };
 
     const bookings: WeekBookings = [
@@ -419,14 +419,14 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
           roomName: 'small',
           slots: [
             {
-              start: formatToDateTime(addHours(start, -1)),
-              end: formatToDateTime(start),
+              startTime: formatToDateTime(addHours(start, -1)),
+              endTime: formatToDateTime(start),
               id: 1,
               bookedBy: null,
             },
             {
-              start: formatToDateTime(end),
-              end: formatToDateTime(addHours(end, 1)),
+              startTime: formatToDateTime(end),
+              endTime: formatToDateTime(addHours(end, 1)),
               id: 2,
               bookedBy: null,
             },
@@ -451,8 +451,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
           roomName: 'small',
           slots: [
             {
-              start: formatToDateTime(nextMonday(set(new Date(), { hours: 10, minutes: 0 }))),
-              end: formatToDateTime(nextMonday(set(new Date(), { hours: 11, minutes: 30 }))),
+              startTime: formatToDateTime(nextMonday(set(new Date(), { hours: 10, minutes: 0 }))),
+              endTime: formatToDateTime(nextMonday(set(new Date(), { hours: 11, minutes: 30 }))),
               id: 1,
               bookedBy: null,
             },
@@ -464,8 +464,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(false);
@@ -483,8 +483,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
           roomName: 'small',
           slots: [
             {
-              start: formatToDateTime(start),
-              end: formatToDateTime(end),
+              startTime: formatToDateTime(start),
+              endTime: formatToDateTime(end),
               id: 1,
               bookedBy: null,
             },
@@ -496,8 +496,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(false);
@@ -516,8 +516,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
           roomName: 'small',
           slots: [
             {
-              start: formatToDateTime(baseStart),
-              end: formatToDateTime(addHours(baseStart, 1.5)),
+              startTime: formatToDateTime(baseStart),
+              endTime: formatToDateTime(addHours(baseStart, 1.5)),
               id: 1,
               bookedBy: null,
             },
@@ -529,8 +529,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(false);
@@ -549,8 +549,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
           roomName: 'small',
           slots: [
             {
-              start: formatToDateTime(baseStart),
-              end: formatToDateTime(addHours(baseStart, 1.5)),
+              startTime: formatToDateTime(baseStart),
+              endTime: formatToDateTime(addHours(baseStart, 1.5)),
               id: 1,
               bookedBy: null,
             },
@@ -562,8 +562,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(user, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(false);
@@ -588,8 +588,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(student, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(false);
@@ -614,8 +614,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(staff, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(true);
@@ -639,8 +639,8 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const schema = EnhancedUpsertBookingSchemaFactory(staff, bookings);
     const result = schema.safeParse({
       roomId: 1,
-      start: formatToDateTime(start),
-      end: formatToDateTime(end),
+      startTime: formatToDateTime(start),
+      endTime: formatToDateTime(end),
     });
 
     expect(result.success).toBe(true);
