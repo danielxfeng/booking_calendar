@@ -127,7 +127,12 @@ We welcome contributions! Here's how you can help:
 - [x] Calendar export functionality
 - [ ] Integration with external calendar systems
 
-
+## Update Log
+- 04-2026
+  - Added a dedicated auth landing page for HiveID login and persisted the auth token on the frontend.
+  - Added a conversion layer at the API boundary to adapt to the backend's UTC/ISO timestamp change.
+  - The UI and validation logic still use Helsinki local time, because this system schedules on-site rooms at Hive Helsinki rather than cross-timezone personal events.
+  - This keeps slot rendering and room-specific rules consistent while isolating timezone conversion to the network layer.
 
 ## License
 
