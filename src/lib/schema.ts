@@ -192,6 +192,7 @@ export {
   DateSchema,
   EnhancedUpsertBookingSchemaFactory,
   RoomIsoTimeSchema,
+  RoomSchema,
   RoomsIsoTimeSchema,
   RoomsSchema,
   UpsertBookingIsoTimeSchema,
@@ -207,4 +208,13 @@ type Rooms = z.infer<typeof RoomsSchema>;
 type RoomsIsoTime = z.infer<typeof RoomsIsoTimeSchema>;
 type UpsertBooking = z.infer<typeof UpsertBookingSchema>;
 
-export type { BookingFromApi, BookingFromApiIsoTime, BookingsFromApi, Room, Rooms, RoomsIsoTime, UpsertBooking, UpsertBookingIsoTime };
+export type {
+  BookingFromApi,
+  BookingFromApiIsoTime,
+  BookingsFromApi,
+  Room,
+  Rooms,
+  RoomsIsoTime,
+  UpsertBooking,
+  UpsertBookingIsoTime,
+};

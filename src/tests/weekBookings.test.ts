@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Rooms } from '@/lib/schema';
+import type { RoomsIsoTime } from '@/lib/schema';
 import { weekBookingsGenerator } from '@/lib/weekBookings';
 
 const startDate = '2025-06-23';
 
 vi.mock('@/config', () => ({
+  BOOKING_TIME_ZONE: 'Europe/Helsinki',
   ROOM_MAP: [
     { id: 1, name: 'Big', color: 'bg-blue-300 border-blue-400' },
     { id: 2, name: 'Small', color: 'bg-blue-100 border-blue-200' },
@@ -16,15 +17,15 @@ vi.mock('@/config', () => ({
 
 describe('weekBookingsGenerator', () => {
   it('places a booking in the correct weekday column', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'a',
         slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00:00',
-            end: '2025-06-25T10:30:00',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T07:30:00.000Z',
             bookedBy: 'Daniel',
           },
         ],
@@ -36,27 +37,27 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('places multiple rooms across multiple days correctly, with adjacent slots', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'Alpha',
         slots: [
           {
             id: 101,
-            start: '2025-06-24T10:00:00',
-            end: '2025-06-24T10:30:00',
+            start: '2025-06-24T07:00:00.000Z',
+            end: '2025-06-24T07:30:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 102,
-            start: '2025-06-24T10:30:00',
-            end: '2025-06-24T11:00:00',
+            start: '2025-06-24T07:30:00.000Z',
+            end: '2025-06-24T08:00:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 103,
-            start: '2025-06-25T09:00:00',
-            end: '2025-06-25T09:30:00',
+            start: '2025-06-25T06:00:00.000Z',
+            end: '2025-06-25T06:30:00.000Z',
             bookedBy: 'Alice',
           },
         ],
@@ -67,20 +68,20 @@ describe('weekBookingsGenerator', () => {
         slots: [
           {
             id: 200,
-            start: '2025-06-25T09:00:00',
-            end: '2025-06-25T09:30:00',
+            start: '2025-06-25T06:00:00.000Z',
+            end: '2025-06-25T06:30:00.000Z',
             bookedBy: 'Alice',
           },
           {
             id: 201,
-            start: '2025-06-26T14:00:00',
-            end: '2025-06-26T14:30:00',
+            start: '2025-06-26T11:00:00.000Z',
+            end: '2025-06-26T11:30:00.000Z',
             bookedBy: 'Bob',
           },
           {
             id: 202,
-            start: '2025-06-26T14:30:00',
-            end: '2025-06-26T15:00:00',
+            start: '2025-06-26T11:30:00.000Z',
+            end: '2025-06-26T12:00:00.000Z',
             bookedBy: 'Bob',
           },
         ],
@@ -108,15 +109,15 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('filters out rooms not in ROOM_MAP', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 999,
         roomName: 'ghost room',
         slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00:00',
-            end: '2025-06-25T10:30:00',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T07:30:00.000Z',
             bookedBy: 'Ghost',
           },
         ],
@@ -128,21 +129,21 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('filters out slots out of range (too early or too late)', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'a',
         slots: [
           {
             id: 1,
-            start: '2025-06-20T10:00:00',
-            end: '2025-06-20T10:30:00',
+            start: '2025-06-20T07:00:00.000Z',
+            end: '2025-06-20T07:30:00.000Z',
             bookedBy: 'X',
           },
           {
             id: 2,
-            start: '2025-06-30T10:00:00',
-            end: '2025-06-30T10:30:00',
+            start: '2025-06-30T07:00:00.000Z',
+            end: '2025-06-30T07:30:00.000Z',
             bookedBy: 'Y',
           },
         ],
@@ -154,21 +155,21 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('throws error on duplicate slot IDs', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'a',
         slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T07:30:00.000Z',
             bookedBy: 'D1',
           },
           {
             id: 1,
-            start: '2025-06-25T11:00',
-            end: '2025-06-25T11:30',
+            start: '2025-06-25T08:00:00.000Z',
+            end: '2025-06-25T08:30:00.000Z',
             bookedBy: 'D2',
           },
         ],
@@ -181,21 +182,21 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('throws error on overlapping bookings within the same room/day', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'a',
         slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T07:30:00.000Z',
             bookedBy: 'D1',
           },
           {
             id: 2,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T11:00',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T08:00:00.000Z',
             bookedBy: 'D2',
           },
         ],
@@ -208,21 +209,21 @@ describe('weekBookingsGenerator', () => {
   });
 
   it('accepts legal adjacent bookings without overlap', () => {
-    const rooms: Rooms = [
+    const rooms: RoomsIsoTime = [
       {
         roomId: 1,
         roomName: 'a',
         slots: [
           {
             id: 1,
-            start: '2025-06-25T10:00',
-            end: '2025-06-25T10:30',
+            start: '2025-06-25T07:00:00.000Z',
+            end: '2025-06-25T07:30:00.000Z',
             bookedBy: 'X',
           },
           {
             id: 2,
-            start: '2025-06-25T10:30',
-            end: '2025-06-25T11:00',
+            start: '2025-06-25T07:30:00.000Z',
+            end: '2025-06-25T08:00:00.000Z',
             bookedBy: 'Y',
           },
         ],
