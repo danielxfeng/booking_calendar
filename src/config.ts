@@ -26,6 +26,11 @@ if (60 % TIME_SLOT_INTERVAL !== 0)
  */
 const OPEN_HOURS: [string, string] = ['06:00', '21:00'];
 
+/**
+ * Booking times are anchored to the venue's local clock, not the viewer's browser timezone.
+ */
+const BOOKING_TIME_ZONE = 'Europe/Helsinki';
+
 const getOpenHoursIdx = (time: string): number => {
   const [hour, minute] = time.split(':').map(Number);
   const minutes = hour * 60 + minute;
@@ -39,14 +44,11 @@ const getOpenHoursIdx = (time: string): number => {
  */
 const OPEN_HOURS_IDX = [getOpenHoursIdx(OPEN_HOURS[0]), getOpenHoursIdx(OPEN_HOURS[1])];
 
-const API_URL: string =
-  import.meta.env.MODE === 'production'
-    ? import.meta.env.VITE_API_URL || ''
-    : import.meta.env.VITE_API_URL_NO_PROD || '';
+const API_URL: string = import.meta.env.VITE_API_URL;
 
-const ENDPOINT_AUTH: string = 'oauth/login';
+const endpoint_auth = (provider: string): string => `auth/${provider}/login`;
 
-const ENDPOINT_SLOTS: string = 'reservation';
+const ENDPOINT_SLOTS: string = 'api/v1/reservations';
 
 const FETCHER_TIMEOUT: number = 30000; // 30 seconds
 
@@ -62,11 +64,12 @@ const CELL_HEIGHT_PX: number = 88; // 24px
 
 export {
   API_URL,
+  BOOKING_TIME_ZONE,
   CACHE_DURATION,
   CELL_HEIGHT_PX,
   CELL_WIDTH_PX,
   CURR_USER_COLOR,
-  ENDPOINT_AUTH,
+  endpoint_auth,
   ENDPOINT_SLOTS,
   FETCHER_TIMEOUT,
   LONGEST_STUDENT_MEETING,

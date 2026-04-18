@@ -2,8 +2,8 @@ import { type Day, differenceInCalendarDays } from 'date-fns';
 
 import { ROOM_MAP } from '@/config';
 import { ThrowInvalidIncomingDataErr } from '@/lib/errorHandler';
-import { type Room, type Rooms, RoomsSchema } from '@/lib/schema';
-import { newDate } from '@/lib/tools';
+import { type Room, type Rooms, type RoomsIsoTime, RoomsIsoTimeSchema, RoomsSchema } from '@/lib/schema';
+import { isoTimeRoomsToLocalTimeRooms, newDate } from '@/lib/tools';
 
 /**
  * @summary main data structure of this application.
@@ -21,8 +21,13 @@ const newWeekBookings = (): WeekBookings => {
   return weekBookings;
 };
 
-const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
-  const validatedRooms = RoomsSchema.safeParse(rooms);
+const weekBookingsGenerator = (rooms: RoomsIsoTime, start: string): WeekBookings => {
+  const validatedIsoTimeRooms = RoomsIsoTimeSchema.safeParse(rooms);
+  if (!validatedIsoTimeRooms.success)
+    ThrowInvalidIncomingDataErr(JSON.stringify(validatedIsoTimeRooms.error));
+  const isoTimeRooms = validatedIsoTimeRooms.data!;
+  const localTimeRooms: Rooms = isoTimeRoomsToLocalTimeRooms(isoTimeRooms);
+  const validatedRooms = RoomsSchema.safeParse(localTimeRooms);
   if (!validatedRooms.success) ThrowInvalidIncomingDataErr(JSON.stringify(validatedRooms.error));
   const data = validatedRooms.data!;
 
@@ -36,7 +41,7 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
     if (!ROOM_MAP.some((r) => r.id === room.roomId)) continue;
 
     for (const slot of room.slots) {
-      const bookingStartTime = new Date(slot.start);
+      const bookingStartTime = new Date(slot.startTime);
       const col = differenceInCalendarDays(bookingStartTime, startDate);
 
       if (col < 0 || col > 6) continue;
@@ -61,7 +66,7 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
 
   weekBookings.forEach((day) => {
     Object.values(day).forEach((room) => {
-      room.slots.sort((a, b) => (a.start > b.start ? 1 : -1));
+      room.slots.sort((a, b) => (a.startTime > b.startTime ? 1 : -1));
     });
   });
 
@@ -71,7 +76,7 @@ const weekBookingsGenerator = (rooms: Rooms, start: string): WeekBookings => {
     for (const room of Object.values(day)) {
       if (room.slots.length < 2) continue;
       for (let i = 0; i < room.slots.length - 1; i++) {
-        if (room.slots[i].end > room.slots[i + 1].start) {
+        if (room.slots[i].endTime > room.slots[i + 1].startTime) {
           overlapping = true;
           break;
         }

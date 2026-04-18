@@ -1,5 +1,3 @@
-import { Badge } from '@/components/ui/badge';
-
 const HeaderBrand = () => {
   return (
     <div className='flex items-center gap-1.5'>
@@ -11,9 +9,6 @@ const HeaderBrand = () => {
         <span className='text-foreground hidden text-xl font-semibold tracking-tight sm:text-2xl lg:block'>
           Bookme
         </span>
-      </div>
-      <div className='hidden h-8 shrink-0 items-start lg:flex'>
-        <Badge variant='secondary'>Beta</Badge>
       </div>
     </div>
   );

@@ -23,8 +23,8 @@ const initForm = (
       formType,
       {
         roomId: formProp.roomId,
-        start: formatToDateTime(formProp.startTime),
-        end: formatToDateTime(addMinutes(formProp.startTime, TIME_SLOT_INTERVAL)),
+        startTime: formatToDateTime(formProp.startTime),
+        endTime: formatToDateTime(addMinutes(formProp.startTime, TIME_SLOT_INTERVAL)),
       },
     ];
   } else {
@@ -37,7 +37,10 @@ const initForm = (
     // Update is only allowed for a booking in future.
     const formType =
       currBooking.bookedBy !== null && isAfter(formProp.startTime, new Date()) ? 'update' : 'view';
-    return [formType, { start: currBooking.start, end: currBooking.end, roomId: currRoomId }];
+    return [
+      formType,
+      { startTime: currBooking.startTime, endTime: currBooking.endTime, roomId: currRoomId },
+    ];
   }
 };
 
@@ -67,8 +70,8 @@ const calculateSlots = (
       // We skip ourself.
       if (slot.id === bookingId) return;
 
-      const bookingStart = new Date(slot.start);
-      const bookingEnd = new Date(slot.end);
+      const bookingStart = new Date(slot.startTime);
+      const bookingEnd = new Date(slot.endTime);
 
       const startIndex = Math.floor(
         differenceInMinutes(bookingStart, firstSlot) / TIME_SLOT_INTERVAL,

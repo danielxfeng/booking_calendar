@@ -202,6 +202,10 @@ a:hover {
   animation: fade-in 0.8s ease-out;
 }
 
+.animate-fade-in-delayed {
+  animation: fade-in 0.7s ease-out 0.35s both;
+}
+
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }

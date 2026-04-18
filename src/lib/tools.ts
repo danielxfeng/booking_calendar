@@ -1,7 +1,17 @@
-import { addHours, format, isBefore, startOfDay } from 'date-fns';
 import type { CSSProperties } from 'react';
+import { addHours, format, isBefore, startOfDay } from 'date-fns';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 
-import { OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+import { BOOKING_TIME_ZONE, OPEN_HOURS_IDX, TIME_SLOT_INTERVAL } from '@/config';
+
+import type {
+  BookingFromApi,
+  BookingFromApiIsoTime,
+  Rooms,
+  RoomsIsoTime,
+  UpsertBooking,
+  UpsertBookingIsoTime,
+} from './schema';
 
 /**
  * @summary Returns a local time format of date
@@ -99,12 +109,56 @@ const rowsArr = Array.from(
   (_, i) => i + OPEN_HOURS_IDX[0] / slotsInAHour,
 );
 
+const isoTimeRoomsToLocalTimeRooms = (rooms: RoomsIsoTime): Rooms => {
+  return rooms.map((room) => ({
+    roomId: room.roomId,
+    roomName: room.roomName,
+    slots: room.slots.map((slot) => isoTimeApiToLocalTimeApi(slot)),
+  }));
+};
+
+const isoTimeApiToLocalTimeApi = (booking: BookingFromApiIsoTime): BookingFromApi => {
+  return {
+    id: booking.id,
+    startTime: formatInTimeZone(
+      new Date(booking.startTime),
+      BOOKING_TIME_ZONE,
+      "yyyy-MM-dd'T'HH:mm:ss",
+    ),
+    endTime: formatInTimeZone(
+      new Date(booking.endTime),
+      BOOKING_TIME_ZONE,
+      "yyyy-MM-dd'T'HH:mm:ss",
+    ),
+    bookedBy: booking.bookedBy,
+  };
+};
+
+const localTimeUpsertToIsoTimeUpsert = (booking: UpsertBooking): UpsertBookingIsoTime => {
+  return {
+    roomId: booking.roomId,
+    startTime: formatInTimeZone(
+      fromZonedTime(booking.startTime, BOOKING_TIME_ZONE),
+      'UTC',
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    ),
+    endTime: formatInTimeZone(
+      fromZonedTime(booking.endTime, BOOKING_TIME_ZONE),
+      'UTC',
+      "yyyy-MM-dd'T'HH:mm:ss'Z'",
+    ),
+  };
+};
+
 export {
   changeDate,
   formatToDate,
   formatToDateTime,
   gridStyleGenerator,
+  isoTimeApiToLocalTimeApi,
+  isoTimeRoomsToLocalTimeRooms,
   isPast,
+  localTimeUpsertToIsoTimeUpsert,
   newDate,
   rowsArr,
   slotsInAHour,
