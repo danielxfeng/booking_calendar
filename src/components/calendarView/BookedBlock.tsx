@@ -101,7 +101,7 @@ const BookedBlock = ({
           height < 16 && 'py-0 leading-none',
         )}
       >
-        {user?.role == 'staff' && slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'}
+        {slot.bookedBy && height >= 12 ? slot.bookedBy : 'Booked'}
       </span>
     </div>
   );
