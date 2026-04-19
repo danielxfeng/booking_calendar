@@ -75,13 +75,13 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
         >
           <Button
             className='w-full lg:w-1/2'
-            onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('42')}`)}
+            onClick={() => window.location.assign(`${API_URL}/${endpoint_auth('42')}`)}
           >
             Login with 42
           </Button>
           <Button
             className='w-full lg:w-1/2'
-            onClick={() => window.location.replace(`${API_URL}/${endpoint_auth('keycloak')}`)}
+            onClick={() => window.location.assign(`${API_URL}/${endpoint_auth('keycloak')}`)}
           >
             Login with Hive ID
           </Button>
