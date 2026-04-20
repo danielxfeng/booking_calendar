@@ -67,20 +67,20 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
           </div>
         </div>
         <div
-          className={`flex flex-col items-center gap-6 transition-all duration-300 lg:flex-row ${
+          className={`grid grid-cols-1 items-center gap-6 transition-all duration-300 lg:grid-cols-2 ${
             showButtons
               ? 'translate-y-0 opacity-100'
               : 'pointer-events-none translate-y-3 opacity-0'
           }`}
         >
           <Button
-            className='w-full lg:w-1/2'
+            className='w-full'
             onClick={() => window.location.assign(`${API_URL}/${endpoint_auth('42')}`)}
           >
             Login with 42
           </Button>
           <Button
-            className='w-full lg:w-1/2'
+            className='w-full'
             onClick={() => window.location.assign(`${API_URL}/${endpoint_auth('keycloak')}`)}
           >
             Login with Hive ID
