@@ -1,5 +1,5 @@
 import { useSetAtom } from 'jotai';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import { startAtom } from '@/lib/atoms';
 import { normalizeStartDate } from '@/lib/normalizeStartDate';
