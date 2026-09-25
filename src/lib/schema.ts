@@ -178,7 +178,7 @@ const EnhancedUpsertBookingSchemaFactory = (user: User | null, bookings: WeekBoo
     if (user.role === 'student' && !roleBasedLengthCheck(startDate, endDate, user.role)) {
       ctx.issues.push({
         code: 'custom',
-        message: `The max length meeting for students is ${LONGEST_STUDENT_MEETING} hours.`,
+        message: `Bookings are limited to ${LONGEST_STUDENT_MEETING} hours.`,
         input: ctx.value,
         path: ['endTime'],
       });

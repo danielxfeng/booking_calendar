@@ -14,7 +14,7 @@ import { formatToDateTime } from '@/lib/tools';
 import type { WeekBookings } from '@/lib/weekBookings';
 
 vi.mock('@/config', () => ({
-  LONGEST_STUDENT_MEETING: 4,
+  LONGEST_STUDENT_MEETING: 3,
   TIME_SLOT_INTERVAL: 30,
   OPEN_HOURS_IDX: [12, 42],
 }));
@@ -374,7 +374,7 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const result = schema.safeParse({
       roomId: 1,
       startTime: formatToDateTime(start),
-      endTime: formatToDateTime(addHours(start, 4)),
+      endTime: formatToDateTime(addHours(start, 3)),
     });
 
     expect(result.success).toBe(true);
@@ -396,11 +396,11 @@ describe('EnhancedUpsertBookingSchemaFactory', () => {
     const result = schema.safeParse({
       roomId: 1,
       startTime: formatToDateTime(start),
-      endTime: formatToDateTime(addHours(start, 5)),
+      endTime: formatToDateTime(addHours(start, 3.5)),
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0].message).toContain('max length');
+    expect(result.error?.issues[0].message).toContain('limited to');
   });
 
   it('passes with valid booking', () => {
