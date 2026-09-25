@@ -54,7 +54,7 @@ const FETCHER_TIMEOUT: number = 30000; // 30 seconds
 
 const CACHE_DURATION: number = 5; // 5 minutes
 
-const LONGEST_STUDENT_MEETING: number = 4; // 4 hours.
+const LONGEST_STUDENT_MEETING: number = 3; // 3 hours.
 
 /**
  * The size of a cell of the calendar view.

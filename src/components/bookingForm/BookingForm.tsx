@@ -4,6 +4,7 @@ import {
   addDays,
   addYears,
   differenceInCalendarDays,
+  differenceInMinutes,
   format,
   isAfter,
   isBefore,
@@ -11,7 +12,7 @@ import {
 } from 'date-fns';
 import { enGB } from 'date-fns/locale';
 import { useAtom, useAtomValue } from 'jotai';
-import { ChevronDownIcon, Loader, User } from 'lucide-react';
+import { ChevronDownIcon, Info, Loader, User } from 'lucide-react';
 
 import ScrollSlotPicker from '@/components/bookingForm/ScrollSlotPicker';
 import {
@@ -44,10 +45,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { ROOM_MAP } from '@/config';
+import { LONGEST_STUDENT_MEETING, ROOM_MAP } from '@/config';
 import { formPropAtom } from '@/lib/atoms';
 import useBookingForm from '@/lib/hooks/useBookingForm';
 import { changeDate } from '@/lib/tools';
+import { getUser } from '@/lib/userStore';
 import { cn } from '@/lib/utils';
 
 /**
@@ -73,6 +75,17 @@ const BookingForm = () => {
     onSubmit,
     onDelete,
   } = useBookingForm(prop);
+
+  const user = getUser();
+  const [watchedStart, watchedEnd] = form.watch(['startTime', 'endTime']);
+  const durationMinutes =
+    watchedStart && watchedEnd
+      ? differenceInMinutes(new Date(watchedEnd), new Date(watchedStart))
+      : 0;
+  const showDurationWarning =
+    formType === 'insert' &&
+    user?.role === 'student' &&
+    durationMinutes > LONGEST_STUDENT_MEETING * 60;
 
   const titlePrefix =
     formType === 'insert'
@@ -255,6 +268,19 @@ const BookingForm = () => {
               )}
             />
           </div>
+
+          {showDurationWarning && (
+            <p
+              role='alert'
+              className='bg-amber-50 border-amber-300 text-amber-800 flex items-start gap-2 rounded-md border px-3 py-2 text-sm'
+            >
+              <Info className='mt-0.5 h-4 w-4 shrink-0' />
+              <span>
+                Meeting rooms are shared — please keep bookings to {LONGEST_STUDENT_MEETING} hours
+                or less so others can use the room too.
+              </span>
+            </p>
+          )}
 
           <hr />
           {/* Root error(possible) */}
